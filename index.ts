@@ -15,6 +15,7 @@ app.get("/", (req: Request, res: Response) => {
 
 const PORT: number = 3000;
 app.listen(PORT, () => {
-  console.log(`The App is running on ${PORT}`);
+  console.log(`The App is running on ${PORT}`)
+
 });
 
