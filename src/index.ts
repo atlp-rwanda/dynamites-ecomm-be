@@ -1,11 +1,10 @@
-import bodyParser from "body-parser";
+
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import morgan from "morgan";
 const app: Application = express();
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+
 app.use(cors());
 app.use(morgan("dev"));
 
