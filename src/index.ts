@@ -11,11 +11,11 @@ app.use(morgan("dev"));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 
-app.get("/", (req: Request, res: Response) => {
-  return res.json({ message: "Welcome To The Dynamites backend e-commerce" });
-});
+app.get('/', (req: Request, res: Response) => res.json({ message: 'Welcome To The Dynamites backend e-commerce' }));
 
 const PORT: number = 3000;
 app.listen(PORT, () => {
   console.log(`The App is running on ${PORT}`)
+
 });
+
