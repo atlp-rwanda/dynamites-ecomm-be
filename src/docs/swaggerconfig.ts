@@ -4,7 +4,7 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: "Dynamites project API",
+      title: 'Dynamites project API',
       version: '1.0.0',
       description: 'Documentation for dynamites ecommerce app',
     },
@@ -15,19 +15,19 @@ const options = {
       },
     ],
     components: {
-        securitySchemes: {
-            bearerAuth: {
-                type: 'http',
-                scheme: 'bearer',
-                in: 'header',
-                bearerformat: 'JWT'
-            }
-        }
-    }
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          in: 'header',
+          bearerformat: 'JWT',
+        },
+      },
+    },
   },
-  apis:['src/docs/*']
+  apis: ['src/docs/*'],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
 
-export default swaggerSpec
+export default swaggerSpec;
