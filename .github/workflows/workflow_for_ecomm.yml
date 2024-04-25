@@ -1,0 +1,38 @@
+name: CI for ecomm-project for Dynamite
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
+
+jobs:
+  build:
+    #git hub offer virtual machines to run workflows so we will be using ubuntu lastest version its standand one
+    #we using ubuntu because we want to use lunex terminal
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        #each version we specify we be tested on
+        #we are only limited to 3 versions
+        node-version: [16.x, 18.x, 20.x]
+        
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }} #this will help use know which version we are testing on.
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm' #this we help speed up the workflow by reusing dependencies from previous runs
+    - run: npm ci #run dependencies installing we using ci in place of 'npm install' becouse ci(clearn install) is smooth and faster
+    - run: npm test #this line will run test script
+    - name: linting using GitHub Super Linter
+      uses: super-linter/super-linter@v6.4. #we giong to use the linter to check the issues in code before build but after test
+      env:
+        VALIDATE_ALL_CODEBASE: false #will check the linking for only new or edited files
+        DEFAULT_BRANCH: develop #this state the default branch
+        DISABLE_ERRORS: true #this will prevent the CI to fail because the linter fail only N.B this if because its first time using this linter after some time i will change true to farse 
+    - run: npm run build --if-present # we using if statement because initial the code have no build script in packege.json
+    
