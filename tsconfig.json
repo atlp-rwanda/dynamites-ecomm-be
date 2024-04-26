@@ -1,12 +1,19 @@
 {
   "compilerOptions": {
-    "target": "es2016",                                 
-    "module": "commonjs",                                
-    "esModuleInterop": true,                                                   
-    "forceConsistentCasingInFileNames": true,            
-    "strict": true,                                     
-    "skipLibCheck": true                                 
+    "target": "es2018",
+    "module": "commonjs",
+    "jsx": "preserve",
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true,
+    "esModuleInterop": true,
+    "lib": ["es2018", "esnext.asynciterable"],
+    "declaration": true,
+    "declarationDir": "dist/types",
+    "strictPropertyInitialization": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
   },
-  "include": ["src/**/*.ts,*.js", "app.ts", "src/index.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules, **/types/*"],
+  "include": ["./src/*", "src/types"]
 }
