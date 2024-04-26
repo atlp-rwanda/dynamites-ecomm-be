@@ -13,14 +13,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(morgan("dev"));
-app.use('/api/v1', route);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(process.env.ALL as string, route);
+app.use(process.env.DOCS as string, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get('/', (req: Request, res: Response) =>
   res.json({ message: 'Welcome To The Dynamites backend e-commerce' })
 );
 
-const PORT: number = 3000;
+const PORT = process.env.APP_PORT;
 (async () => {
   await connect();
 
