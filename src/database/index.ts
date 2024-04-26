@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
 import { config } from 'dotenv';
 config();
-const dabasePort = process.env.PORT ? parseInt(process.env.PORT) :undefined
+const dabasePort = process.env.DB_PORT ? parseInt(process.env.DB_PORT) :undefined
 
 const dbConnection = new DataSource({
   type: 'postgres',
