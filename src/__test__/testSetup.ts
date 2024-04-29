@@ -1,15 +1,13 @@
-import request from 'supertest';
-import app from '../app';
-import { connectTest, disconnectTest } from '../database/testDatabase';
-
-jest.setTimeout(50000);
+import { DbConnection } from '../database/index';
 
 // Hook to run before all tests
 export async function beforeAllHook() {
-  await connectTest();
+  // await connect();
+  await DbConnection.instance.initializeDb();
 }
 
 // Hook to run after all tests
 export async function afterAllHook() {
-  await disconnectTest();
+  DbConnection.instance.disconnectDb();
+  // await disconnectTest();
 }

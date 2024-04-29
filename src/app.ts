@@ -13,11 +13,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-let logStream = fs.createWriteStream(path.join(__dirname, 'output.log'), {
+const logStream = fs.createWriteStream(path.join(__dirname, 'output.log'), {
   flags: 'a',
 });
 
-morgan.token('type', function (req, res) {
+morgan.token('type', function (req: Request) {
   return req.headers['content-type'];
 });
 
@@ -26,7 +26,6 @@ app.use(morgan('combined', { stream: logStream }));
 
 // Route for the index page
 app.get('/', (req: Request, res: Response) => {
-  // Sends a welcome message to the client
   return res
     .status(200)
     .json({ message: 'Welcome To The Dynamites backend e-commerce' });
