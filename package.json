@@ -2,15 +2,15 @@
   "name": "dynamites-ecomm-be",
   "version": "1.0.0",
   "description": "",
-  "main": "/src/index.ts",
+  "main": "index.ts",
   "scripts": {
-    "start": "node ./src/index.js",
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "start": "node index.js",
+    "dev": "ts-node-dev --respawn --transpile-only index.ts",
     "build": "tsc",
     "lint": "eslint --config .eslintrc.json .",
     "format": "prettier --write .",
-    "test": "jest  --no-cache --detectOpenHandles",
-    "test:ci": "jest --coverage --detectOpenHandles"
+    "test": "jest  --no-cache ",
+    "test:ci": "jest --coverage "
   },
   "repository": {
     "type": "git",
@@ -35,7 +35,8 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "tsc-init": "^2.1.0",
-    "typeorm": "^0.3.20"
+    "typeorm": "^0.3.20",
+    "typescript": "^5.4.5"
   },
   "jest": {
     "preset": "ts-jest",
