@@ -28,7 +28,7 @@ jobs:
         cache: 'npm' #this we help speed up the workflow by reusing dependencies from previous runs
     - run: npm ci #run dependencies installing we using ci in place of 'npm install' becouse ci(clearn install) is smooth and faster
     - run: npm run test --if-present #this line will run test script
-    #- run: npm run lint --if-present 
+    - run: npm run lint --if-present 
     - run: npm run build --if-present # we using if statement because initial the code have no build script in packege.json
     - run: npm run test:ci --if-present # this will run test with coverage flag
 
