@@ -1,8 +1,12 @@
 import request from 'supertest';
 import app from '../app';
-import { beforeAllHook } from './globalConfig';
+import { afterAllHook, beforeAllHook } from './testSetup';
 
+// This hook runs once before all tests in the test suite
 beforeAll(beforeAllHook);
+
+// This hook runs once after all tests in the test suite have finished
+afterAll(afterAllHook);
 
 describe('The Dynamites backend e-commerce Tests', () => {
   it('responds with welcome message on /', async () => {
