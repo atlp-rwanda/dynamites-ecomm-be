@@ -1,16 +1,12 @@
-# Dynamites API
+# Dynamites API ![check-code-coverage](https://img.shields.io/badge/code--coverage-87.77%25-green)
 
 ## Overview
 
 Welcome to Dynamites API! This project provides the backend API for the dynamites e-commerce application. It allows users to browse products, place orders, manage their account, and perform other e-commerce-related activities.
 
-## Badges
-
-![check-code-coverage](https://img.shields.io/badge/code--coverage-87.77%25-green)
-
 ## Documentation
 
-Find the API documentation at http://localhost:3000/api-docs
+Find the API documentation at https://dynamites-ecomm-be-backend-hosting.onrender.com/api-docs
 
 ## Installation
 
