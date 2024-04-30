@@ -3,7 +3,13 @@ import {User} from '../database/models';
 
 const userRepository = dbConnection.getRepository(User)
 
-export const createUser = async(data:any) => {
+interface UserData {
+    firstName: string;
+    lastName: string;
+    age: number;
+  }
+
+export const createUser = async(data: UserData) => {
     const user = new User()
     user.firstName = data.firstName
     user.lastName = data.lastName
