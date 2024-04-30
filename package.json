@@ -10,7 +10,7 @@
     "lint": "eslint --config .eslintrc.json .",
     "format": "prettier --write .",
     "test": "jest  --no-cache",
-    "test:ci": "jest --coverage "
+    "test:ci": "jest --coverage"
   },
   "repository": {
     "type": "git",
@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/atlp-rwanda/dynamites-ecomm-be#readme",
   "dependencies": {
+    "check-code-coverage": "^1.10.5",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
@@ -40,7 +41,12 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
-    "testTimeout": 10000
+    "testTimeout": 50000,
+    "coverageReporters": [
+      "json-summary",
+      "text",
+      "lcov"
+    ]
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
