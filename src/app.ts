@@ -32,11 +32,11 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 // Middleware to handle all endpoint routes
-app.use(process.env.ALL as string, route);
+app.use('/api/v1', route);
 
 // Endpoint for serving Swagger documentation
 app.use(
-  process.env.DOCS as string,
+  '/api-docs',
   swaggerUi.serve,
   swaggerUi.setup(swaggerSpec)
 );
