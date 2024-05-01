@@ -2,7 +2,7 @@ import passport from 'passport';
 import GooglePassport from 'passport-google-oauth20';
 import FacebookPassport from 'passport-facebook';
 import dbConnection from '../database';
-import { UserModel } from '../database/models';
+import  UserModel  from '../database/models/userModel';
 import dotenv from 'dotenv';
 dotenv.config();
 
