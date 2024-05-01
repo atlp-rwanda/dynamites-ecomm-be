@@ -2,37 +2,48 @@ name: CI for ecomm-project for Dynamite
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: ['develop']
   pull_request:
     branches: [ "develop" ]
 
 jobs:
   build:
-    #git hub offer virtual machines to run workflows so we will be using ubuntu lastest version its standand one
-    #we using ubuntu because we want to use lunex terminal
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        #each version we specify we be tested on
-        #we are only limited to 3 versions
-        node-version: [16.x, 18.x, 20.x]
-        
+        node-version: [20.x]
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }} #this will help use know which version we are testing on.
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm' #this we help speed up the workflow by reusing dependencies from previous runs
-    - run: npm ci #run dependencies installing we using ci in place of 'npm install' becouse ci(clearn install) is smooth and faster
-    - run: npm run test --if-present #this line will run test script
-    - run: npm run lint --if-present # run tle 
-    - run: npm run build --if-present # we using if statement because initial the code have no build script in packege.json
-    - run: npm run test:ci --if-present # this will run test with coverage flag
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run test --if-present
+      - run: npm run build --if-present
+      - run: npm run test:ci --if-present
+      - run: npm run lint --if-present
+      - name: Upload coverage to Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          allow-empty: true
 
-    - name: Upload coverage to Coveralls
-      uses: coverallsapp/github-action@v2
-      with:
-        allow-empty: true
+    env:
+      DB_PORT_DEV: ${{ secrets.DB_PORT_DEV }}
+      DB_USER_DEV: ${{ secrets.DB_USER_DEV }}
+      DB_PASSWORD_DEV: ${{ secrets.DB_PASSWORD_DEV }}
+      DB_NAME_DEV: ${{ secrets.DB_NAME_DEV }}
+      DB_HOST_DEV: ${{ secrets.DB_HOST_DEV }}
+      APP_URL: ${{ secrets.APP_URL }}
+      ALL: ${{ secrets.ALL }}
+      DOCS: ${{ secrets.DOCS }}
+      APP_PORT: ${{ secrets.APP_PORT }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      DB_PORT_TEST: ${{ secrets.DB_PORT_TEST }}
+      DB_USER_TEST: ${{ secrets.DB_USER_TEST }}
+      DB_PASSWORD_TEST: ${{ secrets.DB_PASSWORD_TEST }}
+      DB_NAME_TEST: ${{ secrets.DB_NAME_TEST }}
+      DB_HOST_TEST: ${{ secrets.DB_HOST_TEST }}
