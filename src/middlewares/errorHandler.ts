@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 
+type MiddlewareFunction = (req: Request, res: Response, next: NextFunction) => Promise<void>;
 
-function errorHandler(func: Function) {
+function errorHandler(func: MiddlewareFunction) {
     return async (req: Request, res: Response, next: NextFunction) => {
       try {
         await func(req, res, next);
