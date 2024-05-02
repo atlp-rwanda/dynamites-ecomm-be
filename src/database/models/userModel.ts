@@ -28,6 +28,18 @@ export class UserModel {
   @JoinColumn()
   userType: Role;
 
+  @Column({ default: null })
+  googleId: string;
+
+  @Column({ default: null })
+  facebookId: string;
+
+  @Column({ default: null })
+  picture: string;
+
+  @Column({ default: null })
+  provider: string;
+
   @Column({ default: false })
   isVerified: boolean;
 
