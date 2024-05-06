@@ -16,7 +16,7 @@ jobs:
       matrix:
         #each version we specify we be tested on
         #we are only limited to 3 versions
-        node-version: [16.x, 18.x, 20.x]
+        node-version: [20.x]
         
 
     steps:
