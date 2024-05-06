@@ -4,7 +4,8 @@ import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './docs/swaggerconfig';
 import 'reflect-metadata';
-import route from './router';
+import userRoute from './routes/userRoutes';
+
 import fs from 'fs';
 import path from 'path';
 
@@ -32,13 +33,9 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 // Middleware to handle all endpoint routes
-app.use('/api/v1', route);
+app.use('/api/v1', userRoute);
 
 // Endpoint for serving Swagger documentation
-app.use(
-  '/api-docs',
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec)
-);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 export default app;
