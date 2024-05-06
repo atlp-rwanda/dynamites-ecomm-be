@@ -1,13 +1,15 @@
 import { DbConnection } from '../database/index';
+import { UserModel } from '../database/models/userModel';
 
-// Hook to run before all tests
 export async function beforeAllHook() {
-  // await connect();
   await DbConnection.instance.initializeDb();
 }
 
-// Hook to run after all tests
 export async function afterAllHook() {
+  const userRepository = DbConnection.connection.getRepository(UserModel);
+  const repository = await userRepository.delete({});
+  // eslint-disable-next-line no-console
+  console.log(repository);
+
   DbConnection.instance.disconnectDb();
-  // await disconnectTest();
 }

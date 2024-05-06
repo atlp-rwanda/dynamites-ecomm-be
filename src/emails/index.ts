@@ -1,8 +1,6 @@
 import axios from 'axios';
 import handlebars from 'handlebars';
 import fs from 'fs';
-
-
 type EmailType = 'confirm' | 'reset';
 type Data = {
     name: string;
@@ -18,7 +16,7 @@ type Data = {
  * @throws An error if there is an issue sending the email.
  */
 async function sendEmail(emailType: EmailType, recipient: string, data: Data) {
-    const templatePath = `/workspaces/dynamites-ecomm-be/src/emails/templates/${emailType}.html`;
+    const templatePath = `./src/emails/templates/${emailType}.html`;
     try {
         // Read the Handlebars template file
         const templateFile = fs.readFileSync(templatePath, 'utf-8');
