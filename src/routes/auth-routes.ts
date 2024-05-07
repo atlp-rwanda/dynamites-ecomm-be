@@ -13,7 +13,7 @@ authRoutes.get(
   '/google/redirect',
   passport.authenticate('google'),
   (req: Request, res: Response) => {
-    res.send(req.user);
+    return res.send(req.user);
   }
 );
 

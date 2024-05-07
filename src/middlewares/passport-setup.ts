@@ -1,12 +1,10 @@
-import passport, { use } from 'passport';
+import passport from 'passport';
 import GooglePassport from 'passport-google-oauth20';
 import FacebookPassport from 'passport-facebook';
 import dbConnection from '../database';
 import { UserModel } from '../database/models';
 import dotenv from 'dotenv';
 dotenv.config();
-import sendEmail from '../emails/index';
-import jwt from 'jsonwebtoken';
 
 const userRepository = dbConnection.getRepository(UserModel);
 

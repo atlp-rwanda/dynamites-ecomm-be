@@ -113,7 +113,16 @@ export const confirmEmail = async (req: Request, res: Response) => {
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
     const users = await userRepository.find({
-      select: ['id', 'firstName', 'lastName', 'email', 'userType'],
+      // select: ['id', 'firstName', 'lastName', 'email', 'userType'],
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        userType: {
+          id: true,
+        },
+      },
       relations: ['userType'],
     });
     res.status(200).json(users);

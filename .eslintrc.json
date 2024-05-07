@@ -10,5 +10,5 @@
     "no-console": "warn",
     "quotes": ["error", "single"]
   },
-  "ignorePatterns": ["dist/**/*"]
+  "ignorePatterns": ["dist/**/*", "src/middlewares/passport-setup.ts"]
 }

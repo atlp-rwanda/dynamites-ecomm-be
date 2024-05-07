@@ -43,14 +43,17 @@ app.use(
 );
 
 // register regenerate & save after the cookieSession middleware initialization
+interface CallbackFunction {
+  (err?: string): void;
+}
 app.use(function (request: Request, response: Response, next: NextFunction) {
   if (request.session && !request.session.regenerate) {
-    request.session.regenerate = (cb: any) => {
+    request.session.regenerate = (cb: CallbackFunction) => {
       cb();
     };
   }
   if (request.session && !request.session.save) {
-    request.session.save = (cb: any) => {
+    request.session.save = (cb: CallbackFunction) => {
       cb();
     };
   }
