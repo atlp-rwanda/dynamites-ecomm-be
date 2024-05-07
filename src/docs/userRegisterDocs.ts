@@ -4,6 +4,7 @@
  *   name: User
  *   description: User management
  */
+
 /**
  * @swagger
  * /api/v1/user/register:
@@ -88,6 +89,7 @@
  *                   description: A message indicating the email already exists
  */
 
+
 /**
  * @swagger
  * /api/v1/user/confirm:
@@ -169,4 +171,84 @@
  *       '500':
  *         description: An error occurred while deleting the record.
  */
-
+/**
+ * @swagger
+ * /api/v1/updateProfile/{id}:
+ *   put:
+ *     summary: Update user profile
+ *     tags:
+ *       - User
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID of the user to update
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *                 description: The updated first name of the user.
+ *               lastName:
+ *                 type: string
+ *                 description: The updated last name of the user.
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: The updated email address of the user.
+ *               oldPassword:
+ *                 type: string
+ *                 format: password
+ *                 description: The old password of the user for verification.
+ *               newPassword:
+ *                 type: string
+ *                 format: password
+ *                 description: The new password of the user (optional).
+ *     responses:
+ *       '200':
+ *         description: User profile updated successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A message indicating successful profile update.
+ *       '400':
+ *         description: Bad request or validation errors.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: Error message indicating the reason for the bad request.
+ *       '404':
+ *         description: Not Found - User not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: A message indicating the user was not found.
+ *       '500':
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: A message indicating an internal server error occurred.
+ */
