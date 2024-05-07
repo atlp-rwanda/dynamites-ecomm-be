@@ -60,14 +60,12 @@ export const registerUser = [
 
     const savedUser = await userRepository.save(newUser);
 
-    // Generate token
     const token = jwt.sign(
       { userId: savedUser.id, email: savedUser.email },
       process.env.JWT_SECRET as jwt.Secret,
       { expiresIn: '1d' }
     );
 
-    // Send confirmation email
     const confirmLink = `${process.env.APP_URL}/api/v1/confirm?token=${token}`;
     await sendEmail('confirm', email, { name: firstName, link: confirmLink });
 
@@ -115,7 +113,16 @@ export const confirmEmail = async (req: Request, res: Response) => {
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
     const users = await userRepository.find({
-      select: ['id', 'firstName', 'lastName', 'email', 'userType'],
+      // select: ['id', 'firstName', 'lastName', 'email', 'userType'],
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        userType: {
+          id: true,
+        },
+      },
       relations: ['userType'],
     });
     res.status(200).json(users);
@@ -124,19 +131,35 @@ export const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
-// Add this function to your userController.ts
-
 export const deleteAllUsers = async (req: Request, res: Response) => {
   try {
-    // Delete all users
     const deletedUsers = await userRepository.delete({});
-    // Return a success message with the number of deleted users
     return res.status(200).json({
       message: 'All users deleted successfully',
       count: deletedUsers.affected,
     });
   } catch (error) {
-    // Return an error message if something goes wrong
     return res.status(500).json({ message: 'Failed to delete users' });
+  }
+};
+
+export const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const id: number = parseInt(req.params.id);
+
+    const recordToDelete = await userRepository.findOne({
+      where: { id },
+    });
+
+    if (!recordToDelete) {
+      return res.status(404).json({ error: 'Record not found.' });
+    }
+    await userRepository.remove(recordToDelete);
+
+    return res.status(200).json({ message: 'Record deleted successfully.' });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: 'An error occurred while deleting the record.' });
   }
 };

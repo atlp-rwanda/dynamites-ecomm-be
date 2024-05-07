@@ -24,9 +24,21 @@ export class UserModel {
   @Column({ nullable: true })
   password: string;
 
-  @OneToOne(() => Role)
+  @OneToOne(() => Role, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   @JoinColumn()
   userType: Role;
+
+  @Column({ nullable: true })
+  googleId: string;
+
+  @Column({ nullable: true })
+  facebookId: string;
+
+  @Column({ nullable: true })
+  picture: string;
+
+  @Column({ nullable: true })
+  provider: string;
 
   @Column({ default: false })
   isVerified: boolean;

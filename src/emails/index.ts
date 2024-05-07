@@ -3,8 +3,8 @@ import handlebars from 'handlebars';
 import fs from 'fs';
 type EmailType = 'confirm' | 'reset';
 type Data = {
-    name: string;
-    link: string;
+  name: string;
+  link: string;
 };
 /**
  * Sends an email of the specified type to the recipient using the provided data.
@@ -16,18 +16,18 @@ type Data = {
  * @throws An error if there is an issue sending the email.
  */
 async function sendEmail(emailType: EmailType, recipient: string, data: Data) {
-    const templatePath = `./src/emails/templates/${emailType}.html`;
-    try {
-        // Read the Handlebars template file
-        const templateFile = fs.readFileSync(templatePath, 'utf-8');
+  const templatePath = `./src/emails/templates/${emailType}.html`;
+  try {
+    // Read the Handlebars template file
+    const templateFile = fs.readFileSync(templatePath, 'utf-8');
 
-        // Compile the template
-        const template = handlebars.compile(templateFile);
+    // Compile the template
+    const template = handlebars.compile(templateFile);
 
-        // Generate the HTML content using the template and data
-        const html = template(data);
+    // Generate the HTML content using the template and data
+    const html = template(data);
 
-        // Send the Email
+    // Send the Email
 
         const domain = process.env.MAILGUN_DOMAIN
         const key = process.env.MAILGUN_TOKEN as string

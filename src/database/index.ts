@@ -48,8 +48,6 @@ export class DbConnection {
   };
 }
 
-
-
 const dbConnection = DbConnection.connection;
 
 export default dbConnection;
