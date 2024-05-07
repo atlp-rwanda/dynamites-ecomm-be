@@ -198,3 +198,88 @@ export const verify2FA = errorHandler(async (req: Request, res: Response) => {
   });
   return res.status(200).json({ token });
 });
+
+export const updateProfile = errorHandler(async (req: Request, res: Response) => {
+  const userId: number = parseInt(req.params.id);
+  const { firstName, lastName, email } = req.body as UpdateRrofileRequestBody;
+
+  const user = await userRepository.findOne({ where: { id: userId } });
+
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+
+  user.firstName = firstName || user.firstName;
+  user.lastName = lastName || user.lastName;
+  
+ 
+    const emailExists = await userRepository.findOne({ where: { email } });
+  
+    if (emailExists) {
+      return res.status(400).json({ error: 'Email is already taken' });
+    }
+  
+    user.email = email;
+  
+
+  const errors = await validate(user);
+
+  if (errors.length > 0) {
+    return res.status(400).json({ errors });
+  }
+
+  await userRepository.save(user);
+
+  return res.status(201).json({ message: 'User updated successfully' });
+});
+
+export const recoverPassword = errorHandler(async (req: Request, res: Response) => {
+    const { email } = req.body as { email: string };
+
+    const user = await userRepository.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Generate a JWT token with the user's email as the payload
+    const recoverToken = jwt.sign({ email : user.email }, process.env.JWT_SECRET as jwt.Secret, { expiresIn: '1h' });
+    
+    const confirmLink = `${process.env.APP_URL}/api/v1/recover/confirm?recoverToken=${recoverToken}`;
+    await sendEmail('confirmPassword', email, { name: user.firstName, link: confirmLink });
+    
+    return res.status(200).json({ message: 'Password reset token generated successfully', recoverToken });
+
+});
+
+//password Recover Confirmation
+export const updateNewPassword = errorHandler(async (req: Request, res: Response) => {
+  const recoverToken = req.query.recoverToken as string;
+  
+  const { password } = req.body as { password: string };
+
+  if (!recoverToken) {
+    return res.status(404).json({ message: 'Token is required' });
+  }
+
+  const decoded = jwt.verify(recoverToken, process.env.JWT_SECRET as jwt.Secret) as {
+    email : string;
+  };
+  const user = await userRepository.findOne({
+    where: { email: decoded.email },
+  });
+
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+   
+  const hashedPassword : string = await bcrypt.hash(password, 10);
+  user.password = hashedPassword;
+
+  await userRepository.save(user);
+
+  return res.status(200).json({ message: 'Password updated successfully' });
+
+});
+
+

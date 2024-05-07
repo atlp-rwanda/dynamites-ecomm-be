@@ -4,6 +4,8 @@ import {
   confirmEmail,
   Login,
   verify2FA,
+  recoverPassword,
+  updateNewPassword,
 } from '../controller/userController';
 
 import {
@@ -31,5 +33,7 @@ userRouter.put(
   checkRole(['Admin']),
   deactivateAccount
 );
+userRouter.post('/recover', recoverPassword);
+userRouter.post('/recover/confirm', updateNewPassword);
 
 export default userRouter;
