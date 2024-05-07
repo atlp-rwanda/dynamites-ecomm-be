@@ -27,8 +27,8 @@ export class UserModel {
   @OneToOne(() => Role)
   @JoinColumn()
   userType: Role;
-
-  @Column({ default: null })
+  
+  @Column({ nullable: true })
   googleId: string;
 
   @Column({ default: null })
