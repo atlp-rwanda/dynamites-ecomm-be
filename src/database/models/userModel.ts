@@ -1,7 +1,5 @@
-
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { Role } from './roleEntity';
-
 
 @Entity()
 export default class UserModel {
