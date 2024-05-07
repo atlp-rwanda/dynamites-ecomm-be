@@ -1,12 +1,14 @@
 import { Router } from 'express';
 import {
   registerUser,
-  getAllUsers,
+  confirmEmail,
   deleteAllUsers,
+  getAllUsers,
 } from '../controller/userController';
 const route = Router();
 route.post('/register', registerUser);
-route.get('/all-users', getAllUsers);
-route.delete('/delete-allusers', deleteAllUsers);
+route.get('/getAllUsers', getAllUsers);
+route.get('/confirm', confirmEmail);
+route.delete('/deleteAllUsers', deleteAllUsers);
 
 export default route;

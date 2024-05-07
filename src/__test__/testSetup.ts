@@ -3,7 +3,6 @@ import { UserModel } from '../database/models/userModel';
 
 import { Role } from '../database/models';
 
-// Hook to run before all tests
 export async function beforeAllHook() {
   await DbConnection.instance.initializeDb();
   // removing all data from role table

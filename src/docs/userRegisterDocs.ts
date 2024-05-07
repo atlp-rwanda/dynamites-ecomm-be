@@ -1,5 +1,11 @@
 /**
  * @swagger
+ * tags:
+ *   name: User
+ *   description: User management
+ */
+/**
+ * @swagger
  * /api/v1/register:
  *   post:
  *     summary: Register a new user
@@ -80,4 +86,50 @@
  *                 message:
  *                   type: string
  *                   description: A message indicating the email already exists
+ */
+
+/**
+ * @swagger
+ * /api/v1/confirm:
+ *   get:
+ *     summary: Confirm user email
+ *     tags: [User]
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: JWT token received in the confirmation email
+ *     responses:
+ *       '200':
+ *         description: Email confirmed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A message indicating successful email confirmation
+ *       '400':
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message indicating invalid or missing token
+ *       '404':
+ *         description: Not Found - User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message indicating user not found
  */
