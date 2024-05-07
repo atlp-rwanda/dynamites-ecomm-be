@@ -5,7 +5,7 @@ import {
   Login,
   verify2FA,
   recoverPassword,
-  updateNewPassword,
+  updateNewPassword
 } from '../controller/userController';
 
 import {
@@ -33,6 +33,7 @@ userRouter.put(
   checkRole(['Admin']),
   deactivateAccount
 );
+
 userRouter.post('/recover', recoverPassword);
 userRouter.post('/recover/confirm/', updateNewPassword);
 
