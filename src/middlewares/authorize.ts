@@ -6,11 +6,10 @@ const roleRepository = dbConnection.getRepository(Role);
 
 export const checkRole = (roles: string[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
-    // @ts-expect-error Expect error because user does not exist on Request type
-    if (req.user && roles.includes(req.user.role)) {
+    if (req.user && roles.includes(req.user.userType.name)) {
       next();
     } else {
-      res.status(403).send('Forbidden');
+      res.status(403).json({msg:'Forbidden'});
     }
   };
 };
@@ -18,14 +17,13 @@ export const checkRole = (roles: string[]) => {
 export const checkPermissions = async (permission: string) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     const userRole = await roleRepository.findOneBy({
-      // @ts-expect-error Expect error because user does not exist on Request type
-      name: req.user.role,
+      name: req.user!.userType.name,
     });
 
     if (userRole && userRole.permissions.includes(permission)) {
       next();
     } else {
-      res.status(403).send('Forbidden');
+      res.status(403).json({msg:'Forbidden'});
     }
   };
 };
