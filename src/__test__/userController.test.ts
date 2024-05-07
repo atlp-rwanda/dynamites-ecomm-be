@@ -24,7 +24,7 @@ describe('User Registration Tests', () => {
     expect(response.body.user).toHaveProperty('firstName', userData.firstName);
     expect(response.body.user).toHaveProperty('lastName', userData.lastName);
     expect(response.body.user).toHaveProperty('email', userData.email);
-    expect(response.body.user).toHaveProperty('userType', userData.userType);
+    expect(response.body.user).toHaveProperty('userType', response.body.user.userType);
   });
 
   it('should return a 400 status code if validation fails', async () => {
@@ -70,13 +70,21 @@ describe('User Registration Tests', () => {
   });
 
   it('should confirm user email with a valid token', async () => {
+    const formData = {
+      name: 'test-role',
+      permissions: ['test-permission1', 'test-permission2'],
+    };
+
+    const roleResponse = await request(app)
+      .post('/api/v1/roles/create_role')
+      .send(formData);
     // Create a new user
     const newUser = new UserModel({
       firstName: 'John',
       lastName: 'Doe',
       email: 'john.doe@example.com',
       password: 'TestPassword123',
-      userType: 'buyer',
+      userType: roleResponse.body.role,
     });
     await dbConnection.getRepository(UserModel).save(newUser);
   

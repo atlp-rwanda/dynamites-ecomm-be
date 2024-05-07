@@ -11,8 +11,6 @@ export async function beforeAllHook() {
 }
 
 export async function afterAllHook() {
-  // await DbConnection.instance.disconnectDb();
-  // await disconnectTest();
   const userRepository = DbConnection.connection.getRepository(UserModel);
   const repository = await userRepository.delete({});
   // eslint-disable-next-line no-console

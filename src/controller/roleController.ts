@@ -133,7 +133,7 @@ class roleController {
       user.userType = role;
       await userRepository.save(user);
       return res.status(200).json({ msg: 'User role successfully updated' });
-    } catch (err: any) {
+    } catch (err) {
       res.status(500).json({ msg: 'Internal Server Error' });
     }
   }

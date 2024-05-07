@@ -92,8 +92,8 @@
  *             properties:
  *               userId:
  *                 type: number
- *               newRole:
- *                 type: string
+ *               newRoleId:
+ *                 type: number
  *     responses:
  *       '200':
  *         description: Update Successful

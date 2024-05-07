@@ -4,7 +4,7 @@ import { afterAllHook, beforeAllHook } from './testSetup';
 beforeAll(beforeAllHook);
 afterAll(afterAllHook);
 
-describe('CRUD roles test', () => {
+describe('RoleController test', () => {
   it('should create a new role successfully', async () => {
     const formData = {
       name: 'test-role',
@@ -134,7 +134,7 @@ describe('CRUD roles test', () => {
     const userData = {
       firstName: 'Test',
       lastName: 'User',
-      email: 'test55555@gmail.com',
+      email: 'testing123@gmail.com',
       password: 'TestPassword123',
       userType: 'buyer',
     };
@@ -167,7 +167,7 @@ describe('CRUD roles test', () => {
     expect(response.body.msg).toBe('User not found');
   });
 
-  it('should return a 404 if user is not found on change user role operation', async () => {
+  it('should return a 400 if validation fails on change user role', async () => {
     const formData = {
       userId: 100,
       newRoleId: 'some id',
