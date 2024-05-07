@@ -3,11 +3,13 @@ import { check, validationResult } from 'express-validator';
 import bcrypt from 'bcryptjs';
 import dbConnection from '../database';
 import { UserModel } from '../database/models/userModel';
+import { Role } from '../database/models/roleEntity';
 import sendEmail from '../emails/index';
 import jwt from 'jsonwebtoken';
 
 // Assuming dbConnection.getRepository(UserModel) returns a repository instance
 const userRepository = dbConnection.getRepository(UserModel);
+const roleRepository = dbConnection.getRepository(Role);
 
 interface CreateUserRequestBody {
   firstName: string;
@@ -42,12 +44,18 @@ export const registerUser = [
       return res.status(409).json({ message: 'Email already exists' });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    const userRole =
+      userType == 'vendor'
+        ? (await roleRepository.findOneBy({ name: 'Vendor' }))!
+        : (await roleRepository.findOneBy({ name: 'Buyer' }))!;
+
     const newUser = new UserModel({
       firstName: firstName,
       lastName: lastName,
       email: email,
       password: hashedPassword,
-      userType: userType,
+      userType: userRole,
     });
 
     const savedUser = await userRepository.save(newUser);
@@ -104,6 +112,18 @@ export const confirmEmail = async (req: Request, res: Response) => {
   }
 };
 
+export const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await userRepository.find({
+      select: ['id', 'firstName', 'lastName', 'email', 'userType'],
+      relations: ['userType'],
+    });
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 // Add this function to your userController.ts
 
 export const deleteAllUsers = async (req: Request, res: Response) => {
@@ -118,19 +138,5 @@ export const deleteAllUsers = async (req: Request, res: Response) => {
   } catch (error) {
     // Return an error message if something goes wrong
     return res.status(500).json({ message: 'Failed to delete users' });
-  }
-};
-
-// Add this function to your userController.ts
-
-export const getAllUsers = async (req: Request, res: Response) => {
-  try {
-    // Find all users
-    const users = await userRepository.find();
-    // Return the users
-    return res.status(200).json(users);
-  } catch (error) {
-    // Return an error message if something goes wrong
-    return res.status(500).json({ message: 'Failed to fetch users' });
   }
 };

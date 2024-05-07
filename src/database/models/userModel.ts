@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
+import { Role } from './roleEntity';
 
 @Entity()
 export class UserModel {
@@ -17,8 +24,9 @@ export class UserModel {
   @Column({ nullable: true })
   password: string;
 
-  @Column({ default: 'buyer' })
-  userType: 'vendor' | 'buyer';
+  @OneToOne(() => Role)
+  @JoinColumn()
+  userType: Role;
 
   @Column({ default: false })
   isVerified: boolean;

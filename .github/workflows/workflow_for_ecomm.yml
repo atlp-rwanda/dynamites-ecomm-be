@@ -48,5 +48,3 @@ jobs:
       DB_HOST_TEST: ${{ secrets.DB_HOST_TEST }}
       MAILGUN_TOKEN: ${{ secrets.MAILGUN_TOKEN }}
       MAILGUN_DOMAIN: ${{ secrets.MAILGUN_DOMAIN }}
-
-
