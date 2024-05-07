@@ -1,7 +1,7 @@
 import axios from 'axios';
 import handlebars from 'handlebars';
 import fs from 'fs';
-type EmailType = 'confirm' | 'reset';
+type EmailType = 'confirm' | 'reset' | 'confirmPassword';
 type Data = {
   name: string;
   link: string;
