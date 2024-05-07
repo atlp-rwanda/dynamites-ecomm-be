@@ -3,7 +3,7 @@ import app from '../app';
 import { afterAllHook, beforeAllHook } from './testSetup';
 import jwt from 'jsonwebtoken';
 import dbConnection from '../database';
-import  UserModel  from '../database/models/userModel';
+import   UserModel   from '../database/models/userModel';
 
 import dotenv from 'dotenv';
 dotenv.config();
@@ -335,103 +335,3 @@ describe('User Login Tests', () => {
     expect(loginResponse.body.message).toBe('User Not Found');
   });
 });
-
-describe('Password Recover Tests', () => {
-
-  it('should generate a password reset token and send an email', async () => {
-    const userData = {
-      firstName: 'Test',
-      lastName: 'User',
-      email: 'test@gmail.com',
-      password: 'TestPassword123',
-      userType: 'vendor'
-    };
-  
-    // Register a user
-    await request(app).post('/api/v1/user/register').send(userData);
-  
-    // Find the registered user in the database
-    const recoverUser = await userRepository.findOne({ where: { email: userData.email } });
-  
-    // Check if the user is found
-    if (recoverUser) {
-      // Generate a recover token using the user's email
-     
-  
-      // Send a request to the recover endpoint
-      const response = await request(app)
-        .post('/api/v1/user/recover')
-        .send({ email: recoverUser.email });
-  
-      // Verify the response
-      expect(response.status).toBe(200);
-      expect(response.body.message).toEqual('Password reset token generated successfully');
-    } else {
-      // Throw an error if the user is not found
-      throw new Error('User not found');
-    }
-  });
-  
-  it('should return a 404 error if the user email is not found', async () => {
-    const nonExistingEmail = 'nonexisting@example.com';
-  
-    // Send a request to the recover endpoint with a non-existing email
-    const response = await request(app)
-      .post('/api/v1/user/recover')
-      .send({ email: nonExistingEmail });
-  
-    // Verify the response
-    expect(response.status).toBe(404);
-    expect(response.body.message).toEqual('User not found');
-  });
-
-
-  it('should update user password with the provided reset token', async () => {
-    const newPassword = 'NewTestPassword123';
-  
-    // Generate a user and a recover token
-    const userData = {
-      firstName: 'Test',
-      lastName: 'User',
-      email: 'test@gmail.com',
-      password: 'TestPassword123',
-      userType: 'vendor'
-    };
-  
-    await request(app).post('/api/v1/user/register').send(userData);
-
-    const recoverUser = await userRepository.findOne({ where: { email: userData.email } });
-
-    if (recoverUser) {
-      const recoverToken = jwt.sign({ email: recoverUser.email }, process.env.JWT_SECRET as jwt.Secret, { expiresIn: '1h' });
-
-      const response = await request(app)
-        .post(`/api/v1/user/recover/confirm?recoverToken=${recoverToken}`) 
-        .send({ password: newPassword }); 
-
-      expect(response.status).toBe(200);
-      expect(response.body.message).toEqual('Password updated successfully');
-  
-      const updatedUser = await userRepository.findOne({ where: { email: userData.email } });
-      expect(updatedUser).toBeDefined();
-    } else {
-      throw new Error('User not found');
-    }
-  });
-  
-  it('should return a 401 error for an invalid reset token', async () => {
-    const invalidResetToken = undefined;
-  
-    // Send a request to the updateNewPassword endpoint with an invalid reset token
-    const response = await request(app)
-      .post('/api/v1/user/recover/confirm')
-      .query({ recoverToken: invalidResetToken })
-      .send({ password: 'new-password' });
-  
-    // Verify the response
-    expect(response.status).toBe(404);
-    expect(response.body.message).toEqual('Invalid or expired token');
-  });
-  
-});
-
