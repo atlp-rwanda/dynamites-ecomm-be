@@ -21,7 +21,7 @@ export class UserModel {
   @Column()
   email: string;
 
-  @Column({ default: null })
+  @Column({ nullable: true })
   password: string;
 
   @OneToOne(() => Role)
