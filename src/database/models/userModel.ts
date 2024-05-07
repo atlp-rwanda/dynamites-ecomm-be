@@ -14,7 +14,7 @@ export class UserModel {
   @Column()
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   password: string;
 
   @Column({ default: 'buyer' })
@@ -22,7 +22,7 @@ export class UserModel {
 
   @Column({ default: false })
   isVerified: boolean;
-  
+
   constructor(user: Partial<UserModel>) {
     Object.assign(this, user);
   }
