@@ -1,16 +1,7 @@
-<<<<<<< HEAD
+
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { Role } from './roleEntity';
-=======
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-} from 'typeorm';
-import { Role } from './roleEntity';
 
->>>>>>> 4979604 (* feat(rbac): Implement role based access control)
 
 @Entity()
 export default class UserModel {
