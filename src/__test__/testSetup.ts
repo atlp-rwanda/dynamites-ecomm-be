@@ -1,10 +1,13 @@
 import { DbConnection } from '../database/index';
 import UserModel from '../database/models/userModel';
 import { Role } from '../database/models';
+<<<<<<< HEAD
 import Category from '../database/models/categoryEntity';
 import Product from '../database/models/productEntity';
 import request from 'supertest';
 import app from '../app';
+=======
+>>>>>>> 4979604 (* feat(rbac): Implement role based access control)
 
 export async function beforeAllHook() {
   await DbConnection.instance.initializeDb();
@@ -12,6 +15,7 @@ export async function beforeAllHook() {
   // Get repositories
   const userRepository = await DbConnection.connection.getRepository(UserModel);
   const roleRepository = await DbConnection.connection.getRepository(Role);
+<<<<<<< HEAD
   const categoryRepository =
     await DbConnection.connection.getRepository(Category);
   const productRepository =
@@ -23,6 +27,12 @@ export async function beforeAllHook() {
     await categoryRepository.createQueryBuilder().delete().execute();
     await userRepository.createQueryBuilder().delete().execute();
     await roleRepository.createQueryBuilder().delete().execute();
+=======
+
+  // Delete all users and roles
+  await userRepository.createQueryBuilder().delete().execute();
+  await roleRepository.createQueryBuilder().delete().execute();
+>>>>>>> 4979604 (* feat(rbac): Implement role based access control)
 }
 export async function getAdminToken() {
   const userRepository = await DbConnection.connection.getRepository(UserModel);
