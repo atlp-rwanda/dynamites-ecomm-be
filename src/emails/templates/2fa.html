@@ -46,6 +46,17 @@
             text-align: center;
         }
 
+        .code {
+            font-size: 20px;
+            color: #4c51bf;
+            font-weight: bold;
+            text-align: center;
+            padding: 12px;
+            border-radius: 4px;
+            background-color: #f7fafc;
+            margin-top: 16px;
+        }
+
         .button {
             display: block;
             width: 100%;
@@ -54,23 +65,16 @@
             border-radius: 4px;
             font-size: 14px;
             font-weight: bold;
-            color: #f7fafc !important;
+            color: #f7fafc;
             background-color: #4c51bf;
             text-align: center;
             text-decoration: none;
             cursor: pointer;
         }
-    
+
         .button:hover {
             background-color: #434190;
-            color: #f7fafc !important;
         }
-
-        .button:visited {
-            background-color: #434190;
-            color: #f7fafc !important;
-        }
-
 
         .link {
             color: #4c51bf;
@@ -87,24 +91,17 @@
 <div class="container">
     <div class="card">
         <div class="title">
-            Welcome back to Dynamites Ecommerce
+            Welcome to Dynamites Ecommerce,{{name}}!
         </div>
         <p class="message">
-            Dear {{name}},
+           We've generated a 2FA code for you.
         </p>
+        <div class="code">
+            {{twoFactorCode}}
+        </div>
         <p class="message">
-            We received your request to reset password. If this was you, click on the following link to reset your password.
+            Please enter this code to complete your authentication process. Let's keep your account safe and secure!
         </p>
-        <div>
-            <a href="{{link}}" class="button">
-                Reset Password
-            </a>
-        </div>
-        <div class="mt-6">
-            <p class="message">
-                If you are having trouble clicking the "Reset Password" button above, copy and paste the URL below into your web browser: <a href="{{link}}" class="link">{{link}}</a>
-            </p>
-        </div>
     </div>
 </div>
 

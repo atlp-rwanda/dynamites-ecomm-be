@@ -1,4 +1,4 @@
-# Dynamites API ![check-code-coverage](https://img.shields.io/badge/code--coverage-87.77%25-green)
+# Dynamites API ![check-code-coverage](https://img.shields.io/badge/code--coverage-74.53%25-yellow)
 
 ## Overview
 

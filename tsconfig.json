@@ -4,6 +4,7 @@
     "module": "commonjs",
     "jsx": "preserve",
     "outDir": "dist",
+    "types": ["jest"],
     "rootDir": "src",
     "strict": true,
     "esModuleInterop": true,

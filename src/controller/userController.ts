@@ -2,12 +2,16 @@ import { Request, Response } from 'express';
 import { check, validationResult } from 'express-validator';
 import bcrypt from 'bcryptjs';
 import dbConnection from '../database';
-import { UserModel } from '../database/models/userModel';
+import { Role } from '../database/models/roleEntity';
+import UserModel from '../database/models/userModel';
 import sendEmail from '../emails/index';
+import { sendCode } from '../emails/mailer';
 import jwt from 'jsonwebtoken';
+import errorHandler from '../middlewares/errorHandler'
 
 // Assuming dbConnection.getRepository(UserModel) returns a repository instance
 const userRepository = dbConnection.getRepository(UserModel);
+const roleRepository = dbConnection.getRepository(Role);
 
 interface CreateUserRequestBody {
   firstName: string;
@@ -42,24 +46,28 @@ export const registerUser = [
       return res.status(409).json({ message: 'Email already exists' });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    const userRole =
+      userType == 'vendor'
+        ? (await roleRepository.findOneBy({ name: 'Vendor' }))!
+        : (await roleRepository.findOneBy({ name: 'Buyer' }))!;
+
     const newUser = new UserModel({
       firstName: firstName,
       lastName: lastName,
       email: email,
       password: hashedPassword,
-      userType: userType,
+      userType: userRole,
     });
 
     const savedUser = await userRepository.save(newUser);
 
-    // Generate token
     const token = jwt.sign(
       { userId: savedUser.id, email: savedUser.email },
       process.env.JWT_SECRET as jwt.Secret,
       { expiresIn: '1d' }
     );
 
-    // Send confirmation email
     const confirmLink = `${process.env.APP_URL}/api/v1/confirm?token=${token}`;
     await sendEmail('confirm', email, { name: firstName, link: confirmLink });
 
@@ -104,33 +112,184 @@ export const confirmEmail = async (req: Request, res: Response) => {
   }
 };
 
-// Add this function to your userController.ts
+export const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await userRepository.find({
+      // select: ['id', 'firstName', 'lastName', 'email', 'userType'],
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        userType: {
+          id: true,
+          name: true,
+        },
+      },
+      relations: ['userType'],
+    });
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
 
 export const deleteAllUsers = async (req: Request, res: Response) => {
   try {
-    // Delete all users
     const deletedUsers = await userRepository.delete({});
-    // Return a success message with the number of deleted users
     return res.status(200).json({
       message: 'All users deleted successfully',
       count: deletedUsers.affected,
     });
   } catch (error) {
-    // Return an error message if something goes wrong
     return res.status(500).json({ message: 'Failed to delete users' });
   }
 };
 
-// Add this function to your userController.ts
-
-export const getAllUsers = async (req: Request, res: Response) => {
+export const deleteUser = async (req: Request, res: Response) => {
   try {
-    // Find all users
-    const users = await userRepository.find();
-    // Return the users
-    return res.status(200).json(users);
+    const id: number = parseInt(req.params.id);
+
+    const recordToDelete = await userRepository.findOne({
+      where: { id },
+    });
+
+    if (!recordToDelete) {
+      return res.status(404).json({ error: 'Record not found.' });
+    }
+    await userRepository.remove(recordToDelete);
+
+    return res.status(200).json({ message: 'Record deleted successfully.' });
   } catch (error) {
-    // Return an error message if something goes wrong
-    return res.status(500).json({ message: 'Failed to fetch users' });
+    return res
+      .status(500)
+      .json({ error: 'An error occurred while deleting the record.' });
+
+ }}
+
+
+ export const Login = errorHandler(async (req: Request, res: Response) => {
+  const user = await userRepository.findOne({ 
+    where: { email: req.body['email'] }, 
+    relations: ['userType'] 
+  });
+  if (!user) {
+    return res.status(404).send({ message: 'User Not Found' });
+  }
+  const passwordMatch = await bcrypt.compare(req.body.password, user.password); // Compare with hashed password from the database
+  if (!passwordMatch) {
+    return res.status(401).send({ message: 'Password does not match' });
+  }
+  if (!user.isVerified) {
+    const token = jwt.sign(
+      { userId: user.id, email: user.email },
+      process.env.JWT_SECRET as jwt.Secret,
+      { expiresIn: '1d' }
+    );
+    const confirmLink = `${process.env.APP_URL}/api/v1/confirm?token=${token}`;
+    await sendEmail('confirm', user.email, { name: user.firstName, link: confirmLink });
+    return res.status(401).send({ message: 'Please verify your email. Confirmation link has been sent.' });
+  }
+
+  if (user.userType.name === 'Vendor') {
+    const twoFactorCode = Math.floor(100000 + Math.random() * 900000);
+
+    await userRepository.update(user.id, { twoFactorCode });
+
+    await sendCode(
+      user.email,
+      'Your 2FA Code',
+      './templates/2fa.html',
+      { name: user.firstName, twoFactorCode: twoFactorCode.toString() }
+    );
+
+    res.status(200).json({ message: 'Please provide the 2FA code sent to your email.' });
+  } else {
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET as jwt.Secret, { expiresIn: '1h' });
+    res.status(200).json({ token, message: 'Buyer Logged in successfully'});
+  }
+});
+
+export const verify2FA = errorHandler(async (req: Request, res: Response) => {
+  const { code } = req.body;
+  const { userId } = req.params;
+
+  const user = await userRepository.findOne({ where: { id: Number(userId) } });
+
+  if (!user) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+  if (code !== user.twoFactorCode) {
+    return res.status(401).json({ error: 'Invalid code' });
+  }
+
+  const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET as jwt.Secret, { expiresIn: '1h' });
+  return res.status(200).json({ token });
+});
+
+
+export const recoverPassword = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body as { email: string };
+
+    const user = await userRepository.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Generate a JWT token with the user's email as the payload
+    const recoverToken = jwt.sign({ email : user.email }, process.env.JWT_SECRET as jwt.Secret, { expiresIn: '1h' });
+    
+    const confirmLink = `${process.env.APP_URL}/api/v1/recover/confirm?recoverToken=${recoverToken}`;
+    await sendEmail('confirmPassword', email, { name: user.firstName, link: confirmLink });
+    
+    return res.status(200).json({ message: 'Password reset token generated successfully', recoverToken });
+
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+//password Recover Confirmation
+export const updateNewPassword = async (req: Request, res: Response) => {
+  const recoverToken = req.query.recoverToken as string;
+  
+  const { password } = req.body as { password: string };
+
+  if (!recoverToken) {
+    return res.status(404).json({ message: 'Token is required' });
+  }
+
+  try {
+    const decoded = jwt.verify(recoverToken, process.env.JWT_SECRET as jwt.Secret) as {
+      email : string;
+    };
+    const user = await userRepository.findOne({
+      where: { email: decoded.email },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+   
+    const hashedPassword : string = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
+
+    await userRepository.save(user);
+
+    return res.status(200).json({ message: 'Password updated successfully' });
+
+  } catch (error) {
+    // Check if the error is an instance of Error
+    if (error instanceof Error) {
+      // Check if the error is related to token verification failure
+      if (error.name === 'TokenExpiredError' || error.name === 'JsonWebTokenError') {
+        return res.status(404).json({ message: 'Invalid or expired token' });
+      }
+    return res.status(500).json({ message: 'Internal Sever Error' });
+  }
+}
+}
+
+
