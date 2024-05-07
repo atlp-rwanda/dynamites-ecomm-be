@@ -136,6 +136,7 @@
 
 /**
  * @swagger
+<<<<<<< HEAD
  * /api/v1/user/getAllUsers:
  *   get:
  *     summary: Get all Users
@@ -173,6 +174,9 @@
 /**
  * @swagger
  * /api/v1/user/recover:
+=======
+ * /api/v1/recover:
+>>>>>>> 4979604 (* feat(rbac): Implement role based access control)
  *   post:
  *     summary: Recover Password
  *     tags: [User]
@@ -223,7 +227,11 @@
  */
 /**
  * @swagger
+<<<<<<< HEAD
  * /api/v1/user/recover/confirm:
+=======
+ * /api/v1/recover/confirm:
+>>>>>>> 4979604 (* feat(rbac): Implement role based access control)
  *   post:
  *     summary: Recover Password
  *     tags: [User]

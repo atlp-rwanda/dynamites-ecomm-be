@@ -1,7 +1,6 @@
 /**
  * @swagger
  * /api/v1/user/login:
- * /api/v1/login:
  *   post:
  *     summary: Login user
  *     tags: [Login]
@@ -92,4 +91,3 @@
  *                   type: string
  *                   description: An error message indicating internal server error
  */
-

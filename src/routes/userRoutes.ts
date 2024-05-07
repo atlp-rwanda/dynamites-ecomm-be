@@ -15,6 +15,8 @@ import {
 import { checkRole } from '../middlewares/authorize';
 import { IsLoggedIn } from '../middlewares/isLoggedIn';
 
+
+
 const userRouter = Router();
 userRouter.post('/register', registerUser);
 userRouter.get('/confirm', confirmEmail);

@@ -36,13 +36,10 @@ export default class UserModel {
   @Column({ default: false })
   isVerified: boolean;
 
-<<<<<<< HEAD
   @Column({ default: 'active' })
   status: 'active' | 'inactive';
-=======
->>>>>>> 4979604 (* feat(rbac): Implement role based access control)
 
-  @Column({ nullable: true }) 
+  @Column({ nullable: true })
   twoFactorCode: number;
 
   constructor(user: Partial<UserModel>) {
