@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v1/login:
+ * /api/v1/user/login:
  *   post:
  *     summary: Login user
  *     tags: [Login]
