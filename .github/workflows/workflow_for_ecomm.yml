@@ -46,7 +46,7 @@ jobs:
       DB_PASSWORD_TEST: ${{ secrets.DB_PASSWORD_TEST }}
       DB_NAME_TEST: ${{ secrets.DB_NAME_TEST }}
       DB_HOST_TEST: ${{ secrets.DB_HOST_TEST }}
-      MAILERSEND_TOKEN: ${{ secrets.MAILERSEND_TOKEN }}
-      MAILERSEND_DOMAIN: ${{ secrets.MAILERSEND_DOMAIN }}
+      MAILGUN_TOKEN: ${{ secrets.MAILGUN_TOKEN }}
+      MAILGUN_DOMAIN: ${{ secrets.MAILGUN_DOMAIN }}
 
 
