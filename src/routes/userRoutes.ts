@@ -2,6 +2,9 @@ import { Router } from 'express';
 import {
   registerUser,
   confirmEmail,
+  deleteAllUsers,
+  getAllUsers,
+  deleteUser,
   Login,
   verify2FA,
   recoverPassword,
@@ -20,6 +23,9 @@ userRouter.post('/register', registerUser);
 userRouter.get('/confirm', confirmEmail);
 userRouter.post('/login', Login);
 userRouter.post('/verify2FA/:userId', verify2FA);
+userRouter.get('/getAllUsers', getAllUsers);
+userRouter.delete('/delete/:id', deleteUser);
+userRouter.delete('/deleteAllUsers', deleteAllUsers);
 userRouter.put(
   '/activate/:userId',
   IsLoggedIn,
@@ -36,4 +42,4 @@ userRouter.put(
 userRouter.post('/recover', recoverPassword);
 userRouter.post('/recover/confirm/:recoverToken', updateNewPassword);
 
-export default userRouter;
+
