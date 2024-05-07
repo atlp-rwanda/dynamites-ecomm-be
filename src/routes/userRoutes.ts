@@ -34,6 +34,6 @@ userRouter.put(
   deactivateAccount
 );
 userRouter.post('/recover', recoverPassword);
-userRouter.post('/recover/confirm', updateNewPassword);
+userRouter.post('/recover/confirm/:recoverToken', updateNewPassword);
 
 export default userRouter;
