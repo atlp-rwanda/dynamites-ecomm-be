@@ -1,14 +1,8 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  OneToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { Role } from './roleEntity';
 
 @Entity()
-export class UserModel {
+export default class UserModel {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -18,18 +12,35 @@ export class UserModel {
   @Column()
   lastName: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @Column({ nullable: true })
   password: string;
 
-  @OneToOne(() => Role)
-  @JoinColumn()
+  @ManyToOne(() => Role)
   userType: Role;
+
+  @Column({ nullable: true })
+  googleId: string;
+
+  @Column({ nullable: true })
+  facebookId: string;
+
+  @Column({ nullable: true })
+  picture: string;
+
+  @Column({ nullable: true })
+  provider: string;
 
   @Column({ default: false })
   isVerified: boolean;
+
+  @Column({ default: 'active' })
+  status: 'active' | 'inactive';
+
+  @Column({ nullable: true })
+  twoFactorCode: number;
 
   constructor(user: Partial<UserModel>) {
     Object.assign(this, user);

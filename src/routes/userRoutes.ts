@@ -4,11 +4,18 @@ import {
   confirmEmail,
   deleteAllUsers,
   getAllUsers,
+  deleteUser,
+  Login,
+  verify2FA,
 } from '../controller/userController';
-const route = Router();
-route.post('/register', registerUser);
-route.get('/getAllUsers', getAllUsers);
-route.get('/confirm', confirmEmail);
-route.delete('/deleteAllUsers', deleteAllUsers);
 
-export default route;
+const userRouter = Router();
+userRouter.post('/register', registerUser);
+userRouter.get('/getAllUsers', getAllUsers);
+userRouter.get('/confirm', confirmEmail);
+userRouter.delete('/delete/:id', deleteUser);
+userRouter.delete('/deleteAllUsers', deleteAllUsers);
+userRouter.post('/login', Login);
+userRouter.post('/verify2FA/:userId', verify2FA);
+
+export default userRouter;

@@ -6,7 +6,7 @@ import {
   updateRoleSchema,
   changeRoleSchema,
 } from '../middlewares/roleSchema';
-import { UserModel } from '../database/models/userModel';
+import  UserModel  from '../database/models/userModel';
 
 const roleRepository = dbConnection.getRepository(Role);
 const userRepository = dbConnection.getRepository(UserModel);

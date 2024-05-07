@@ -1,7 +1,14 @@
 /* eslint-disable no-console */
 import app from './app';
 import { DbConnection } from './database';
-declare module 'express' {export interface Request {user?:Record<string, Record<string, string>>}}
+
+declare module 'express' {
+  export interface Request {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    user?: Record<string, any>;
+  }
+}
+
 const PORT = process.env.APP_PORT;
 
 (async () => {
