@@ -5,7 +5,8 @@ import {
   deleteAllUsers,
   getAllUsers,
   deleteUser,
-  Login
+  Login,
+  verify2FA
 } from '../controller/userController';
 
 const route = Router();
@@ -16,6 +17,7 @@ route.delete('/delete/:id', deleteUser);
 route.delete('/deleteAllUsers', deleteAllUsers);
 route.post('/login',Login)
 route.get('/all-users', getAllUsers);
+route.post('/verify2FA/:userId', verify2FA);
 
 export default route;
 

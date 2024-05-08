@@ -44,6 +44,10 @@ export default class UserModel {
   @Column({ default: false })
   isVerified: boolean;
 
+
+  @Column({ nullable: true }) 
+  twoFactorCode: Number;
+
   constructor(user: Partial<UserModel>) {
     Object.assign(this, user);
   }

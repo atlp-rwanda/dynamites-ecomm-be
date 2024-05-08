@@ -5,8 +5,8 @@ import dbConnection from '../database';
 import { Role } from '../database/models/roleEntity';
 import UserModel from '../database/models/userModel';
 import sendEmail from '../emails/index';
+import { sendCode } from '../emails/mailer';
 import jwt from 'jsonwebtoken';
-
 
 // Assuming dbConnection.getRepository(UserModel) returns a repository instance
 const userRepository = dbConnection.getRepository(UserModel);
@@ -188,23 +188,54 @@ export const deleteUser = async (req: Request, res: Response) => {
       await sendEmail('confirm', user.email, { name: user.firstName, link: confirmLink });
       return res.status(401).send({ message: 'Please verify your email. Confirmation link has been sent.' });
     }
-    const userToken = jwt.sign({
-      id: user.id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      userType: user.userType
-    }, process.env.JWT_SECRET as string, { expiresIn: '7d' });
-    const { id, firstName, lastName, email, userType } = user;
-    res.status(200).json({ token: userToken, message: 'Successfully Logged in', id, firstName, lastName, email, userType });
+
+    // Generate a new 2FA code
+    const twoFactorCode = Math.floor(100000 + Math.random() * 900000);
+
+    // Store the 2FA code in the user's record in the database
+    await userRepository.update(user.id, { twoFactorCode });
+
+    // Send 2FA code to user's email
+    await sendCode(
+      user.email,
+      'Your 2FA Code',
+      './templates/2fa.html',
+      { name: user.firstName, twoFactorCode: twoFactorCode.toString() }
+    );
+
+    // Respond with a message asking for the 2FA code
+    res.status(200).json({ message: 'Please provide the 2FA code sent to your email.' });
+
   } catch (error) {
     console.error('Error occurred while logging in:', error);
     res.status(500).send(error);
   }
 }
 
+export const verify2FA = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { code } = req.body;
+    const { userId } = req.params;
 
+    // Use the repository to find the user by their id
+    const user = await userRepository.findOne({ where: { id: Number(userId) } });
 
+    if (!user) {
+      res.status(401).json({ error: 'Invalid credentials' });
+      return;
+    }
+    if (code !== user.twoFactorCode) {
+      res.status(401).json({ error: 'Invalid code' });
+      return;
+    }
 
+    // Generate JWT
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET as jwt.Secret, { expiresIn: '1h' });
 
+    // Send JWT to the user
+    res.status(200).json({ token });
 
+  } catch (error) {
+    res.status(500).json({ error: (error as Error).message });
+  }
+};
