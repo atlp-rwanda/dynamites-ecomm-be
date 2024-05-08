@@ -25,6 +25,10 @@ const logStream = fs.createWriteStream(path.join(__dirname, 'output.log'), {
   flags: 'a',
 });
 
+//Data Sanitation Against SQL injection 
+
+//Data Sanitation Against SiteScripts
+
 morgan.token('type', function (req: Request) {
   return req.headers['content-type'];
 });

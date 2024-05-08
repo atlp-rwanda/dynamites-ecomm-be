@@ -2,10 +2,11 @@ import { Request, Response } from 'express';
 import { check, validationResult } from 'express-validator';
 import bcrypt from 'bcryptjs';
 import dbConnection from '../database';
-import { UserModel } from '../database/models/userModel';
 import { Role } from '../database/models/roleEntity';
+import UserModel from '../database/models/userModel';
 import sendEmail from '../emails/index';
 import jwt from 'jsonwebtoken';
+
 
 // Assuming dbConnection.getRepository(UserModel) returns a repository instance
 const userRepository = dbConnection.getRepository(UserModel);
@@ -161,5 +162,49 @@ export const deleteUser = async (req: Request, res: Response) => {
     return res
       .status(500)
       .json({ error: 'An error occurred while deleting the record.' });
+
+ }}
+
+
+
+ export const Login = async (req: Request, res: Response) => {
+  try {
+    const user = await userRepository.findOne({ where: { email: req.body['email'] } });
+    if (!user) {
+      return res.status(404).send({ message: 'User Not Found' });
+    }
+    const passwordMatch = await bcrypt.compare(req.body.password, user.password); // Compare with hashed password from the database
+    if (!passwordMatch) {
+      return res.status(401).send({ message: 'Password does not match' });
+    }
+    if (!user.isVerified) {
+      // Send confirmation email if user is not verified
+      const token = jwt.sign(
+        { userId: user.id, email: user.email },
+        process.env.JWT_SECRET as jwt.Secret,
+        { expiresIn: '1d' }
+      );
+      const confirmLink = `${process.env.APP_URL}/api/v1/confirm?token=${token}`;
+      await sendEmail('confirm', user.email, { name: user.firstName, link: confirmLink });
+      return res.status(401).send({ message: 'Please verify your email. Confirmation link has been sent.' });
+    }
+    const userToken = jwt.sign({
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      userType: user.userType
+    }, process.env.JWT_SECRET as string, { expiresIn: '7d' });
+    const { id, firstName, lastName, email, userType } = user;
+    res.status(200).json({ token: userToken, message: 'Successfully Logged in', id, firstName, lastName, email, userType });
+  } catch (error) {
+    console.error('Error occurred while logging in:', error);
+    res.status(500).send(error);
   }
-};
+}
+
+
+
+
+
+

@@ -1,5 +1,5 @@
 import { DbConnection } from '../database/index';
-import { UserModel } from '../database/models/userModel';
+import UserModel from '../database/models/userModel';
 
 import { Role } from '../database/models';
 
@@ -12,7 +12,7 @@ export async function beforeAllHook() {
 
 export async function afterAllHook() {
   const userRepository = DbConnection.connection.getRepository(UserModel);
-  const repository = await userRepository.delete({});
+  const repository = await userRepository.clear();
   // eslint-disable-next-line no-console
   console.log(repository);
 

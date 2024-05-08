@@ -3,7 +3,9 @@ import app from '../app';
 import { afterAllHook, beforeAllHook } from './testSetup';
 import jwt from 'jsonwebtoken';
 import dbConnection from '../database';
-import { UserModel } from '../database/models';
+import  UserModel  from '../database/models/userModel';
+const userRepository = dbConnection.getRepository(UserModel);
+
 beforeAll(beforeAllHook);
 afterAll(afterAllHook);
 
@@ -143,3 +145,94 @@ describe('User Registration Tests', () => {
     expect(response.body.message).toBe('User not found');
   });
 });
+
+
+
+
+
+describe('User Login Tests', () => {
+  it('should log in a user with valid credentials', async () => {
+     const userData = {
+       firstName: 'Test',
+       lastName: 'User',
+       email: 'test@gmail.com',
+       password: 'TestPassword123',
+       userType: 'buyer',
+     };
+     await request(app).post('/api/v1/register').send(userData);
+     const updatedUser = await userRepository.findOne({ where: { email: userData.email } });
+     if (updatedUser) {
+       updatedUser.isVerified = true;
+       await userRepository.save(updatedUser);
+       
+       const loginResponse = await request(app).post('/api/v1/login').send({
+         email: userData.email,
+         password: userData.password,
+       });
+      
+       expect(loginResponse.status).toBe(200);
+       expect(loginResponse.body.token).toBeDefined();
+       expect(loginResponse.body.message).toBe('Successfully Logged in');
+     } else {
+       throw new Error('User not found');
+     }
+  });
+ 
+  it('should return a 401 status code if the email is not verified', async () => {
+     const userData = {
+       firstName: 'Test',
+       lastName: 'User',
+       email: 'test@gmail.com',
+       password: 'TestPassword123',
+       userType: 'buyer',
+     };
+     await request(app).post('/api/v1/register').send(userData);
+     const updatedUser = await userRepository.findOne({
+       where: { email: userData.email },
+     });
+  
+     if (updatedUser) {
+       updatedUser.isVerified = false;
+       await userRepository.save(updatedUser);
+       const loginResponse = await request(app).post('/api/v1/login').send({
+         email: userData.email,
+         password: userData.password,
+       });
+ 
+       expect(loginResponse.status).toBe(401);
+       expect(loginResponse.body.message).toBe('Please verify your email. Confirmation link has been sent.'); // Corrected message
+     } else {
+       throw new Error('User not found');
+     }
+  });
+ 
+  it('should return a 401 status code if the password does not match', async () => {
+     const userData = {
+       firstName: 'Test',
+       lastName: 'User',
+       email: 'test@gmail.com',
+       password: 'TestPassword123',
+       userType: 'buyer',
+     };
+     await request(app).post('/api/v1/register').send(userData);
+ 
+     const loginResponse = await request(app).post('/api/v1/login').send({
+       email: userData.email,
+       password: 'IncorrectPassword',
+     });
+     expect(loginResponse.status).toBe(401);
+     expect(loginResponse.body.message).toBe('Password does not match');
+  });
+
+  it('should return a 404 status code if the user is not found', async () => {
+
+    const nonExistentEmail = 'nonexistent@example.com';
+    const loginResponse = await request(app).post('/api/v1/login').send({
+       email: nonExistentEmail,
+       password: 'TestPassword123', 
+    });
+   
+    expect(loginResponse.status).toBe(404);
+    expect(loginResponse.body.message).toBe('User Not Found');
+   });
+ });
