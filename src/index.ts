@@ -14,5 +14,9 @@ const PORT = process.env.APP_PORT;
 (async () => {
   // connecting to the database
   await DbConnection.instance.initializeDb();
-  app.listen(PORT, () => console.log(`App is up and listening to ${PORT}`));
+  app.listen(PORT, () =>
+    console.log(
+      `App is up and listening to ${PORT}, env ${process.env.NODE_ENV}`
+    )
+  );
 })();

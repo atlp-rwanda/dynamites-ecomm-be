@@ -7,14 +7,16 @@ export class DbConnection {
   private static dbConnection = new DataSource({
     type: 'postgres',
     logging: false,
-    synchronize: true,
-    host: config.host,
-    port: Number(config.port as string),
-    username: config.username,
-    password: config.password,
-    database: config.name,
+    synchronize: false,
+    // host: config.host,
+    // port: Number(config.port as string),
+    // username: config.username,
+    // password: config.password,
+    // database: config.name,
+    url: 'postgres://dynamites_user:q5ivjQLaUf5nPPYQtNoffhTvun7ZXLsj@dpg-coumqf0l6cac73b79ahg-a/dynamites',
     migrations: [__dirname + '/migrations/'],
     entities: [__dirname + '/models/*{.js,.ts}'],
+    // ssl: { rejectUnauthorized: false },
   });
 
   private constructor() {}
@@ -31,6 +33,7 @@ export class DbConnection {
 
   initializeDb = async () => {
     try {
+      console.log('=>db-configurations=>', JSON.stringify(config, null, 2));
       const connection = await DbConnection.dbConnection.initialize();
       console.log('db-connection', connection.options.database);
     } catch (error) {
