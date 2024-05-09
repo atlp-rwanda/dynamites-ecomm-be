@@ -4,7 +4,6 @@
     "module": "commonjs",
     "jsx": "preserve",
     "outDir": "dist",
-    "types": ["jest"],
     "rootDir": "src",
     "strict": true,
     "esModuleInterop": true,
@@ -15,6 +14,6 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true
   },
-  "exclude": ["node_modules, **/types/*"],
+  "exclude": ["node_modules, **/types/*", "**/__test__/*"],
   "include": ["./src/*", "src/types"]
 }
