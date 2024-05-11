@@ -1,7 +1,18 @@
 import { Router } from 'express';
-import { getAllCategories } from '../controller/categoryController';
-const route = Router();
+import {
+  createCategory,
+  deleteCategory,
+  getAllCategories,
+  getCategory,
+  updateCategory,
+} from '../controller/categoryController';
+const categoryRouter = Router();
 
-route.get('/getAllCategories', getAllCategories);
+categoryRouter.route('/').post(createCategory).get(getAllCategories);
+categoryRouter
+  .route('/:categoryId')
+  .get(getCategory)
+  .put(updateCategory)
+  .delete(deleteCategory);
 
-export default route;
+export default categoryRouter;

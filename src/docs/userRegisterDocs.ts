@@ -6,7 +6,7 @@
  */
 /**
  * @swagger
- * /api/v1/register:
+ * /api/v1/user/register:
  *   post:
  *     summary: Register a new user
  *     tags: [User]
@@ -90,7 +90,7 @@
 
 /**
  * @swagger
- * /api/v1/confirm:
+ * /api/v1/user/confirm:
  *   get:
  *     summary: Confirm user email
  *     tags: [User]

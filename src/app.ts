@@ -4,10 +4,7 @@ import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './docs/swaggerconfig';
 import 'reflect-metadata';
-import userRoute from './routes/userRoutes';
-import roleRoutes from './routes/roleRoutes';
-import productRoutes from './routes/productRoutes';
-import categoryRoutes from './routes/categoryRoutes';
+import router from './routes/index';
 
 import fs from 'fs';
 import path from 'path';
@@ -82,10 +79,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 // Middleware to handle all endpoint routes
-app.use('/api/v1', userRoute);
-app.use('/api/v1/roles', roleRoutes);
-app.use('/api/v1/product', productRoutes);
-app.use('/api/v1/category', categoryRoutes);
+app.use('/api/v1', router);
 
 // Endpoints for serving social login
 app.use('/auth', authRoutes);
