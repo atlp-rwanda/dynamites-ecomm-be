@@ -163,20 +163,22 @@ export const deleteUser = async (req: Request, res: Response) => {
     return res
       .status(500)
       .json({ error: 'An error occurred while deleting the record.' });
-
- }}
-
+  }
+};
 
 export const Login = async (req: Request, res: Response) => {
   try {
-    const user = await userRepository.findOne({ 
-      where: { email: req.body['email'] }, 
-      relations: ['userType'] 
+    const user = await userRepository.findOne({
+      where: { email: req.body['email'] },
+      relations: ['userType'],
     });
     if (!user) {
       return res.status(404).send({ message: 'User Not Found' });
     }
-    const passwordMatch = await bcrypt.compare(req.body.password, user.password); // Compare with hashed password from the database
+    const passwordMatch = await bcrypt.compare(
+      req.body.password,
+      user.password
+    ); // Compare with hashed password from the database
     if (!passwordMatch) {
       return res.status(401).send({ message: 'Password does not match' });
     }
@@ -188,8 +190,13 @@ export const Login = async (req: Request, res: Response) => {
         { expiresIn: '1d' }
       );
       const confirmLink = `${process.env.APP_URL}/api/v1/confirm?token=${token}`;
-      await sendEmail('confirm', user.email, { name: user.firstName, link: confirmLink });
-      return res.status(401).send({ message: 'Please verify your email. Confirmation link has been sent.' });
+      await sendEmail('confirm', user.email, {
+        name: user.firstName,
+        link: confirmLink,
+      });
+      return res.status(401).send({
+        message: 'Please verify your email. Confirmation link has been sent.',
+      });
     }
 
     // If user is a vendor, proceed with 2FA
@@ -201,24 +208,28 @@ export const Login = async (req: Request, res: Response) => {
       await userRepository.update(user.id, { twoFactorCode });
 
       // Send 2FA code to user's email
-      await sendCode(
-        user.email,
-        'Your 2FA Code',
-        './templates/2fa.html',
-        { name: user.firstName, twoFactorCode: twoFactorCode.toString() }
-      );
+      await sendCode(user.email, 'Your 2FA Code', './templates/2fa.html', {
+        name: user.firstName,
+        twoFactorCode: twoFactorCode.toString(),
+      });
 
       // Respond with a message asking for the 2FA code
-      res.status(200).json({ message: 'Please provide the 2FA code sent to your email.' });
+      res
+        .status(200)
+        .json({ message: 'Please provide the 2FA code sent to your email.' });
     } else {
-      // If user is not a vendor, 
-      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET as jwt.Secret, { expiresIn: '1h' });
+      // If user is not a vendor,
+      const token = jwt.sign(
+        { userId: user.id },
+        process.env.JWT_SECRET as jwt.Secret,
+        { expiresIn: '1h' }
+      );
       res.status(200).json({ token });
     }
   } catch (error) {
     res.status(500).send(error);
   }
-}
+};
 
 export const verify2FA = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -226,7 +237,9 @@ export const verify2FA = async (req: Request, res: Response): Promise<void> => {
     const { userId } = req.params;
 
     // Use the repository to find the user by their id
-    const user = await userRepository.findOne({ where: { id: Number(userId) } });
+    const user = await userRepository.findOne({
+      where: { id: Number(userId) },
+    });
 
     if (!user) {
       res.status(401).json({ error: 'Invalid credentials' });
@@ -238,11 +251,14 @@ export const verify2FA = async (req: Request, res: Response): Promise<void> => {
     }
 
     // Generate JWT
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET as jwt.Secret, { expiresIn: '1h' });
+    const token = jwt.sign(
+      { userId: user.id },
+      process.env.JWT_SECRET as jwt.Secret,
+      { expiresIn: '1h' }
+    );
 
     // Send JWT to the user
     res.status(200).json({ token });
-
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
   }

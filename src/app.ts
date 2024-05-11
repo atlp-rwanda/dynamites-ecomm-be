@@ -6,6 +6,7 @@ import swaggerSpec from './docs/swaggerconfig';
 import 'reflect-metadata';
 import userRoute from './routes/userRoutes';
 import roleRoutes from './routes/roleRoutes';
+import productRoutes from './routes/productRoutes';
 
 import fs from 'fs';
 import path from 'path';
@@ -25,7 +26,7 @@ const logStream = fs.createWriteStream(path.join(__dirname, 'output.log'), {
   flags: 'a',
 });
 
-//Data Sanitation Against SQL injection 
+//Data Sanitation Against SQL injection
 
 //Data Sanitation Against SiteScripts
 
@@ -82,6 +83,7 @@ app.get('/', (req: Request, res: Response) => {
 // Middleware to handle all endpoint routes
 app.use('/api/v1', userRoute);
 app.use('/api/v1/roles', roleRoutes);
+app.use('api/v1/product', productRoutes);
 
 // Endpoints for serving social login
 app.use('/auth', authRoutes);
