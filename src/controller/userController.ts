@@ -164,9 +164,8 @@ export const deleteUser = async (req: Request, res: Response) => {
     return res
       .status(500)
       .json({ error: 'An error occurred while deleting the record.' });
-
- }}
-
+  }
+};
 
  export const Login = errorHandler(async (req: Request, res: Response) => {
   const user = await userRepository.findOne({ 

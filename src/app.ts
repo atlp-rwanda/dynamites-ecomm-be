@@ -4,14 +4,14 @@ import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './docs/swaggerconfig';
 import 'reflect-metadata';
-import userRoute from './routes/userRoutes';
-import roleRoutes from './routes/roleRoutes';
+import router from './routes/index';
 
 import fs from 'fs';
 import path from 'path';
 import authRoutes from './routes/auth-routes';
 import cookieSession from 'cookie-session';
 import passport from 'passport';
+import userRouter from './routes/userRoutes';
 
 // Require Passport midleware
 require('./middlewares/passport-setup');
@@ -25,7 +25,7 @@ const logStream = fs.createWriteStream(path.join(__dirname, 'output.log'), {
   flags: 'a',
 });
 
-//Data Sanitation Against SQL injection 
+//Data Sanitation Against SQL injection
 
 //Data Sanitation Against SiteScripts
 
@@ -80,8 +80,8 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 // Middleware to handle all endpoint routes
-app.use('/api/v1', userRoute);
-app.use('/api/v1/roles', roleRoutes);
+app.use('/api/v1', router);
+app.use('/api/v1', userRouter);
 
 // Endpoints for serving social login
 app.use('/auth', authRoutes);

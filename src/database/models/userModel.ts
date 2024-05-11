@@ -6,7 +6,6 @@ import {
 } from 'typeorm';
 import { Role } from './roleEntity';
 
-
 @Entity()
 export default class UserModel {
   @PrimaryGeneratedColumn()
@@ -18,7 +17,7 @@ export default class UserModel {
   @Column()
   lastName: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @Column({ nullable: true })
@@ -42,8 +41,10 @@ export default class UserModel {
   @Column({ default: false })
   isVerified: boolean;
 
+  @Column({ default: 'active' })
+  status: 'active' | 'inactive';
 
-  @Column({ nullable: true }) 
+  @Column({ nullable: true })
   twoFactorCode: number;
 
   constructor(user: Partial<UserModel>) {
