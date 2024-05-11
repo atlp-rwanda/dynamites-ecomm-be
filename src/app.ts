@@ -7,6 +7,7 @@ import 'reflect-metadata';
 import userRoute from './routes/userRoutes';
 import roleRoutes from './routes/roleRoutes';
 import productRoutes from './routes/productRoutes';
+import categoryRoutes from './routes/categoryRoutes';
 
 import fs from 'fs';
 import path from 'path';
@@ -84,6 +85,7 @@ app.get('/', (req: Request, res: Response) => {
 app.use('/api/v1', userRoute);
 app.use('/api/v1/roles', roleRoutes);
 app.use('api/v1/product', productRoutes);
+app.use('api/v1/category', categoryRoutes);
 
 // Endpoints for serving social login
 app.use('/auth', authRoutes);

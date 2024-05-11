@@ -6,8 +6,8 @@ const productRepository = dbConnection.getRepository(Product);
 
 export const getAllProducts = async (req: Request, res: Response) => {
   try {
-    const users = await productRepository.find({});
-    res.status(200).json(users);
+    const products = await productRepository.find({});
+    res.status(200).json(products);
   } catch (error) {
     res.status(500).json({ message: 'Internal server error' });
   }
