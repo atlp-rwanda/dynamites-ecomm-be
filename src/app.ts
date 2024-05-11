@@ -84,8 +84,8 @@ app.get('/', (req: Request, res: Response) => {
 // Middleware to handle all endpoint routes
 app.use('/api/v1', userRoute);
 app.use('/api/v1/roles', roleRoutes);
-app.use('api/v1/product', productRoutes);
-app.use('api/v1/category', categoryRoutes);
+app.use('/api/v1/product', productRoutes);
+app.use('/api/v1/category', categoryRoutes);
 
 // Endpoints for serving social login
 app.use('/auth', authRoutes);
