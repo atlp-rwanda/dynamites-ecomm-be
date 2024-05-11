@@ -39,7 +39,7 @@ export const createCategory = [
     });
     const updatedCategory = await categoryRepository.save(newCategory);
     return res.status(201).json({
-      message: 'Category successfully registered',
+      message: 'Category successfully created',
       data: updatedCategory,
     });
   },
