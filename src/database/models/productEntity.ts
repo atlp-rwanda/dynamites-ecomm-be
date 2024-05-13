@@ -32,7 +32,7 @@ export default class Product {
   category: Category;
 
   @Column()
-  quanity: number;
+  quantity: number;
 
   @Column()
   regularPrice: number;
