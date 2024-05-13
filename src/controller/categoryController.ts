@@ -10,7 +10,6 @@ interface categoryRequestBody {
   description: string;
 }
 
-// Define validation and sanitization rules
 const createCategoryRules = [
   check('name').isLength({ min: 1 }).withMessage('Category name is required'),
   check('description')

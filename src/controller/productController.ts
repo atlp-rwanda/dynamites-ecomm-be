@@ -21,7 +21,6 @@ interface ProductRequestBody {
   type: 'Simple' | 'Grouped' | 'Variable';
 }
 
-// Define validation and sanitization rules
 const createProductRules = [
   check('name').isLength({ min: 1 }).withMessage('Product name is required'),
   check('image').isLength({ min: 1 }).withMessage('Product image is required'),
@@ -112,9 +111,65 @@ export const createProduct = [
 
 export const getAllProducts = async (req: Request, res: Response) => {
   try {
-    const products = await productRepository.find();
-    return res.status(200).json({ products });
+    const products = await productRepository.find({
+      select: {
+        category: {
+          id: true,
+          name: true,
+        },
+      },
+      relations: ['category'],
+    });
+    res.status(200).json(products);
   } catch (error) {
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+export const getProduct = async (req: Request, res: Response) => {
+  try {
+    const productId: number = parseInt(req.params.productId);
+
+    const product = await productRepository.findOne({
+      where: { id: productId },
+      select: {
+        category: {
+          id: true,
+          name: true,
+        },
+      },
+      relations: ['category'],
+    });
+
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    return res
+      .status(200)
+      .json({ message: 'Data retrieved successfully', data: product });
+  } catch (error) {
+    console.error('Error fetching product:', error);
     return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+export const deleteProduct = async (req: Request, res: Response) => {
+  try {
+    const productId: number = parseInt(req.params.productId);
+
+    const product = await productRepository.findOne({
+      where: { id: productId },
+    });
+
+    if (!product) {
+      return res.status(404).json({ message: 'Product Not Found' });
+    }
+
+    await productRepository.delete(productId);
+
+    return res.status(200).json({ message: 'Product deleted successfully' });
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal Server Error' });
   }
 };
