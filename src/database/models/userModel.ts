@@ -2,8 +2,7 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  OneToOne,
-  JoinColumn,
+  ManyToOne,
 } from 'typeorm';
 import { Role } from './roleEntity';
 
@@ -25,8 +24,7 @@ export default class UserModel {
   @Column({ nullable: true })
   password: string;
 
-  @OneToOne(() => Role, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
-  @JoinColumn()
+  @ManyToOne(() => Role)
   userType: Role;
 
   @Column({ nullable: true })
