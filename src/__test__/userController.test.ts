@@ -1,6 +1,5 @@
 import request from 'supertest';
 import app from '../app';
-// import { Role } from '../database/models';
 import { afterAllHook, beforeAllHook } from './testSetup';
 import jwt from 'jsonwebtoken';
 import dbConnection from '../database';
