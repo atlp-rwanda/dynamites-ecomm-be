@@ -4,7 +4,9 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import Product from './productEntity';
 
 @Entity()
 export default class Category {
@@ -16,6 +18,11 @@ export default class Category {
 
   @Column({ length: 250 })
   description: string;
+
+  @OneToMany(() => Product, (product) => product.category, {
+    cascade: ['update'],
+  })
+  products: Product[];
 
   @CreateDateColumn({
     type: 'timestamp with time zone',

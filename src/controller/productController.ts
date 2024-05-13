@@ -4,6 +4,8 @@ import dbConnection from '../database';
 
 const productRepository = dbConnection.getRepository(Product);
 
+
+
 export const getAllProducts = async (req: Request, res: Response) => {
   try {
     const products = await productRepository.find();

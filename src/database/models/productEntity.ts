@@ -4,7 +4,9 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
 } from 'typeorm';
+import Category from './categoryEntity';
 
 @Entity()
 export default class Product {
@@ -26,8 +28,8 @@ export default class Product {
   @Column()
   longDesc: string;
 
-  @Column()
-  category: string;
+  @ManyToOne(() => Category)
+  category: Category;
 
   @Column()
   quanity: number;
