@@ -19,6 +19,7 @@ interface ProductRequestBody {
   salesPrice: number;
   tags: string[];
   type: 'Simple' | 'Grouped' | 'Variable';
+  isAvailable: boolean;
 }
 
 const createProductRules = [
@@ -109,6 +110,105 @@ export const createProduct = [
   },
 ];
 
+const updateProductRules = [
+  check('name').isLength({ min: 1 }).withMessage('Product name is required'),
+  check('image').isLength({ min: 1 }).withMessage('Product image is required'),
+  check('gallery').isArray().withMessage('Gallery must be an array'),
+  check('shortDesc')
+    .isLength({ min: 1 })
+    .withMessage('Short description is required'),
+  check('longDesc')
+    .isLength({ min: 1 })
+    .withMessage('Long description is required'),
+  check('categoryId')
+    .isInt({ min: 1 })
+    .withMessage('Valid category ID is required'),
+  check('quantity')
+    .isInt({ min: 0 })
+    .withMessage('Quantity must be a non-negative integer'),
+  check('regularPrice')
+    .isFloat({ min: 0 })
+    .withMessage('Regular price must be a non-negative number'),
+  check('salesPrice')
+    .isFloat({ min: 0 })
+    .withMessage('Sales price must be a non-negative number'),
+  check('tags').isArray().withMessage('Tags must be an array'),
+  check('type')
+    .isIn(['Simple', 'Grouped', 'Variable'])
+    .withMessage('Invalid product type'),
+  check('isAvailable')
+    .isBoolean()
+    .withMessage('isAvailable must be a boolean value'),
+];
+export const updateProduct = [
+  ...updateProductRules,
+  async (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const productId: number = parseInt(req.params.productId);
+    const {
+      name,
+      image,
+      gallery,
+      shortDesc,
+      longDesc,
+      categoryId,
+      quantity,
+      regularPrice,
+      salesPrice,
+      tags,
+      type,
+      isAvailable,
+    } = req.body as ProductRequestBody;
+
+    try {
+      const product = await productRepository.findOne({
+        where: { id: productId },
+      });
+
+      if (!product) {
+        return res.status(404).json({ message: 'Product not found' });
+      }
+
+      if (categoryId <= 0) {
+        return res.status(400).json({ message: 'Invalid category ID' });
+      }
+
+      const category = await categoryRepository.findOne({
+        where: { id: categoryId },
+      });
+      if (!category) {
+        return res.status(404).json({ message: 'Category not found' });
+      }
+
+      product.name = name;
+      product.image = image;
+      product.gallery = gallery;
+      product.shortDesc = shortDesc;
+      product.longDesc = longDesc;
+      product.category = category;
+      product.quantity = quantity;
+      product.regularPrice = regularPrice;
+      product.salesPrice = salesPrice;
+      product.tags = tags;
+      product.type = type;
+      product.isAvailable = isAvailable;
+
+      const updatedProduct = await productRepository.save(product);
+
+      return res.status(200).json({
+        message: 'Product successfully updated',
+        data: updatedProduct,
+      });
+    } catch (error) {
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  },
+];
+
 export const getAllProducts = async (req: Request, res: Response) => {
   try {
     const products = await productRepository.find({
@@ -149,7 +249,6 @@ export const getProduct = async (req: Request, res: Response) => {
       .status(200)
       .json({ message: 'Data retrieved successfully', data: product });
   } catch (error) {
-    console.error('Error fetching product:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
