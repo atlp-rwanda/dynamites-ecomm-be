@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, query } from 'express';
 import Product from '../database/models/productEntity';
 import Category from '../database/models/categoryEntity';
 import dbConnection from '../database';
@@ -249,7 +249,6 @@ export const getProduct = async (req: Request, res: Response) => {
       .status(200)
       .json({ message: 'Data retrieved successfully', data: product });
   } catch (error) {
-    console.error('Error fetching product:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -273,3 +272,38 @@ export const deleteProduct = async (req: Request, res: Response) => {
     return res.status(500).json({ message: 'Internal Server Error' });
   }
 };
+
+// get available product
+
+export const AvailableProducts = async (req: Request, res: Response) => {
+  try {
+      var limit: number
+      var page: number
+
+      if(req.query.limit == undefined && req.query.page == undefined) 
+        {
+        limit=10
+        page=1
+        }
+      else{
+        limit=parseInt(req.query.limit as string)
+        page=parseInt(req.query.page as string)
+      }
+      const [availableProducts, totalCount] = await productRepository.findAndCount({
+          where:{isAvailable:true},
+          take: limit,
+          skip: (page - 1) * limit,
+          relations: ['category'],
+      });
+
+      return res.status(200).json({
+          status: 'success',
+          message: "Items retrieved successfully.",
+          availableProducts,
+          totalPages: Math.ceil(totalCount / limit),
+          currentPage: page
+      });
+  } catch (error) {
+      return res.status(500).json({ msg: "Error fetching products", error:error});
+  }
+}
