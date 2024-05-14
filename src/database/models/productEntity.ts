@@ -46,6 +46,9 @@ export default class Product {
   @Column({ default: 'Simple' })
   type: 'Simple' | 'Grouped' | 'Variable';
 
+  @Column({ default: true })
+  isAvailable: boolean;
+
   @CreateDateColumn({
     type: 'timestamp with time zone',
     default: () => 'CURRENT_TIMESTAMP',

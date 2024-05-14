@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   createProduct,
+  deleteProduct,
   getAllProducts,
   getProduct,
 } from '../controller/productController';
@@ -8,6 +9,6 @@ import {
 const productRouter = Router();
 
 productRouter.route('/').post(createProduct).get(getAllProducts);
-productRouter.route('/:productId').get(getProduct);
+productRouter.route('/:productId').get(getProduct).delete(deleteProduct);
 
 export default productRouter;

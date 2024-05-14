@@ -39,6 +39,9 @@ export default class UserModel {
   @Column({ default: 'active' })
   status: 'active' | 'inactive';
 
+  @Column({ nullable: true })
+  twoFactorCode: number;
+
   constructor(user: Partial<UserModel>) {
     Object.assign(this, user);
   }
