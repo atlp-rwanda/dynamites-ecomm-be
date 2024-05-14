@@ -1,11 +1,13 @@
 import { Request, Response } from 'express';
 import Product from '../database/models/productEntity';
 import Category from '../database/models/categoryEntity';
+import UserModel from '../database/models/userModel';
 import dbConnection from '../database';
 import { check, validationResult } from 'express-validator';
 
 const productRepository = dbConnection.getRepository(Product);
 const categoryRepository = dbConnection.getRepository(Category);
+const userRepository = dbConnection.getRepository(UserModel);
 
 interface ProductRequestBody {
   name: string;
@@ -57,6 +59,8 @@ export const createProduct = [
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
+    const vendorId = req.user!.userId;
+
     const {
       name,
       image,
@@ -79,12 +83,25 @@ export const createProduct = [
         return res.status(404).json({ message: 'Category not found' });
       }
 
+      const vendor = await userRepository.findOne({
+        where: { id: vendorId },
+        select: {
+          id: true,
+          firstName: true,
+        },
+      });
+
+      if (!vendor) {
+        return res.status(404).json({ message: 'Vendor not found' });
+      }
+
       const existingProduct = await productRepository.findOne({
         where: { name },
       });
       if (existingProduct) {
         return res.status(409).json({ message: 'Product name already exists' });
       }
+
       const newProduct = new Product({
         name,
         image,
@@ -92,6 +109,7 @@ export const createProduct = [
         shortDesc,
         longDesc,
         category,
+        vendor,
         quantity,
         regularPrice,
         salesPrice,
@@ -214,11 +232,13 @@ export const getAllProducts = async (req: Request, res: Response) => {
     const products = await productRepository.find({
       select: {
         category: {
-          id: true,
           name: true,
         },
+        vendor: {
+          firstName: true,
+        },
       },
-      relations: ['category'],
+      relations: ['category', 'vendor'],
     });
     res.status(200).json(products);
   } catch (error) {
@@ -234,11 +254,13 @@ export const getProduct = async (req: Request, res: Response) => {
       where: { id: productId },
       select: {
         category: {
-          id: true,
           name: true,
         },
+        vendor: {
+          firstName: true,
+        },
       },
-      relations: ['category'],
+      relations: ['category', 'vendor'],
     });
 
     if (!product) {
@@ -270,5 +292,17 @@ export const deleteProduct = async (req: Request, res: Response) => {
     return res.status(200).json({ message: 'Product deleted successfully' });
   } catch (error) {
     return res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
+
+export const deleteAllProduct = async (req: Request, res: Response) => {
+  try {
+    const deletedProducts = await productRepository.delete({});
+    return res.status(200).json({
+      message: 'All product deleted successfully',
+      count: deletedProducts.affected,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: 'Failed to delete product' });
   }
 };

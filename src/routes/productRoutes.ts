@@ -1,20 +1,22 @@
 import { Router } from 'express';
 import {
   createProduct,
+  deleteAllProduct,
   deleteProduct,
   getAllProducts,
   getProduct,
   updateProduct,
 } from '../controller/productController';
 import { IsLoggedIn } from '../middlewares/isLoggedIn';
-import { checkRole } from '../middlewares/authorize';
+// import { checkRole } from '../middlewares/authorize';
 
 const productRouter = Router();
 
 productRouter
   .route('/')
-  .post(IsLoggedIn, checkRole(['Vendor']), createProduct)
-  .get(getAllProducts);
+  .post(IsLoggedIn, createProduct)
+  .get(getAllProducts)
+  .delete(deleteAllProduct);
 productRouter
   .route('/:productId')
   .get(getProduct)

@@ -7,6 +7,7 @@ import {
   ManyToOne,
 } from 'typeorm';
 import Category from './categoryEntity';
+import UserModel from './userModel';
 
 @Entity()
 export default class Product {
@@ -48,6 +49,9 @@ export default class Product {
 
   @Column({ default: true })
   isAvailable: boolean;
+
+  @ManyToOne(() => UserModel)
+  vendor: UserModel;
 
   @CreateDateColumn({
     type: 'timestamp with time zone',
