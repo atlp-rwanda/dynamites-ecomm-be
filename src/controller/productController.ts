@@ -1,4 +1,4 @@
-import { Request, Response, query } from 'express';
+import { Request, Response} from 'express';
 import Product from '../database/models/productEntity';
 import Category from '../database/models/categoryEntity';
 import dbConnection from '../database';
@@ -104,7 +104,6 @@ export const createProduct = [
         data: updatedProduct,
       });
     } catch (error) {
-      console.log(error);
       return res.status(500).json({ message: 'Failed to create product' });
     }
   },
@@ -277,8 +276,8 @@ export const deleteProduct = async (req: Request, res: Response) => {
 
 export const AvailableProducts = async (req: Request, res: Response) => {
   try {
-      var limit: number
-      var page: number
+      let limit: number
+      let page: number
 
       if(req.query.limit == undefined && req.query.page == undefined) 
         {
@@ -298,12 +297,12 @@ export const AvailableProducts = async (req: Request, res: Response) => {
 
       return res.status(200).json({
           status: 'success',
-          message: "Items retrieved successfully.",
+          message: 'Items retrieved successfully.',
           availableProducts,
           totalPages: Math.ceil(totalCount / limit),
           currentPage: page
       });
   } catch (error) {
-      return res.status(500).json({ msg: "Error fetching products", error:error});
+      return res.status(500).json({ msg: 'Error fetching products', error:error});
   }
 }
