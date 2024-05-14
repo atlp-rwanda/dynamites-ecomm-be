@@ -122,7 +122,6 @@ export const createProduct = [
         data: updatedProduct,
       });
     } catch (error) {
-      console.log(error);
       return res.status(500).json({ message: 'Failed to create product' });
     }
   },

@@ -12,7 +12,7 @@ const categoryRouter = Router();
 
 categoryRouter
   .route('/')
-  .post(IsLoggedIn, createCategory)
+  .post(createCategory)
   .get(getAllCategories);
 categoryRouter
   .route('/:categoryId')
