@@ -1,4 +1,4 @@
-import { Request, Response, query } from 'express';
+import { Request, Response} from 'express';
 import Product from '../database/models/productEntity';
 import Category from '../database/models/categoryEntity';
 import UserModel from '../database/models/userModel';
