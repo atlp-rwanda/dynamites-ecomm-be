@@ -20,6 +20,8 @@
  *   delete:
  *     summary: Delete all products
  *     tags: [Product]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       '200':
  *         description: Products deleted successfully
@@ -50,6 +52,8 @@
  *   delete:
  *     summary: Delete a product by ID
  *     tags: [Product]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: productId

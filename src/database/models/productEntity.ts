@@ -53,17 +53,10 @@ export default class Product {
   @ManyToOne(() => UserModel)
   vendor: UserModel;
 
-  @CreateDateColumn({
-    type: 'timestamp with time zone',
-    default: () => 'CURRENT_TIMESTAMP',
-  })
+  @CreateDateColumn()
   createdAt: Date;
 
-  @UpdateDateColumn({
-    type: 'timestamp with time zone',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP',
-  })
+  @UpdateDateColumn()
   updatedAt: Date;
 
   constructor(product: Partial<Product>) {
