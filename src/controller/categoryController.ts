@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import dbConnection from '../database';
 import Category from '../database/models/categoryEntity';
 import { check, validationResult } from 'express-validator';
+import errorHandler from '../middlewares/errorHandler';
 
 const categoryRepository = dbConnection.getRepository(Category);
 
@@ -19,7 +20,7 @@ const createCategoryRules = [
 
 export const createCategory = [
   ...createCategoryRules,
-  async (req: Request, res: Response) => {
+  errorHandler(async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -41,41 +42,37 @@ export const createCategory = [
       message: 'Category successfully created',
       data: updatedCategory,
     });
-  },
+  }),
 ];
 
-export const getAllCategories = async (req: Request, res: Response) => {
-  try {
+export const getAllCategories = errorHandler(
+  async (req: Request, res: Response) => {
     const categories = await categoryRepository.find();
     return res
       .status(200)
       .json({ message: 'Data retrieved successfully', data: categories });
-  } catch (error) {
-    return res.status(500).json({ message: 'Internal server error' });
   }
-};
+);
 
-export const getCategory = async (req: Request, res: Response) => {
-  try {
-    const categoryId: number = parseInt(req.params.categoryId);
+export const getCategory = errorHandler(async (req: Request, res: Response) => {
+  const categoryId: number = parseInt(req.params.categoryId);
 
-    const category = await categoryRepository.findOne({
-      where: { id: categoryId },
-    });
-    if (!category) {
-      return res.status(404).json({ message: 'Category Not Found' });
-    }
-    return res
-      .status(200)
-      .json({ message: 'Data retrieved successfully', data: category });
-  } catch (error) {
-    return res.status(500).json({ message: 'Internal server error' });
+  const category = await categoryRepository.findOne({
+    where: { id: categoryId },
+  });
+
+  if (!category) {
+    return res.status(404).json({ message: 'Category Not Found' });
   }
-};
+
+  res
+    .status(200)
+    .json({ message: 'Data retrieved successfully', data: category });
+});
 
 export const updateCategory = [
   ...createCategoryRules,
-  async (req: Request, res: Response) => {
+  errorHandler(async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -108,11 +105,11 @@ export const updateCategory = [
       message: 'Category successfully updated',
       data: updatedCategory,
     });
-  },
+  }),
 ];
 
-export const deleteCategory = async (req: Request, res: Response) => {
-  try {
+export const deleteCategory = errorHandler(
+  async (req: Request, res: Response) => {
     const categoryId: number = parseInt(req.params.categoryId);
 
     const category = await categoryRepository.findOne({
@@ -125,8 +122,6 @@ export const deleteCategory = async (req: Request, res: Response) => {
 
     await categoryRepository.delete(categoryId);
 
-    return res.status(200).json({ message: 'Category deleted successfully' });
-  } catch (error) {
-    return res.status(500).json({ message: 'Internal Server Error' });
+    res.status(200).json({ message: 'Category deleted successfully' });
   }
-};
+);
