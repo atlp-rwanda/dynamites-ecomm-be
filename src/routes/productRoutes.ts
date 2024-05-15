@@ -15,7 +15,7 @@ const productRouter = Router();
 productRouter
   .route('/')
   .post(IsLoggedIn, checkRole(['Vendor']), createProduct)
-  .get(IsLoggedIn, getAllProducts)
+  .get(getAllProducts)
   .delete(IsLoggedIn, deleteAllProduct);
 productRouter
   .route('/:productId')
