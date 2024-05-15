@@ -1,12 +1,16 @@
 import { DbConnection } from '../database/index';
 import UserModel from '../database/models/userModel';
-
 import { Role } from '../database/models';
 
 export async function beforeAllHook() {
   await DbConnection.instance.initializeDb();
-  // removing all data from role table
+
+  // Get repositories
+  const userRepository = await DbConnection.connection.getRepository(UserModel);
   const roleRepository = await DbConnection.connection.getRepository(Role);
+
+  // Delete all users and roles
+  await userRepository.createQueryBuilder().delete().execute();
   await roleRepository.createQueryBuilder().delete().execute();
 }
 
