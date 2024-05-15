@@ -60,7 +60,7 @@ export const createProduct = [
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const vendorId = req.user!.userId;
+    const vendorId = req.user!.id;
 
     const {
       name,

@@ -8,14 +8,14 @@ import {
   updateProduct,
 } from '../controller/productController';
 import { IsLoggedIn } from '../middlewares/isLoggedIn';
-// import { checkRole } from '../middlewares/authorize';
+import { checkRole } from '../middlewares/authorize';
 
 const productRouter = Router();
 
 productRouter
   .route('/')
   .post(IsLoggedIn, createProduct)
-  .get(getAllProducts)
+  .get(IsLoggedIn, checkRole(['Vendor']), getAllProducts)
   .delete(deleteAllProduct);
 productRouter
   .route('/:productId')

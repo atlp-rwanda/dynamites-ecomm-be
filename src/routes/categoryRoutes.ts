@@ -10,14 +10,11 @@ import { IsLoggedIn } from '../middlewares/isLoggedIn';
 
 const categoryRouter = Router();
 
-categoryRouter
-  .route('/')
-  .post(createCategory)
-  .get(getAllCategories);
+categoryRouter.route('/').post(createCategory).get(getAllCategories);
 categoryRouter
   .route('/:categoryId')
   .get(getCategory)
   .put(IsLoggedIn, updateCategory)
-  .delete(IsLoggedIn,deleteCategory);
+  .delete(IsLoggedIn, deleteCategory);
 
 export default categoryRouter;

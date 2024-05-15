@@ -24,7 +24,7 @@ export const IsLoggedIn = (req: Request, res: Response, next: NextFunction) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET as jwt.Secret);
 
     // @ts-expect-error
-    req.user = decoded;
+    req.user = decoded.user;
 
     next();
   } catch (error) {
