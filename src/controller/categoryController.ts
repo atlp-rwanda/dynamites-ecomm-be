@@ -23,8 +23,7 @@ export const createCategory = [
   errorHandler(async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      res.status(400).json({ errors: errors.array() });
-      return;
+      return res.status(400).json({ errors: errors.array() });
     }
     const { name, description } = req.body as categoryRequestBody;
 
@@ -32,15 +31,14 @@ export const createCategory = [
       where: { name },
     });
     if (existingCategory) {
-      res.status(409).json({ message: 'Category name already exists' });
-      return;
+      return res.status(409).json({ message: 'Category name already exists' });
     }
     const newCategory = new Category({
       name: name,
       description: description,
     });
     const updatedCategory = await categoryRepository.save(newCategory);
-    res.status(201).json({
+    return res.status(201).json({
       message: 'Category successfully created',
       data: updatedCategory,
     });
@@ -50,7 +48,7 @@ export const createCategory = [
 export const getAllCategories = errorHandler(
   async (req: Request, res: Response) => {
     const categories = await categoryRepository.find();
-    res
+    return res
       .status(200)
       .json({ message: 'Data retrieved successfully', data: categories });
   }
@@ -64,8 +62,7 @@ export const getCategory = errorHandler(async (req: Request, res: Response) => {
   });
 
   if (!category) {
-    res.status(404).json({ message: 'Category Not Found' });
-    return;
+    return res.status(404).json({ message: 'Category Not Found' });
   }
 
   res
@@ -78,8 +75,7 @@ export const updateCategory = [
   errorHandler(async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      res.status(400).json({ errors: errors.array() });
-      return;
+      return res.status(400).json({ errors: errors.array() });
     }
 
     const categoryId: number = parseInt(req.params.categoryId);
@@ -90,8 +86,7 @@ export const updateCategory = [
     });
 
     if (!category) {
-      res.status(404).json({ message: 'Category Not Found' });
-      return;
+      return res.status(404).json({ message: 'Category Not Found' });
     }
 
     const existingCategory = await categoryRepository.findOne({
@@ -99,8 +94,7 @@ export const updateCategory = [
     });
 
     if (existingCategory && existingCategory.id !== categoryId) {
-      res.status(409).json({ message: 'Category name already exists' });
-      return;
+      return res.status(409).json({ message: 'Category name already exists' });
     }
 
     category.name = name;
@@ -108,7 +102,7 @@ export const updateCategory = [
 
     const updatedCategory = await categoryRepository.save(category);
 
-    res.status(200).json({
+    return res.status(200).json({
       message: 'Category successfully updated',
       data: updatedCategory,
     });
@@ -124,8 +118,7 @@ export const deleteCategory = errorHandler(
     });
 
     if (!category) {
-      res.status(404).json({ message: 'Category Not Found' });
-      return;
+      return res.status(404).json({ message: 'Category Not Found' });
     }
 
     await categoryRepository.delete(categoryId);
