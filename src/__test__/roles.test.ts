@@ -142,6 +142,8 @@ describe('RoleController test', () => {
       .post('/api/v1/register')
       .send(userData);
 
+    console.log(createResponse.body)  
+
     const formData = {
       userId: createResponse.body.user.id,
       newRoleId: createResponse.body.user.userType.id,

@@ -1,12 +1,9 @@
 import request from 'supertest';
 import app from '../app';
-// import { Role } from '../database/models';
 import { afterAllHook, beforeAllHook } from './testSetup';
 import jwt from 'jsonwebtoken';
 import dbConnection from '../database';
-// import bcrpt from 'bcrypt';
 import  UserModel  from '../database/models/userModel';
-// import { use } from 'passport';
 const userRepository = dbConnection.getRepository(UserModel);
 
 beforeAll(beforeAllHook);
@@ -151,7 +148,7 @@ describe('User Registration Tests', () => {
 
 
 describe('User Login Tests', () => {
-  it('should log in a user with valid credentials', async () => {
+  it('should log in a vendor with valid credentials', async () => {
       const formData = {
         name: 'Vendor',
         permissions: ['test-permission1', 'test-permission2'],
@@ -180,11 +177,8 @@ describe('User Login Tests', () => {
       
        expect(loginResponse.status).toBe(200);
        expect(loginResponse.body.message).toBe('Please provide the 2FA code sent to your email.');
-     } else {
-       throw new Error('User not found');
      }
   });
-  
 
   it('should verify the 2FA code for a vendor user', async () => {
     const userData = {
@@ -203,11 +197,7 @@ describe('User Login Tests', () => {
     if (user) {
       user.isVerified = true;
       await userRepository.save(user);
-    } else {
-      throw new Error('User not found');
     }
-  
-
     const loginResponse = await request(app).post('/api/v1/login').send({
       email: userData.email,
       password: userData.password,
@@ -228,11 +218,49 @@ describe('User Login Tests', () => {
 
       expect(verifyResponse.status).toBe(200);
       expect(verifyResponse.body).toHaveProperty('token');
-    } else {
-      throw new Error('User not found');
     }
   });
 
+
+  it('should log in a buyer with valid credentials', async () => {
+    const formData = {
+      name: 'Buyer',
+      permissions: ['test-permission1', 'test-permission2'],
+    };
+  
+    // Create the role first
+    const roleResponse = await request(app).post('/api/v1/roles/create_role').send(formData);
+    
+    const userData = {
+      firstName: 'Test',
+      lastName: 'User',
+      email: 'test2@gmail.com',
+      password: 'TestPassword123',
+      userType: roleResponse.body.id
+    };
+    await request(app).post('/api/v1/register').send(userData);
+  
+    const updatedUser = await userRepository.findOne({ where: { email: userData.email } });
+    if (updatedUser) {
+      updatedUser.isVerified = true;
+      await userRepository.save(updatedUser);
+      
+      const loginResponse = await request(app).post('/api/v1/login').send({
+        email: userData.email,
+        password: userData.password,
+      });
+      
+      expect(loginResponse.status).toBe(200);
+      expect(loginResponse.body.token).toBeDefined();
+      expect(loginResponse.body.message).toBe('Buyer Logged in successfully');
+  
+      // Decode the token and check its properties
+      const decodedToken = jwt.decode(loginResponse.body.token);
+      expect(decodedToken).toHaveProperty('userId');
+      expect(decodedToken).toHaveProperty('iat');
+      expect(decodedToken).toHaveProperty('exp');
+    }
+  });
 
   it('should return a 401 status code if the email is not verified', async () => {
      const userData = {
@@ -257,9 +285,7 @@ describe('User Login Tests', () => {
  
        expect(loginResponse.status).toBe(401);
        expect(loginResponse.body.message).toBe('Please verify your email. Confirmation link has been sent.'); // Corrected message
-     } else {
-       throw new Error('User not found');
-     }
+     } 
   });
  
   it('should return a 401 status code if the password does not match', async () => {
