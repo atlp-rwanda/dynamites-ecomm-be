@@ -14,13 +14,13 @@ const productRouter = Router();
 
 productRouter
   .route('/')
-  .post(IsLoggedIn, createProduct)
-  .get(IsLoggedIn, checkRole(['Vendor']), getAllProducts)
-  .delete(deleteAllProduct);
+  .post(IsLoggedIn, checkRole(['Vendor']), createProduct)
+  .get(IsLoggedIn, getAllProducts)
+  .delete(IsLoggedIn, deleteAllProduct);
 productRouter
   .route('/:productId')
   .get(getProduct)
-  .put(IsLoggedIn, updateProduct)
+  .put(IsLoggedIn, checkRole(['Vendor']), updateProduct)
   .delete(IsLoggedIn, deleteProduct);
 
 export default productRouter;
