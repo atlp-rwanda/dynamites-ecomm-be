@@ -10,7 +10,7 @@
     "lint": "eslint --config .eslintrc.json .",
     "format": "prettier --write .",
     "test": "jest  --no-cache",
-    "test:ci": "jest --coverage --detectOpenHandles"
+    "test:ci": "jest --coverage"
   },
   "repository": {
     "type": "git",

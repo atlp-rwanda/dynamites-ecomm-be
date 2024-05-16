@@ -98,6 +98,7 @@ export const createProduct = [
     const existingProduct = await productRepository.findOne({
       where: { name },
     });
+
     if (existingProduct) {
       return res.status(409).json({ message: 'Product name already exists' });
     }
@@ -184,10 +185,6 @@ export const updateProduct = [
 
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
-    }
-
-    if (categoryId <= 0) {
-      return res.status(400).json({ message: 'Invalid category ID' });
     }
 
     const category = await categoryRepository.findOne({
