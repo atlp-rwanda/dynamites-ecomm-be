@@ -2,10 +2,9 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
+  ManyToOne
 } from 'typeorm';
 import { Role } from './roleEntity';
-
 
 @Entity()
 export default class UserModel {
@@ -18,7 +17,7 @@ export default class UserModel {
   @Column()
   lastName: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @Column({ nullable: true })
@@ -45,6 +44,8 @@ export default class UserModel {
 
   @Column({ nullable: true }) 
   twoFactorCode: number;
+  @Column({ default: 'active' })
+  status: 'active' | 'inactive';
 
   constructor(user: Partial<UserModel>) {
     Object.assign(this, user);
