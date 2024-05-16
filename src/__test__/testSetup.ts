@@ -70,7 +70,6 @@ export async function getVendorToken() {
   expect(verifyResponse.status).toBe(200);
   expect(verifyResponse.body).toHaveProperty('token');
   expect(verifyResponse.body.token).toBeDefined();
-  //console.log('Token is:', verifyResponse.body.token);
   return verifyResponse.body.token;
 }
 
