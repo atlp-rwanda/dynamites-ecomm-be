@@ -101,6 +101,18 @@ describe('User Status Change Tests - Activation', () => {
     }
     expect(updatedUser.status).toBe('active');
   });
+
+  it('should return 404 when trying to activate a non-existent user', async () => {
+    const nonExistentUserId = 999; // Assuming this ID does not exist in the database
+  
+    const response = await request(app)
+     .put(`/api/v1/activate/${nonExistentUserId}`)
+     .set('Authorization', `Bearer ${adminToken}`);
+  
+    expect(response.status).toBe(404);
+    expect(response.body.message).toBe('User not found');
+  });
+  
 });
 
 describe('User Status Change Tests - Deactivation', () => {
@@ -182,6 +194,18 @@ describe('User Status Change Tests - Deactivation', () => {
     }
     expect(updatedUser.status).toBe('inactive');
   });
+  
+  it('should return 404 when trying to deactivate a non-existent user', async () => {
+    const nonExistentUserId = 999; // Assuming this ID does not exist in the database
+  
+    const response = await request(app)
+     .put(`/api/v1/deactivate/${nonExistentUserId}`)
+     .set('Authorization', `Bearer ${adminToken}`);
+  
+    expect(response.status).toBe(404);
+    expect(response.body.message).toBe('User not found');
+  });
+  
 });
 
 // import request from 'supertest';
