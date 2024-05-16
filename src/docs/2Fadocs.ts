@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /api/v1/verify2FA/{userId}:
+ * /api/v1/user/verify2FA/{userId}:
  *   post:
  *     summary: Verify 2FA code
  *     tags: [Login]

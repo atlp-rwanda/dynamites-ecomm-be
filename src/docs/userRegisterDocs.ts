@@ -6,7 +6,7 @@
  */
 /**
  * @swagger
- * /api/v1/register:
+ * /api/v1/user/register:
  *   post:
  *     summary: Register a new user
  *     tags: [User]
@@ -90,7 +90,7 @@
 
 /**
  * @swagger
- * /api/v1/confirm:
+ * /api/v1/user/confirm:
  *   get:
  *     summary: Confirm user email
  *     tags: [User]
@@ -133,3 +133,40 @@
  *                   type: string
  *                   description: An error message indicating user not found
  */
+
+/**
+ * @swagger
+ * /api/v1/user/getAllUsers:
+ *   get:
+ *     summary: Get all Users
+ *     tags: [User]
+ *     responses:
+ *       '200':
+ *         description: Successful
+ *       '500':
+ *         description: Internal Server Error
+ */
+
+/**
+ * @swagger
+ * /api/v1/user/delete/{id}:
+ *   delete:
+ *     summary: Deletes an existing User
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         type: string
+ *         required: true
+ *         description: ID of the user to delete
+ *     responses:
+ *       '200':
+ *         description: Record deleted successfully.
+ *       '404':
+ *         description: Record not found.
+ *       '500':
+ *         description: An error occurred while deleting the record.
+ */
+
