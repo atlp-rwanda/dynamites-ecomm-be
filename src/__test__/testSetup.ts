@@ -2,6 +2,7 @@ import { DbConnection } from '../database/index';
 import UserModel from '../database/models/userModel';
 import { Role } from '../database/models';
 import Category from '../database/models/categoryEntity';
+import Product from '../database/models/productEntity';
 import request from 'supertest';
 import app from '../app';
 
@@ -13,11 +14,14 @@ export async function beforeAllHook() {
   const roleRepository = await DbConnection.connection.getRepository(Role);
   const categoryRepository =
     await DbConnection.connection.getRepository(Category);
+  const productRepository =
+    await DbConnection.connection.getRepository(Product);
 
   // Delete all users,roles and categories
   await userRepository.createQueryBuilder().delete().execute();
   await roleRepository.createQueryBuilder().delete().execute();
   await categoryRepository.createQueryBuilder().delete().execute();
+  await productRepository.createQueryBuilder().delete().execute();
 }
 
 // Get Vendor Token function
@@ -77,9 +81,11 @@ export async function afterAllHook() {
   await DbConnection.connection.transaction(async (transactionManager) => {
     const userRepository = transactionManager.getRepository(UserModel);
     const categoryRepository = transactionManager.getRepository(Category);
+    const productRepository = transactionManager.getRepository(Product);
+
     await userRepository.createQueryBuilder().delete().execute();
     await categoryRepository.createQueryBuilder().delete().execute();
+    await productRepository.createQueryBuilder().delete().execute();
   });
   await DbConnection.instance.disconnectDb();
 }
-
