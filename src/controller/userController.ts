@@ -7,7 +7,7 @@ import UserModel from '../database/models/userModel';
 import sendEmail from '../emails/index';
 import { sendCode } from '../emails/mailer';
 import jwt from 'jsonwebtoken';
-import errorHandler from '../middlewares/errorHandler'
+import errorHandler from '../middlewares/errorHandler';
 
 // Assuming dbConnection.getRepository(UserModel) returns a repository instance
 const userRepository = dbConnection.getRepository(UserModel);
@@ -18,7 +18,7 @@ interface CreateUserRequestBody {
   lastName: string;
   email: string;
   password: string;
-  userType: 'vendor' | 'buyer';
+  userType: 'Admin' | 'vendor' | 'buyer';
 }
 
 // Define validation and sanitization rules
@@ -48,9 +48,12 @@ export const registerUser = [
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const userRole =
-      userType == 'vendor'
-        ? (await roleRepository.findOneBy({ name: 'Vendor' }))!
-        : (await roleRepository.findOneBy({ name: 'Buyer' }))!;
+    userType === 'vendor'
+      ? (await roleRepository.findOneBy({ name: 'Vendor' }))!
+      : userType === 'buyer'
+      ? (await roleRepository.findOneBy({ name: 'Buyer' }))!
+      : (await roleRepository.findOneBy({ name: 'Admin' }))!;
+  
 
     const newUser = new UserModel({
       firstName: firstName,
@@ -164,14 +167,13 @@ export const deleteUser = async (req: Request, res: Response) => {
     return res
       .status(500)
       .json({ error: 'An error occurred while deleting the record.' });
+  }
+};
 
- }}
-
-
- export const Login = errorHandler(async (req: Request, res: Response) => {
-  const user = await userRepository.findOne({ 
-    where: { email: req.body['email'] }, 
-    relations: ['userType'] 
+export const Login = errorHandler(async (req: Request, res: Response) => {
+  const user = await userRepository.findOne({
+    where: { email: req.body['email'] },
+    relations: ['userType'],
   });
   if (!user) {
     return res.status(404).send({ message: 'User Not Found' });
@@ -187,8 +189,13 @@ export const deleteUser = async (req: Request, res: Response) => {
       { expiresIn: '1d' }
     );
     const confirmLink = `${process.env.APP_URL}/api/v1/confirm?token=${token}`;
-    await sendEmail('confirm', user.email, { name: user.firstName, link: confirmLink });
-    return res.status(401).send({ message: 'Please verify your email. Confirmation link has been sent.' });
+    await sendEmail('confirm', user.email, {
+      name: user.firstName,
+      link: confirmLink,
+    });
+    return res.status(401).send({
+      message: 'Please verify your email. Confirmation link has been sent.',
+    });
   }
 
   if (user.userType.name === 'Vendor') {
@@ -196,17 +203,21 @@ export const deleteUser = async (req: Request, res: Response) => {
 
     await userRepository.update(user.id, { twoFactorCode });
 
-    await sendCode(
-      user.email,
-      'Your 2FA Code',
-      './templates/2fa.html',
-      { name: user.firstName, twoFactorCode: twoFactorCode.toString() }
-    );
+    await sendCode(user.email, 'Your 2FA Code', './templates/2fa.html', {
+      name: user.firstName,
+      twoFactorCode: twoFactorCode.toString(),
+    });
 
-    res.status(200).json({ message: 'Please provide the 2FA code sent to your email.' });
+    res
+      .status(200)
+      .json({ message: 'Please provide the 2FA code sent to your email.' });
   } else {
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET as jwt.Secret, { expiresIn: '1h' });
-    res.status(200).json({ token, message: 'Buyer Logged in successfully'});
+    const token = jwt.sign(
+      { userId: user.id },
+      process.env.JWT_SECRET as jwt.Secret,
+      { expiresIn: '1h' }
+    );
+    res.status(200).json({ token, message: 'Buyer Logged in successfully' });
   }
 });
 
@@ -223,6 +234,10 @@ export const verify2FA = errorHandler(async (req: Request, res: Response) => {
     return res.status(401).json({ error: 'Invalid code' });
   }
 
-  const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET as jwt.Secret, { expiresIn: '1h' });
+  const token = jwt.sign(
+    { userId: user.id },
+    process.env.JWT_SECRET as jwt.Secret,
+    { expiresIn: '1h' }
+  );
   return res.status(200).json({ token });
 });

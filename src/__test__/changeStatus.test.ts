@@ -59,13 +59,20 @@ describe('User Status Change Tests - Activation', () => {
   });
 
   afterAll(async () => {
-    // Cleanup: Delete the 'Admin' user
+    // Disable foreign key checks
+    await dbConnection.query('SET session_replication_role = replica');
+
+    // Proceed with your cleanup logic
+    // For example, deleting the 'Admin' user
     const adminUser = await userRepository.findOne({
       where: { email: 'admin@example.com' },
     });
     if (adminUser) {
       await userRepository.delete(adminUser.id);
     }
+
+    // Re-enable foreign key checks
+    await dbConnection.query('SET session_replication_role = primary');
   });
 
   it('should activate a user account', async () => {
@@ -104,15 +111,14 @@ describe('User Status Change Tests - Activation', () => {
 
   it('should return 404 when trying to activate a non-existent user', async () => {
     const nonExistentUserId = 999; // Assuming this ID does not exist in the database
-  
+
     const response = await request(app)
-     .put(`/api/v1/activate/${nonExistentUserId}`)
-     .set('Authorization', `Bearer ${adminToken}`);
-  
+      .put(`/api/v1/activate/${nonExistentUserId}`)
+      .set('Authorization', `Bearer ${adminToken}`);
+
     expect(response.status).toBe(404);
     expect(response.body.message).toBe('User not found');
   });
-  
 });
 
 describe('User Status Change Tests - Deactivation', () => {
@@ -148,13 +154,20 @@ describe('User Status Change Tests - Deactivation', () => {
   });
 
   afterAll(async () => {
-    // Cleanup: Delete the 'Admin' user
+    // Disable foreign key checks
+    await dbConnection.query('SET session_replication_role = replica');
+
+    // Proceed with your cleanup logic
+    // For example, deleting the 'Admin' user
     const adminUser = await userRepository.findOne({
       where: { email: 'admin@example.com' },
     });
     if (adminUser) {
       await userRepository.delete(adminUser.id);
     }
+
+    // Re-enable foreign key checks
+    await dbConnection.query('SET session_replication_role = primary');
   });
 
   it('should deactivate a user account', async () => {
@@ -194,18 +207,17 @@ describe('User Status Change Tests - Deactivation', () => {
     }
     expect(updatedUser.status).toBe('inactive');
   });
-  
+
   it('should return 404 when trying to deactivate a non-existent user', async () => {
     const nonExistentUserId = 999; // Assuming this ID does not exist in the database
-  
+
     const response = await request(app)
-     .put(`/api/v1/deactivate/${nonExistentUserId}`)
-     .set('Authorization', `Bearer ${adminToken}`);
-  
+      .put(`/api/v1/deactivate/${nonExistentUserId}`)
+      .set('Authorization', `Bearer ${adminToken}`);
+
     expect(response.status).toBe(404);
     expect(response.body.message).toBe('User not found');
   });
-  
 });
 
 // import request from 'supertest';

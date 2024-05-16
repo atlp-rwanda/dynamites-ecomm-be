@@ -14,7 +14,6 @@ import {
 } from '../controller/changestatusController';
 import { IsLoggedIn } from '../middlewares/isLoggedIn';
 const route = Router();
-
 route.put('/deactivate/:userId', IsLoggedIn, deactivateAccount);
 route.put('/activate/:userId', IsLoggedIn, activateAccount);
 route.post('/register', registerUser);
