@@ -23,7 +23,7 @@ export const IsLoggedIn = (req: Request, res: Response, next: NextFunction) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET as jwt.Secret);
 
-    // @ts-expect-error
+    // @ts-expect-error this is because ts
     req.user = decoded.user;
 
     next();
