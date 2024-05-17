@@ -139,7 +139,7 @@ describe('RoleController test', () => {
       userType: 'buyer',
     };
     const createResponse = await request(app)
-      .post('/api/v1/register')
+      .post('/api/v1/user/register')
       .send(userData);
 
     const formData = {
