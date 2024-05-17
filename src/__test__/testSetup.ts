@@ -146,7 +146,7 @@ export const getBuyerToken = async () => {
     await userRepository.save(updatedUser);
   }
 
-  const loginResponse = await request(app).post('/api/v1/login').send({
+  const loginResponse = await request(app).post('/api/v1/user/login').send({
     email: userData.email,
     password: userData.password,
   });
