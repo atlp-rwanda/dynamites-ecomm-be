@@ -12,7 +12,7 @@ import authRoutes from './routes/auth-routes';
 import cookieSession from 'cookie-session';
 import passport from 'passport';
 import userRouter from './routes/userRoutes';
-
+import active_deactive_routes from './routes/active_deactive_routes';
 // Require Passport midleware
 require('./middlewares/passport-setup');
 
@@ -80,7 +80,7 @@ app.get('/', (req: Request, res: Response) => {
 // Middleware to handle all endpoint routes
 app.use('/api/v1', router);
 app.use('/api/v1', userRouter);
-
+app.use('/api/v1', active_deactive_routes);
 // Endpoints for serving social login
 app.use('/auth', authRoutes);
 

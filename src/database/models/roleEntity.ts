@@ -13,5 +13,5 @@ export class Role {
   users: UserModel[];
 
   @Column('simple-array')
-  permissions: string[];
+  permissions: string[];
 }
