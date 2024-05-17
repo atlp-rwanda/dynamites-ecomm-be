@@ -25,6 +25,7 @@ const AvailableProducts =   errorHandler(async (req: Request, res: Response) => 
             where:{isAvailable:true},
             take: limit,
             skip: (page - 1) * limit,
+            select:{vendor:{firstName:true,lastName:true,picture:true}},
             relations: ['category','vendor'],
         });
   

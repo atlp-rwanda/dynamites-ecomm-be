@@ -3,7 +3,7 @@ import userRouter from './userRoutes';
 import roleRoutes from './roleRoutes';
 import productRoutes from './productRoutes';
 import categoryRoutes from './categoryRoutes';
-import available_products_route from './list_products_from_vendorsRoute'
+import available_products_route from './list_productsRoute'
 
 const router = Router();
 
