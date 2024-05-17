@@ -77,7 +77,7 @@ export const registerUser = [
       { expiresIn: '1d' }
     );
 
-    const confirmLink = `${process.env.APP_URL}/api/v1/confirm?token=${token}`;
+    const confirmLink = `${process.env.APP_URL}/api/v1/user/confirm?token=${token}`;
     await sendEmail('confirm', email, { name: firstName, link: confirmLink });
 
     res.status(201).json({
@@ -194,7 +194,7 @@ export const Login = errorHandler(async (req: Request, res: Response) => {
       process.env.JWT_SECRET as jwt.Secret,
       { expiresIn: '1d' }
     );
-    const confirmLink = `${process.env.APP_URL}/api/v1/confirm?token=${token}`;
+    const confirmLink = `${process.env.APP_URL}/api/v1/user/confirm?token=${token}`;
     await sendEmail('confirm', user.email, {
       name: user.firstName,
       link: confirmLink,
@@ -293,7 +293,7 @@ export const recoverPassword = errorHandler(async (req: Request, res: Response) 
     // Generate a JWT token with the user's email as the payload
     const recoverToken = jwt.sign({ email : user.email }, process.env.JWT_SECRET as jwt.Secret, { expiresIn: '1h' });
     
-    const confirmLink = `${process.env.APP_URL}/api/v1/recover/confirm?recoverToken=${recoverToken}`;
+    const confirmLink = `${process.env.APP_URL}/api/v1/user/recover/confirm?recoverToken=${recoverToken}`;
     await sendEmail('confirmPassword', email, { name: user.firstName, link: confirmLink });
     
     return res.status(200).json({ message: 'Password reset token generated successfully', recoverToken });

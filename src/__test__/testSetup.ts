@@ -41,7 +41,7 @@ export async function getVendorToken() {
     password: 'TestPassword123',
     userType: 'vendor',
   };
-  await request(app).post('/api/v1/register').send(userData);
+  await request(app).post('/api/v1/user/register').send(userData);
 
   const updatedUser = await userRepository.findOne({
     where: { email: userData.email },
@@ -51,7 +51,7 @@ export async function getVendorToken() {
     await userRepository.save(updatedUser);
   }
 
-  const loginResponse = await request(app).post('/api/v1/login').send({
+  const loginResponse = await request(app).post('/api/v1/user/login').send({
     email: userData.email,
     password: userData.password,
   });
@@ -67,7 +67,7 @@ export async function getVendorToken() {
   if (!user) throw new Error('User not found');
 
   const verifyResponse = await request(app)
-    .post(`/api/v1/verify2FA/${user.id}`)
+    .post(`/api/v1/user/verify2FA/${user.id}`)
     .send({
       code: user.twoFactorCode,
     });
