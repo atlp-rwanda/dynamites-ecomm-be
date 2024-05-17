@@ -253,7 +253,7 @@
 
 /**
  * @swagger
- * /api/v1/recover:
+ * /api/v1/user/recover:
  *   post:
  *     summary: Recover Password
  *     tags: [User]
@@ -304,7 +304,7 @@
  */
 /**
  * @swagger
- * /api/v1/recover/confirm:
+ * /api/v1/user/recover/confirm:
  *   post:
  *     summary: Recover Password
  *     tags: [User]

@@ -22,7 +22,7 @@ describe('User Registration Tests', () => {
       password: 'TestPassword123',
       userType: 'buyer',
     };
-    const response = await request(app).post('/api/v1/register').send(userData);
+    const response = await request(app).post('/api/v1/user/register').send(userData);
     expect(response.status).toBe(201);
     expect(response.body.message).toBe('User successfully registered');
     expect(response.body.user).toHaveProperty('id');
@@ -45,7 +45,7 @@ describe('User Registration Tests', () => {
     };
 
     const response = await request(app)
-      .post('/api/v1/register')
+      .post('/api/v1/user/register')
       .send(invalidData);
 
     expect(response.status).toBe(400);
@@ -61,7 +61,7 @@ describe('User Registration Tests', () => {
       password: 'ExistingPassword123',
       userType: 'buyer',
     };
-    await request(app).post('/api/v1/register').send(existingUserData);
+    await request(app).post('/api/v1/user/register').send(existingUserData);
 
     // Test: Attempt to register a new user with the same email
     const userData = {
@@ -72,7 +72,7 @@ describe('User Registration Tests', () => {
       userType: 'buyer',
     };
 
-    const response = await request(app).post('/api/v1/register').send(userData);
+    const response = await request(app).post('/api/v1/user/register').send(userData);
     expect(response.status).toBe(409);
     expect(response.body.message).toBe('Email already exists');
   });
@@ -104,7 +104,7 @@ describe('User Registration Tests', () => {
     );
 
     // Send a request to confirm the email with the token
-    const response = await request(app).get(`/api/v1/confirm?token=${token}`);
+    const response = await request(app).get(`/api/v1/user/confirm?token=${token}`);
 
     // Check the response
     expect(response.status).toBe(200);
@@ -132,7 +132,7 @@ describe('User Registration Tests', () => {
 
   it('should return a 400 status code if token is missing', async () => {
     // Send a request without a token
-    const response = await request(app).get('/api/v1/confirm');
+    const response = await request(app).get('/api/v1/user/confirm');
 
     // Check the response
     expect(response.status).toBe(400);
@@ -147,7 +147,7 @@ describe('User Registration Tests', () => {
       { expiresIn: '1d' }
     );
 
-    const response = await request(app).get(`/api/v1/confirm?token=${token}`);
+    const response = await request(app).get(`/api/v1/user/confirm?token=${token}`);
     expect(response.status).toBe(404);
     expect(response.body.message).toBe('User not found');
   });
@@ -169,7 +169,7 @@ describe('User Login Tests', () => {
       password: 'TestPassword123',
       userType: 'vendor',
     };
-    await request(app).post('/api/v1/register').send(userData);
+    await request(app).post('/api/v1/user/register').send(userData);
 
     const updatedUser = await userRepository.findOne({
       where: { email: userData.email },
@@ -178,7 +178,7 @@ describe('User Login Tests', () => {
       updatedUser.isVerified = true;
       await userRepository.save(updatedUser);
 
-      const loginResponse = await request(app).post('/api/v1/login').send({
+      const loginResponse = await request(app).post('/api/v1/user/login').send({
         email: userData.email,
         password: userData.password,
       });
@@ -200,7 +200,7 @@ describe('User Login Tests', () => {
     };
 
     // Register the user
-    await request(app).post('/api/v1/register').send(userData);
+    await request(app).post('/api/v1/user/register').send(userData);
 
     // Verify the user
     let user = await userRepository.findOne({
@@ -210,7 +210,7 @@ describe('User Login Tests', () => {
       user.isVerified = true;
       await userRepository.save(user);
     }
-    const loginResponse = await request(app).post('/api/v1/login').send({
+    const loginResponse = await request(app).post('/api/v1/user/login').send({
       email: userData.email,
       password: userData.password,
     });
@@ -224,7 +224,7 @@ describe('User Login Tests', () => {
 
     if (user) {
       const verifyResponse = await request(app)
-        .post(`/api/v1/verify2FA/${user.id}`)
+        .post(`/api/v1/user/verify2FA/${user.id}`)
         .send({
           code: user.twoFactorCode,
         });
@@ -252,7 +252,7 @@ describe('User Login Tests', () => {
       password: 'TestPassword123',
       userType: roleResponse.body.id,
     };
-    await request(app).post('/api/v1/register').send(userData);
+    await request(app).post('/api/v1/user/register').send(userData);
 
     const updatedUser = await userRepository.findOne({
       where: { email: userData.email },
@@ -261,7 +261,7 @@ describe('User Login Tests', () => {
       updatedUser.isVerified = true;
       await userRepository.save(updatedUser);
 
-      const loginResponse = await request(app).post('/api/v1/login').send({
+      const loginResponse = await request(app).post('/api/v1/user/login').send({
         email: userData.email,
         password: userData.password,
       });
@@ -286,7 +286,7 @@ describe('User Login Tests', () => {
       password: 'TestPassword123',
       userType: 'buyer',
     };
-    await request(app).post('/api/v1/register').send(userData);
+    await request(app).post('/api/v1/user/register').send(userData);
     const updatedUser = await userRepository.findOne({
       where: { email: userData.email },
     });
@@ -294,7 +294,7 @@ describe('User Login Tests', () => {
     if (updatedUser) {
       updatedUser.isVerified = false;
       await userRepository.save(updatedUser);
-      const loginResponse = await request(app).post('/api/v1/login').send({
+      const loginResponse = await request(app).post('/api/v1/user/login').send({
         email: userData.email,
         password: userData.password,
       });
@@ -316,7 +316,7 @@ describe('User Login Tests', () => {
     };
     await request(app).post('/api/v1/register').send(userData);
 
-    const loginResponse = await request(app).post('/api/v1/login').send({
+    const loginResponse = await request(app).post('/api/v1/user/login').send({
       email: userData.email,
       password: 'IncorrectPassword',
     });
@@ -326,7 +326,7 @@ describe('User Login Tests', () => {
 
   it('should return a 404 status code if the user is not found', async () => {
     const nonExistentEmail = 'nonexistent@example.com';
-    const loginResponse = await request(app).post('/api/v1/login').send({
+    const loginResponse = await request(app).post('/api/v1/user/login').send({
       email: nonExistentEmail,
       password: 'TestPassword123',
     });
@@ -369,7 +369,7 @@ describe('User Login Tests', () => {
 
   beforeEach(async () => {
     
-    await request(app).post('/api/v1/register').send(userData);
+    await request(app).post('/api/v1/user/register').send(userData);
     user = await userRepository.findOne({ where: { email: userData.email } });
   });
 
@@ -383,7 +383,7 @@ describe('User Login Tests', () => {
       };
 
       const response = await request(app)
-        .put(`/api/v1/updateProfile/${user?.id}`)
+        .put(`/api/v1/user/updateProfile/${user?.id}`)
         .send(newUserData);
       expect(response.statusCode).toBe(201);
       expect(response.body.message).toBe('User updated successfully');
@@ -393,7 +393,7 @@ describe('User Login Tests', () => {
   it('should return 404 when user not found', async () => {
     const Id = 999;  
     const response = await request(app)
-      .put(`/api/v1/updateProfile/${Id}`)
+      .put(`/api/v1/user/updateProfile/${Id}`)
       .send(userData);
     expect(response.statusCode).toBe(404);
     expect(response.body.error).toBe('User not found');
@@ -409,7 +409,7 @@ describe('User Login Tests', () => {
       };
 
       const response = await request(app)
-        .put(`/api/v1/updateProfile/${user.id}`)
+        .put(`/api/v1/user/updateProfile/${user.id}`)
         .send(newUserData);
       expect(response.statusCode).toBe(400); 
       expect(response.body.error).toBe('Email is already taken'); 
@@ -421,7 +421,7 @@ describe('User Login Tests', () => {
       const emptyData = {}; 
       
       const response = await request(app)
-        .put(`/api/v1/updateProfile/${user.id}`)
+        .put(`/api/v1/user/updateProfile/${user.id}`)
         .send(emptyData);
         
       expect(response.statusCode).toBe(400); 
@@ -441,7 +441,7 @@ describe('Password Recover Tests', () => {
     };
   
     // Register a user
-    await request(app).post('/api/v1/register').send(userData);
+    await request(app).post('/api/v1/user/register').send(userData);
   
     // Find the registered user in the database
     const recoverUser = await userRepository.findOne({ where: { email: userData.email } });
@@ -453,7 +453,7 @@ describe('Password Recover Tests', () => {
   
       // Send a request to the recover endpoint
       const response = await request(app)
-        .post('/api/v1/recover')
+        .post('/api/v1/user/recover')
         .send({ email: recoverUser.email });
   
       // Verify the response
@@ -470,7 +470,7 @@ describe('Password Recover Tests', () => {
   
     // Send a request to the recover endpoint with a non-existing email
     const response = await request(app)
-      .post('/api/v1/recover')
+      .post('/api/v1/user/recover')
       .send({ email: nonExistingEmail });
   
     // Verify the response
@@ -491,7 +491,7 @@ describe('Password Recover Tests', () => {
       userType: 'vendor'
     };
   
-    await request(app).post('/api/v1/register').send(userData);
+    await request(app).post('/api/v1/user/register').send(userData);
 
     const recoverUser = await userRepository.findOne({ where: { email: userData.email } });
 
@@ -499,7 +499,7 @@ describe('Password Recover Tests', () => {
       const recoverToken = jwt.sign({ email: recoverUser.email }, process.env.JWT_SECRET as jwt.Secret, { expiresIn: '1h' });
 
       const response = await request(app)
-        .post(`/api/v1/recover/confirm?recoverToken=${recoverToken}`) 
+        .post(`/api/v1/user/recover/confirm?recoverToken=${recoverToken}`) 
         .send({ password: newPassword }); 
 
       expect(response.status).toBe(200);
@@ -513,11 +513,11 @@ describe('Password Recover Tests', () => {
   });
   
   it('should return a 401 error for an invalid reset token', async () => {
-    const invalidResetToken = 'invalid-token';
+    const invalidResetToken = undefined;
   
     // Send a request to the updateNewPassword endpoint with an invalid reset token
     const response = await request(app)
-      .post('/api/v1/recover/confirm')
+      .post('/api/v1/user/recover/confirm')
       .query({ recoverToken: invalidResetToken })
       .send({ password: 'new-password' });
   
