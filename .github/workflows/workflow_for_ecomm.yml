@@ -55,5 +55,3 @@ jobs:
       FACEBOOK_APP_SECRET: ${{ secrets.FACEBOOK_APP_SECRET }}
       FACEBOOK_CALLBACK_URL: ${{ secrets.FACEBOOK_CALLBACK_URL }}
       COOKIES_KEY: ${{ secrets.COOKIES_KEY }}
-      EMAIL_USER: ${{ secrets.EMAIL_USER }}
-      EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
