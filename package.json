@@ -70,7 +70,8 @@
     ],
     "testPathIgnorePatterns": [
       "/node_modules/",
-      "/src/emails/"
+      "/src/emails/",
+      "/src/middlewares/"
     ]
   },
   "devDependencies": {
