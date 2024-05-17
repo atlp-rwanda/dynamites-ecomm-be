@@ -7,9 +7,7 @@ import UserModel from '../database/models/userModel';
 import sendEmail from '../emails/index';
 import { sendCode } from '../emails/mailer';
 import jwt from 'jsonwebtoken';
-import errorHandler from '../middlewares/errorHandler'
-import { validate } from 'class-validator'; // For input validation
-
+import errorHandler from '../middlewares/errorHandler';
 
 // Assuming dbConnection.getRepository(UserModel) returns a repository instance
 const userRepository = dbConnection.getRepository(UserModel);
@@ -22,13 +20,6 @@ interface CreateUserRequestBody {
   password: string;
   userType: 'vendor' | 'buyer';
 }
-interface UpdateRrofileRequestBody {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password:string;
-}
-
 
 // Define validation and sanitization rules
 const registerUserRules = [
@@ -246,38 +237,3 @@ export const verify2FA = errorHandler(async (req: Request, res: Response) => {
   });
   return res.status(200).json({ token });
 });
-
-export const updateProfile = errorHandler(async (req: Request, res: Response) => {
-  const userId: number = parseInt(req.params.id);
-  const { firstName, lastName, email } = req.body as UpdateRrofileRequestBody;
-
-  const user = await userRepository.findOne({ where: { id: userId } });
-
-  if (!user) {
-    return res.status(404).json({ error: 'User not found' });
-  }
-
-  user.firstName = firstName || user.firstName;
-  user.lastName = lastName || user.lastName;
-  
- 
-    const emailExists = await userRepository.findOne({ where: { email } });
-  
-    if (emailExists) {
-      return res.status(400).json({ error: 'Email is already taken' });
-    }
-  
-    user.email = email;
-  
-
-  const errors = await validate(user);
-
-  if (errors.length > 0) {
-    return res.status(400).json({ errors });
-  }
-
-  await userRepository.save(user);
-
-  return res.status(201).json({ message: 'User updated successfully' });
-});
-
