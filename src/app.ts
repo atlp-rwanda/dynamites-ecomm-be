@@ -12,7 +12,6 @@ import authRoutes from './routes/auth-routes';
 import cookieSession from 'cookie-session';
 import passport from 'passport';
 
-
 // Require Passport midleware
 require('./middlewares/passport-setup');
 

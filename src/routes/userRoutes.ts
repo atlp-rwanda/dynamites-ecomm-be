@@ -23,7 +23,6 @@ route.get('/all-users', getAllUsers);
 route.post('/verify2FA/:userId', verify2FA);
 route.post('/recover', recoverPassword);
 route.post('/recover/confirm', updateNewPassword);
-
 route.put('/updateProfile/:id', updateProfile);
 
 export default route;
