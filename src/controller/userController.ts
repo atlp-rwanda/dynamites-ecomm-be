@@ -7,6 +7,7 @@ import UserModel from '../database/models/userModel';
 import sendEmail from '../emails/index';
 import { sendCode } from '../emails/mailer';
 import jwt from 'jsonwebtoken';
+import errorHandler from '../middlewares/errorHandler';
 
 // Assuming dbConnection.getRepository(UserModel) returns a repository instance
 const userRepository = dbConnection.getRepository(UserModel);
@@ -122,6 +123,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
         email: true,
         userType: {
           id: true,
+          name: true,
         },
       },
       relations: ['userType'],
@@ -162,80 +164,76 @@ export const deleteUser = async (req: Request, res: Response) => {
     return res
       .status(500)
       .json({ error: 'An error occurred while deleting the record.' });
-
- }}
-
-
-
- export const Login = async (req: Request, res: Response) => {
-  try {
-    const user = await userRepository.findOne({ where: { email: req.body['email'] } });
-    if (!user) {
-      return res.status(404).send({ message: 'User Not Found' });
-    }
-    const passwordMatch = await bcrypt.compare(req.body.password, user.password); // Compare with hashed password from the database
-    if (!passwordMatch) {
-      return res.status(401).send({ message: 'Password does not match' });
-    }
-    if (!user.isVerified) {
-      // Send confirmation email if user is not verified
-      const token = jwt.sign(
-        { userId: user.id, email: user.email },
-        process.env.JWT_SECRET as jwt.Secret,
-        { expiresIn: '1d' }
-      );
-      const confirmLink = `${process.env.APP_URL}/api/v1/confirm?token=${token}`;
-      await sendEmail('confirm', user.email, { name: user.firstName, link: confirmLink });
-      return res.status(401).send({ message: 'Please verify your email. Confirmation link has been sent.' });
-    }
-
-    // Generate a new 2FA code
-    const twoFactorCode = Math.floor(100000 + Math.random() * 900000);
-
-    // Store the 2FA code in the user's record in the database
-    await userRepository.update(user.id, { twoFactorCode });
-
-    // Send 2FA code to user's email
-    await sendCode(
-      user.email,
-      'Your 2FA Code',
-      './templates/2fa.html',
-      { name: user.firstName, twoFactorCode: twoFactorCode.toString() }
-    );
-
-    // Respond with a message asking for the 2FA code
-    res.status(200).json({ message: 'Please provide the 2FA code sent to your email.' });
-
-  } catch (error) {
-    console.error('Error occurred while logging in:', error);
-    res.status(500).send(error);
-  }
-}
-
-export const verify2FA = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { code } = req.body;
-    const { userId } = req.params;
-
-    // Use the repository to find the user by their id
-    const user = await userRepository.findOne({ where: { id: Number(userId) } });
-
-    if (!user) {
-      res.status(401).json({ error: 'Invalid credentials' });
-      return;
-    }
-    if (code !== user.twoFactorCode) {
-      res.status(401).json({ error: 'Invalid code' });
-      return;
-    }
-
-    // Generate JWT
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET as jwt.Secret, { expiresIn: '1h' });
-
-    // Send JWT to the user
-    res.status(200).json({ token });
-
-  } catch (error) {
-    res.status(500).json({ error: (error as Error).message });
   }
 };
+
+export const Login = errorHandler(async (req: Request, res: Response) => {
+  const user = await userRepository.findOne({
+    where: { email: req.body['email'] },
+    relations: ['userType'],
+  });
+  if (!user) {
+    return res.status(404).send({ message: 'User Not Found' });
+  }
+  const passwordMatch = await bcrypt.compare(req.body.password, user.password); // Compare with hashed password from the database
+  if (!passwordMatch) {
+    return res.status(401).send({ message: 'Password does not match' });
+  }
+  if (!user.isVerified) {
+    const token = jwt.sign(
+      { userId: user.id, email: user.email },
+      process.env.JWT_SECRET as jwt.Secret,
+      { expiresIn: '1d' }
+    );
+    const confirmLink = `${process.env.APP_URL}/api/v1/confirm?token=${token}`;
+    await sendEmail('confirm', user.email, {
+      name: user.firstName,
+      link: confirmLink,
+    });
+    return res.status(401).send({
+      message: 'Please verify your email. Confirmation link has been sent.',
+    });
+  }
+
+  if (user.userType.name === 'Vendor') {
+    const twoFactorCode = Math.floor(100000 + Math.random() * 900000);
+
+    await userRepository.update(user.id, { twoFactorCode });
+
+    await sendCode(user.email, 'Your 2FA Code', './templates/2fa.html', {
+      name: user.firstName,
+      twoFactorCode: twoFactorCode.toString(),
+    });
+
+    res
+      .status(200)
+      .json({ message: 'Please provide the 2FA code sent to your email.' });
+  } else {
+    const token = jwt.sign({ user }, process.env.JWT_SECRET as jwt.Secret, {
+      expiresIn: '1h',
+    });
+    res.status(200).json({ token, message: 'Buyer Logged in successfully' });
+  }
+});
+
+export const verify2FA = errorHandler(async (req: Request, res: Response) => {
+  const { code } = req.body;
+  const { userId } = req.params;
+
+  const user = await userRepository.findOne({
+    where: { id: Number(userId) },
+    relations: ['userType'],
+  });
+
+  if (!user) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
+  if (code !== user.twoFactorCode) {
+    return res.status(401).json({ error: 'Invalid code' });
+  }
+
+  const token = jwt.sign({ user }, process.env.JWT_SECRET as jwt.Secret, {
+    expiresIn: '1h',
+  });
+  return res.status(200).json({ token });
+});
