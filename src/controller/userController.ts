@@ -135,6 +135,7 @@ export const Login = errorHandler(async (req: Request, res: Response) => {
       { expiresIn: '1d' }
     );
 
+
     const confirmLink = `${process.env.APP_URL}/api/v1/confirm?token=${token}`;
     if (process.env.NODE_ENV !== 'test'){
       await sendEmail('confirm', user.email, {
