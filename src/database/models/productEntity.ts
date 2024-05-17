@@ -50,7 +50,7 @@ export default class Product {
   @Column({ default: true })
   isAvailable: boolean;
 
-  @ManyToOne(() => UserModel)
+  @ManyToOne(() => UserModel, { onDelete: 'CASCADE' })
   vendor: UserModel;
 
   @CreateDateColumn()

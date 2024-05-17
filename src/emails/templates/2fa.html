@@ -1,109 +1,105 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        body {
-            font-family: 'Open Sans', sans-serif;
-            background-color: #f7fafc;
-        }
+      body {
+        font-family: 'Open Sans', sans-serif;
+        background-color: #f7fafc;
+      }
 
-        .container {
-            min-height: 100vh;
-            width: 100vw;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 12px;
-            box-sizing: border-box;
-            background-color: #f7fafc;
-        }
+      .container {
+        min-height: 100vh;
+        width: 100vw;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px;
+        box-sizing: border-box;
+        background-color: #f7fafc;
+      }
 
-        .card {
-            max-width: 400px;
-            width: 100%;
-            background-color: #ffffff;
-            padding: 24px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
+      .card {
+        max-width: 400px;
+        width: 100%;
+        background-color: #ffffff;
+        padding: 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
 
-        .title {
-            margin-top: 24px;
-            margin-bottom: 16px;
-            font-size: 24px;
-            font-weight: bold;
-            color: #1a202c;
-            text-align: center;
-        }
+      .title {
+        margin-top: 24px;
+        margin-bottom: 16px;
+        font-size: 24px;
+        font-weight: bold;
+        color: #1a202c;
+        text-align: center;
+      }
 
-        .message {
-            margin-bottom: 16px;
-            font-size: 14px;
-            color: #4a5568;
-            text-align: center;
-        }
+      .message {
+        margin-bottom: 16px;
+        font-size: 14px;
+        color: #4a5568;
+        text-align: center;
+      }
 
-        .code {
-            font-size: 20px;
-            color: #4c51bf;
-            font-weight: bold;
-            text-align: center;
-            padding: 12px;
-            border-radius: 4px;
-            background-color: #f7fafc;
-            margin-top: 16px;
-        }
+      .code {
+        font-size: 20px;
+        color: #4c51bf;
+        font-weight: bold;
+        text-align: center;
+        padding: 12px;
+        border-radius: 4px;
+        background-color: #f7fafc;
+        margin-top: 16px;
+      }
 
-        .button {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: bold;
-            color: #f7fafc;
-            background-color: #4c51bf;
-            text-align: center;
-            text-decoration: none;
-            cursor: pointer;
-        }
+      .button {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: bold;
+        color: #f7fafc;
+        background-color: #4c51bf;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+      }
 
-        .button:hover {
-            background-color: #434190;
-        }
+      .button:hover {
+        background-color: #434190;
+      }
 
-        .link {
-            color: #4c51bf;
-            text-decoration: none;
-        }
+      .link {
+        color: #4c51bf;
+        text-decoration: none;
+      }
 
-        .link:hover {
-            color: #434190;
-        }
+      .link:hover {
+        color: #434190;
+      }
     </style>
-</head>
-<body>
-
-<div class="container">
-    <div class="card">
-        <div class="title">
-            Welcome to Dynamites Ecommerce,{{name}}!
-        </div>
+  </head>
+  <body>
+    <div class="container">
+      <div class="card">
+        <div class="title">Welcome to Dynamites Ecommerce,{{name}}!</div>
+        <p class="message">We've generated a 2FA code for you.</p>
+        <div class="code">{{twoFactorCode}}</div>
         <p class="message">
-           We've generated a 2FA code for you.
+          Please enter this code to complete your authentication process. Let's
+          keep your account safe and secure!
         </p>
-        <div class="code">
-            {{twoFactorCode}}
-        </div>
-        <p class="message">
-            Please enter this code to complete your authentication process. Let's keep your account safe and secure!
-        </p>
+      </div>
     </div>
-</div>
-
-</body>
+  </body>
 </html>

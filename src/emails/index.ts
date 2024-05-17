@@ -29,28 +29,32 @@ async function sendEmail(emailType: EmailType, recipient: string, data: Data) {
 
     // Send the Email
 
-        const domain = process.env.MAILGUN_DOMAIN
-        const key = process.env.MAILGUN_TOKEN as string
-        const body = {
-            from: `Dynamites Account Team <info@${domain}>`,
-            to: [recipient],
-            subject: 'Verification Email',
-            html: html
-        }
-        const mailgunResponse = await axios.post(`https://api.mailgun.net/v3/${domain}/messages`, body, {
-            auth: {
-                username: 'api',
-                password: key
-            },
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            }
-        })
+    const domain = process.env.MAILGUN_DOMAIN;
+    const key = process.env.MAILGUN_TOKEN as string;
+    const body = {
+      from: `Dynamites Account Team <info@${domain}>`,
+      to: [recipient],
+      subject: 'Verification Email',
+      html: html,
+    };
+    const mailgunResponse = await axios.post(
+      `https://api.mailgun.net/v3/${domain}/messages`,
+      body,
+      {
+        auth: {
+          username: 'api',
+          password: key,
+        },
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
 
-        return mailgunResponse
-    } catch (error) {
-        throw new Error(`Error sending email: ${error}`);
-    }
+    return mailgunResponse;
+  } catch (error) {
+    throw new Error(`Error sending email: ${error}`);
+  }
 }
 
 export default sendEmail;
