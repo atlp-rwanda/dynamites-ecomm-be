@@ -233,7 +233,7 @@ export const verify2FA = errorHandler(async (req: Request, res: Response) => {
   }
 
   const token = jwt.sign({ user }, process.env.JWT_SECRET as jwt.Secret, {
-    expiresIn: '1h',
+    expiresIn: '1d',
   });
   return res.status(200).json({ token });
 });
