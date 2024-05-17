@@ -77,15 +77,52 @@ export async function getVendorToken() {
   return verifyResponse.body.token;
 }
 
+export const getBuyerToken = async () => {
+  const userRepository = await DbConnection.connection.getRepository(UserModel);
+  const formData = {
+    name: 'Buyer',
+    permissions: ['test-permission1', 'test-permission2'],
+  };
+  const roleResponse = await request(app)
+    .post('/api/v1/roles/create_role')
+    .send(formData);
+
+  const userData = {
+    firstName: 'Tester',
+    lastName: 'Test',
+    email: 'test4@gmail.com',
+    password: 'TestPassword123',
+    userType: 'buyer',
+  };
+  const res = await request(app).post('/api/v1/register').send(userData);
+
+  const updatedUser = await userRepository.findOne({
+    where: { email: userData.email },
+  });
+  if (updatedUser) {
+    updatedUser.isVerified = true;
+    await userRepository.save(updatedUser);
+  }
+
+  const loginResponse = await request(app).post('/api/v1/login').send({
+    email: userData.email,
+    password: userData.password,
+  });
+
+  return loginResponse.body.token;
+};
+
 export async function afterAllHook() {
   await DbConnection.connection.transaction(async (transactionManager) => {
     const userRepository = transactionManager.getRepository(UserModel);
     const categoryRepository = transactionManager.getRepository(Category);
     const productRepository = transactionManager.getRepository(Product);
+    const roleRepository = transactionManager.getRepository(Role);
 
     await userRepository.createQueryBuilder().delete().execute();
     await categoryRepository.createQueryBuilder().delete().execute();
     await productRepository.createQueryBuilder().delete().execute();
+    await roleRepository.createQueryBuilder().delete().execute();
   });
   await DbConnection.instance.disconnectDb();
 }
