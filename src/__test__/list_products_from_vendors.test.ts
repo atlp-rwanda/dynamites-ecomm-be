@@ -1,17 +1,11 @@
 import request from 'supertest';
 import app from '../app';
-import { getVendorToken, afterAllHook, beforeAllHook } from './testSetup';
+import {afterAllHook, beforeAllHook } from './testSetup';
 
 beforeAll(beforeAllHook);
 afterAll(afterAllHook);
 
 describe('get /api/v1/getAvailableProducts', ()=>{
-
-  let token: string;
-
-  beforeAll(async () => {
-    token = await getVendorToken();
-  });
 
   it('should retrieve all available products', async () => {
     const response = await request(app).get('/api/v1/getAvailableProducts');
