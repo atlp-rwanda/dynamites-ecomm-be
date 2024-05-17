@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import AvailableProducts from '../controller/list_products_from_vendorsController';
+import AvailableProducts from '../controller/list_productsController';
 const available_products_route=Router()
 
 available_products_route.route('/').get(AvailableProducts)
