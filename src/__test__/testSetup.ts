@@ -83,7 +83,7 @@ export const getBuyerToken = async () => {
     name: 'Buyer',
     permissions: ['test-permission1', 'test-permission2'],
   };
-  const roleResponse = await request(app)
+  await request(app)
     .post('/api/v1/roles/create_role')
     .send(formData);
 
@@ -94,7 +94,7 @@ export const getBuyerToken = async () => {
     password: 'TestPassword123',
     userType: 'buyer',
   };
-  const res = await request(app).post('/api/v1/register').send(userData);
+  await request(app).post('/api/v1/register').send(userData);
 
   const updatedUser = await userRepository.findOne({
     where: { email: userData.email },
