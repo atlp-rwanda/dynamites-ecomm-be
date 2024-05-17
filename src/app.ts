@@ -78,7 +78,6 @@ app.get('/', (req: Request, res: Response) => {
 
 // Middleware to handle all endpoint routes
 app.use('/api/v1', router);
-app.use('/api/v1', userRouter);
 // Endpoints for serving social login
 app.use('/auth', authRoutes);
 
