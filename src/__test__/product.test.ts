@@ -260,4 +260,15 @@ describe('Product Controller Tests', () => {
     expect(response.statusCode).toEqual(200);
     expect(response.body.message).toEqual('All product deleted successfully');
   });
+
+  it('should retrieve all available products', async () => {
+    const response = await request(app).get('/api/v1/product/getAvailableProducts');
+
+    expect(response.statusCode).toEqual(200);
+    expect(response.body).toHaveProperty('status', 'success');
+    expect(response.body).toHaveProperty('availableProducts');
+    expect(response.body).toHaveProperty('totalPages');
+    expect(response.body).toHaveProperty('currentPage');
+    expect(response.header['content-type']).toEqual(expect.stringContaining('json'));
+  });
 });
