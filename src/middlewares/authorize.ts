@@ -6,24 +6,37 @@ const roleRepository = dbConnection.getRepository(Role);
 
 export const checkRole = (roles: string[]) => {
   return async (req: Request, res: Response, next: NextFunction) => {
-    if (req.user && roles.includes(req.user.userType.name)) {
-      next();
-    } else {
-      res.status(403).json({msg:'Forbidden'});
+    try {
+      // Assuming req.user contains the user information after authentication
+      if (
+        req.user &&
+        req.user.userType &&
+        roles.includes(req.user.userType.name)
+      ) {
+        return next();
+      } else {
+        return res.status(403).json({ msg: 'Forbidden' });
+      }
+    } catch (error) {
+      return res.status(500).json({ message: 'Internal server error' });
     }
   };
 };
 
 export const checkPermissions = async (permission: string) => {
   return async (req: Request, res: Response, next: NextFunction) => {
-    const userRole = await roleRepository.findOneBy({
-      name: req.user!.userType.name,
-    });
+    try {
+      const userRole = await roleRepository.findOne({
+        where: { name: req.user!.userType.name },
+      });
 
-    if (userRole && userRole.permissions.includes(permission)) {
-      next();
-    } else {
-      res.status(403).json({msg:'Forbidden'});
+      if (userRole && userRole.permissions.includes(permission)) {
+        return next();
+      } else {
+        return res.status(403).json({ msg: 'Forbidden' });
+      }
+    } catch (error) {
+      return res.status(500).json({ message: 'Internal server error' });
     }
   };
 };
