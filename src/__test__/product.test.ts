@@ -233,7 +233,111 @@ describe('Product Controller Tests', () => {
     expect(response.statusCode).toEqual(400);
     expect(response.body.errors).toBeDefined();
   });
+  it('should update product availability', async () => {
+    const availabilityData = {
+      availability: false,
+    };
 
+    const response = await request(app)
+      .put(`/api/v1/product/${productId}/availability`)
+      .set('Authorization', `Bearer ${token}`)
+      .send(availabilityData);
+
+    expect(response.status).toBe(200);
+    expect(response.body.msg).toBe('Product availability updated');
+  });
+
+  it('should return product availability', async () => {
+    const response = await request(app)
+      .get(`/api/v1/product/${productId}/availability`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.availability).toBeDefined();
+    expect(response.body.productId).toBe(`${productId}`);
+  });
+
+  it('should update availability based on quantity', async () => {
+    const zero = 0
+    const nonZero = 3
+    const zeroQuantity = {
+      name: 'Updated Product Name',
+      image: 'Updated.jpg',
+      gallery: [],
+      shortDesc: 'This is a updated',
+      longDesc: 'Detailed description of the Updated product',
+      categoryId: categoryId,
+      quantity: zero,
+      regularPrice: 10,
+      salesPrice: 7,
+      tags: ['tag1', 'tag2'],
+      type: 'Variable',
+      isAvailable: true,
+    };
+    const nonZeroQuantity = {...zeroQuantity, quantity: nonZero}
+    const response = await request(app)
+      .put(`/api/v1/product/${productId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send(zeroQuantity);
+
+    expect(response.body.data.isAvailable).toEqual(false);
+
+    const response2 = await request(app)
+      .put(`/api/v1/product/${productId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send(nonZeroQuantity);
+
+    expect(response2.body.data.isAvailable).toEqual(true);
+  });
+
+  it('should return validation errors for invalid availability data', async () => {
+    const invalidUpdateData = {
+      name: '',
+    };
+    const response = await request(app)
+      .put(`/api/v1/product/${productId}/availability`)
+      .set('Authorization', `Bearer ${token}`)
+      .send(invalidUpdateData);
+    expect(response.statusCode).toEqual(400);
+    expect(response.body.errors).toBeDefined();
+  });
+  it('should return 401 if user is not found', async () => {
+    const nonExistentUserId = 9999;
+
+    const response = await request(app)
+      .get(`/api/v1/product/${productId}/availability`)
+      .set('Authorization', `Bearer ${nonExistentUserId}`);
+
+    expect(response.status).toBe(401);
+  });
+
+  it('should return 404 if product is not found', async () => {
+    const nonExistentProductId = 9999;
+
+    const response = await request(app)
+      .get(`/api/v1/product/${nonExistentProductId}/availability`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(404);
+    expect(response.body.msg).toBe('Product not found');
+  });
+
+  it('should return 403 if product is not owned by vendor', async () => {
+    // Create a user with a different ID
+    const otherToken = await getVendorToken(
+      'test2@gmail.com',
+      'TestPassword123',
+      'Test2',
+      'User2'
+    );
+
+    const response = await request(app)
+      .get(`/api/v1/product/${productId}/availability`)
+      .set('Authorization', `Bearer ${otherToken}`);
+
+    expect(response.status).toBe(403);
+    expect(response.body.msg).toBe('Product not owned by vendor');
+  });
   it('should delete a product by ID', async () => {
     const response = await request(app)
       .delete(`/api/v1/product/${productId}`)
