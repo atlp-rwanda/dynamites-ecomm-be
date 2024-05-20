@@ -13,7 +13,7 @@ import cookieSession from 'cookie-session';
 import passport from 'passport';
 import userRouter from './routes/userRoutes';
 // Require Passport midleware
-require('./middlewares/passport-setup');
+import('./middlewares/passport-setup');
 
 const app: Application = express();
 app.use(cors());
