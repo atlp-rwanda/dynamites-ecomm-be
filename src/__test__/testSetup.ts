@@ -151,12 +151,12 @@ export async function afterAllHook() {
     const roleRepository = transactionManager.getRepository(Role);
     const categoryRepository = transactionManager.getRepository(Category);
     const productRepository = transactionManager.getRepository(Product);
+
     await userRepository.createQueryBuilder().delete().execute();
     await roleRepository.createQueryBuilder().delete().execute();
 
     await categoryRepository.createQueryBuilder().delete().execute();
     await productRepository.createQueryBuilder().delete().execute();
-
     await userRepository.createQueryBuilder().delete().execute();
   });
   await DbConnection.instance.disconnectDb();

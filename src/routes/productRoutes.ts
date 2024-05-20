@@ -6,6 +6,7 @@ import {
   getAllProducts,
   getProduct,
   updateProduct,
+  getRecommendedProducts, 
 } from '../controller/productController';
 import { IsLoggedIn } from '../middlewares/isLoggedIn';
 import { checkRole } from '../middlewares/authorize';
@@ -17,10 +18,16 @@ productRouter
   .post(IsLoggedIn, checkRole(['Vendor']), createProduct)
   .get(getAllProducts)
   .delete(IsLoggedIn, deleteAllProduct);
+
+  productRouter
+  .route('/recommended')
+  .get(getRecommendedProducts);
+
 productRouter
   .route('/:productId')
   .get(getProduct)
   .put(IsLoggedIn, checkRole(['Vendor']), updateProduct)
   .delete(IsLoggedIn, deleteProduct);
+
 
 export default productRouter;

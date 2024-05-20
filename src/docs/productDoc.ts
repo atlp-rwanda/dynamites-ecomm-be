@@ -184,3 +184,16 @@
  *       '500':
  *         description: Internal server error
  */
+
+/**
+ * @swagger
+ * /api/v1/product/recommended:
+ *   get:
+ *     summary: Get recommended products according to season
+ *     tags: [Product]
+ *     responses:
+ *       '200':
+ *         description: Recommended products retrieved successfully
+ *       '500':
+ *         description: Internal server error
+ */

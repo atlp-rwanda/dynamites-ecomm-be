@@ -238,7 +238,7 @@ export const getAllProducts = errorHandler(
 
 export const getProduct = errorHandler(async (req: Request, res: Response) => {
   const productId: number = parseInt(req.params.productId);
-
+  
   const product = await productRepository.findOne({
     where: { id: productId },
     select: {
@@ -285,6 +285,42 @@ export const deleteAllProduct = errorHandler(
     return res.status(200).json({
       message: 'All product deleted successfully',
       count: deletedProducts.affected,
+    });
+  }
+);
+
+
+export const getRecommendedProducts = errorHandler(
+  async (req: Request, res: Response) => {
+    const today = new Date();
+    const month = today.getMonth();
+    const day = today.getDate();
+
+    const holidayTags: { [key: string]: string[] } = {
+      '0': ['New Year', 'Winter'],
+      '1': ['Winter'],
+      '2': day >= 14 ? ['Valentines', 'Spring'] : ['Spring'],
+      '3': ['Spring'],
+      '4': ['Spring', 'Summer'],
+      '5': ['Summer'],
+      '6': ['Summer'],
+      '7': ['Summer', 'Autumn'],
+      '8': ['Autumn'],
+      '9': ['Autumn'],
+      '10': ['Autumn', 'Winter'],
+      '11': ['Winter', 'Christmas'],
+    };
+
+    const recommendedTags = holidayTags[month.toString()] || [];
+    const allProducts = await productRepository.find();
+    const recommendedProducts = allProducts.filter(product => 
+      product.isAvailable && 
+      product.tags.some(tag => recommendedTags.map(tag => tag.toLowerCase()).includes(tag.toLowerCase()))
+    );
+
+    return res.status(200).json({
+      message: 'Recommended products retrieved successfully',
+      data: recommendedProducts,
     });
   }
 );
