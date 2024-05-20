@@ -1,10 +1,6 @@
 /**
  * @swagger
-<<<<<<< HEAD
  * /api/v1/user/login:
-=======
- * /api/v1/login:
->>>>>>> 4979604 (* feat(rbac): Implement role based access control)
  *   post:
  *     summary: Login user
  *     tags: [Login]
