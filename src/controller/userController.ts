@@ -134,12 +134,8 @@ export const Login = errorHandler(async (req: Request, res: Response) => {
       process.env.JWT_SECRET as jwt.Secret,
       { expiresIn: '1d' }
     );
-<<<<<<< HEAD
 
-    const confirmLink = `${process.env.APP_URL}/api/v1/confirm?token=${token}`;
-=======
     const confirmLink = `${process.env.APP_URL}/api/v1/user/confirm?token=${token}`;
->>>>>>> 20f8050 (Removing try and catch in my function)
     await sendEmail('confirm', user.email, {
       name: user.firstName,
       link: confirmLink,
@@ -203,39 +199,6 @@ export const verify2FA = errorHandler(async (req: Request, res: Response) => {
   return res.status(200).json({ token });
 });
 
-export const updateProfile = errorHandler(async (req: Request, res: Response) => {
-  const userId: number = parseInt(req.params.id);
-  const { firstName, lastName, email } = req.body as UpdateRrofileRequestBody;
-
-  const user = await userRepository.findOne({ where: { id: userId } });
-
-  if (!user) {
-    return res.status(404).json({ error: 'User not found' });
-  }
-
-  user.firstName = firstName || user.firstName;
-  user.lastName = lastName || user.lastName;
-  
- 
-    const emailExists = await userRepository.findOne({ where: { email } });
-  
-    if (emailExists) {
-      return res.status(400).json({ error: 'Email is already taken' });
-    }
-  
-    user.email = email;
-  
-
-  const errors = await validate(user);
-
-  if (errors.length > 0) {
-    return res.status(400).json({ errors });
-  }
-
-  await userRepository.save(user);
-
-  return res.status(201).json({ message: 'User updated successfully' });
-});
 
 export const recoverPassword = errorHandler(async (req: Request, res: Response) => {
     const { email } = req.body as { email: string };
