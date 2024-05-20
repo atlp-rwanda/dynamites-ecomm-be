@@ -4,23 +4,16 @@ import morgan from 'morgan';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './docs/swaggerconfig';
 import 'reflect-metadata';
-<<<<<<< HEAD
 import router from './routes/index';
-=======
-import userRoute from './routes/userRoutes';
-import roleRoutes from './routes/roleRoutes';
->>>>>>> 4979604 (* feat(rbac): Implement role based access control)
 
 import fs from 'fs';
 import path from 'path';
 import authRoutes from './routes/auth-routes';
 import cookieSession from 'cookie-session';
 import passport from 'passport';
-<<<<<<< HEAD
-import userRouter from './routes/userRoutes';
-=======
 
->>>>>>> 4979604 (* feat(rbac): Implement role based access control)
+import userRouter from './routes/userRoutes';
+
 // Require Passport midleware
 require('./middlewares/passport-setup');
 
@@ -33,13 +26,7 @@ const logStream = fs.createWriteStream(path.join(__dirname, 'output.log'), {
   flags: 'a',
 });
 
-<<<<<<< HEAD
 //Data Sanitation Against SQL injection
-=======
-//Data Sanitation Against SQL injection 
-
-//Data Sanitation Against SiteScripts
->>>>>>> 4979604 (* feat(rbac): Implement role based access control)
 
 morgan.token('type', function (req: Request) {
   return req.headers['content-type'];
