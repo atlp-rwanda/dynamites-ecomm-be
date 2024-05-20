@@ -225,7 +225,7 @@ export const updateNewPassword = errorHandler(async (req: Request, res: Response
   const { password } = req.body as { password: string };
 
   if (!recoverToken) {
-    return res.status(404).json({ message: 'Token is required' });
+    return res.status(404).json({ message: 'Invalid or expired token' });
   }
 
   const decoded = jwt.verify(recoverToken, process.env.JWT_SECRET as jwt.Secret) as {
