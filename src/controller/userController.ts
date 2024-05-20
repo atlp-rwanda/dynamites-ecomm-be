@@ -18,7 +18,7 @@ interface CreateUserRequestBody {
   lastName: string;
   email: string;
   password: string;
-  userType: 'vendor' | 'buyer';
+  userType: 'Admin' | 'vendor' | 'buyer';
 }
 
 // Define validation and sanitization rules
@@ -50,7 +50,9 @@ export const registerUser = [
     const userRole =
       userType == 'vendor'
         ? (await roleRepository.findOneBy({ name: 'Vendor' }))!
-        : (await roleRepository.findOneBy({ name: 'Buyer' }))!;
+        : userType == 'Admin'
+          ? (await roleRepository.findOneBy({ name: 'Admin' }))!
+          : (await roleRepository.findOneBy({ name: 'Buyer' }))!;
 
     const newUser = new UserModel({
       firstName: firstName,
@@ -112,60 +114,7 @@ export const confirmEmail = async (req: Request, res: Response) => {
   }
 };
 
-export const getAllUsers = async (req: Request, res: Response) => {
-  try {
-    const users = await userRepository.find({
-      // select: ['id', 'firstName', 'lastName', 'email', 'userType'],
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        email: true,
-        userType: {
-          id: true,
-          name: true,
-        },
-      },
-      relations: ['userType'],
-    });
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json({ message: 'Internal server error' });
-  }
-};
 
-export const deleteAllUsers = async (req: Request, res: Response) => {
-  try {
-    const deletedUsers = await userRepository.delete({});
-    return res.status(200).json({
-      message: 'All users deleted successfully',
-      count: deletedUsers.affected,
-    });
-  } catch (error) {
-    return res.status(500).json({ message: 'Failed to delete users' });
-  }
-};
-
-export const deleteUser = async (req: Request, res: Response) => {
-  try {
-    const id: number = parseInt(req.params.id);
-
-    const recordToDelete = await userRepository.findOne({
-      where: { id },
-    });
-
-    if (!recordToDelete) {
-      return res.status(404).json({ error: 'Record not found.' });
-    }
-    await userRepository.remove(recordToDelete);
-
-    return res.status(200).json({ message: 'Record deleted successfully.' });
-  } catch (error) {
-    return res
-      .status(500)
-      .json({ error: 'An error occurred while deleting the record.' });
-  }
-};
 
 export const Login = errorHandler(async (req: Request, res: Response) => {
   const user = await userRepository.findOne({
@@ -185,6 +134,7 @@ export const Login = errorHandler(async (req: Request, res: Response) => {
       process.env.JWT_SECRET as jwt.Secret,
       { expiresIn: '1d' }
     );
+
     const confirmLink = `${process.env.APP_URL}/api/v1/confirm?token=${token}`;
     await sendEmail('confirm', user.email, {
       name: user.firstName,
@@ -208,11 +158,22 @@ export const Login = errorHandler(async (req: Request, res: Response) => {
     res
       .status(200)
       .json({ message: 'Please provide the 2FA code sent to your email.' });
+  } else if (user.userType.name === 'Admin') {
+    const token = jwt.sign({ user }, process.env.JWT_SECRET as jwt.Secret, {
+      expiresIn: '1h',
+    });
+
+    return res
+      .status(200)
+      .json({ token, message: 'Admin Logged in successfully' });
   } else {
     const token = jwt.sign({ user }, process.env.JWT_SECRET as jwt.Secret, {
       expiresIn: '1h',
     });
-    res.status(200).json({ token, message: 'Buyer Logged in successfully' });
+
+    return res
+      .status(200)
+      .json({ token, message: 'Buyer Logged in successfully' });
   }
 });
 
