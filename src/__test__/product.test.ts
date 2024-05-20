@@ -302,4 +302,14 @@ describe('Product Controller Tests', () => {
     expect(response.body).toHaveProperty('currentPage');
     expect(response.header['content-type']).toEqual(expect.stringContaining('json'));
   });
+
+  it('should use default limit and page if none are provided', async () => {
+    const response = await request(app).get('/api/v1/product/getAvailableProducts');
+
+    expect(response.status).toBe(200);
+    expect(response.body.currentPage).toBe(1);
+    expect(response.body.totalPages).toBeGreaterThanOrEqual(1);
+    expect(response.body).toHaveProperty('availableProducts');
+  });
+  
 });
