@@ -2,20 +2,34 @@ import { Router } from 'express';
 import {
   registerUser,
   confirmEmail,
-  deleteAllUsers,
-  getAllUsers,
-  deleteUser,
   Login,
   verify2FA,
 } from '../controller/userController';
 
+import {
+  activateAccount,
+  deactivateAccount,
+} from '../controller/changestatusController';
+import { checkRole } from '../middlewares/authorize';
+import { IsLoggedIn } from '../middlewares/isLoggedIn';
+
 const userRouter = Router();
 userRouter.post('/register', registerUser);
-userRouter.get('/getAllUsers', getAllUsers);
 userRouter.get('/confirm', confirmEmail);
-userRouter.delete('/delete/:id', deleteUser);
-userRouter.delete('/deleteAllUsers', deleteAllUsers);
 userRouter.post('/login', Login);
 userRouter.post('/verify2FA/:userId', verify2FA);
+userRouter.put(
+  '/activate/:userId',
+  IsLoggedIn,
+  checkRole(['Admin']),
+  activateAccount
+);
+
+userRouter.put(
+  '/deactivate/:userId',
+  IsLoggedIn,
+  checkRole(['Admin']),
+  deactivateAccount
+);
 
 export default userRouter;
