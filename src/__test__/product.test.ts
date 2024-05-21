@@ -291,4 +291,27 @@ describe('Product Controller Tests', () => {
     expect(Array.isArray(response.body.data)).toBeTruthy();
     expect(response.body.data[0].tags).toContain('Summer');
   });
+
+  it('should retrieve all available products', async () => {
+    const response = await request(app).get('/api/v1/product/getAvailableProducts');
+
+    expect(response.statusCode).toEqual(200);
+    expect(response.body).toHaveProperty('status', 'success');
+    expect(response.body).toHaveProperty('availableProducts');
+    expect(response.body).toHaveProperty('totalPages');
+    expect(response.body).toHaveProperty('currentPage');
+    expect(response.header['content-type']).toEqual(expect.stringContaining('json'));
+  });
+
+  it('should parse limit and page from query parameters', async () => {
+    const limit = 5;
+    const page = 1;
+    const response = await request(app).get(`/api/v1/product/getAvailableProducts?limit=${limit}&page=${page}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.currentPage).toBe(page);
+    expect(response.body).toHaveProperty('availableProducts');
+    expect(response.body.availableProducts.length).toBeLessThanOrEqual(limit); 
+  });
+  
 });

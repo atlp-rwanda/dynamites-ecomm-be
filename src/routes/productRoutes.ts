@@ -6,12 +6,15 @@ import {
   getAllProducts,
   getProduct,
   updateProduct,
-  getRecommendedProducts, 
+  getRecommendedProducts,
+  AvailableProducts 
 } from '../controller/productController';
 import { IsLoggedIn } from '../middlewares/isLoggedIn';
 import { checkRole } from '../middlewares/authorize';
 
 const productRouter = Router();
+
+productRouter.route('/getAvailableProducts').get(AvailableProducts)
 
 productRouter
   .route('/')
