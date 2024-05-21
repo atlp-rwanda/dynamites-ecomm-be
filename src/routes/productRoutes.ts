@@ -7,14 +7,14 @@ import {
   getProduct,
   updateProduct,
   getRecommendedProducts,
-  AvailableProducts 
+  AvailableProducts,
 } from '../controller/productController';
 import { IsLoggedIn } from '../middlewares/isLoggedIn';
 import { checkRole } from '../middlewares/authorize';
 
 const productRouter = Router();
 
-productRouter.route('/getAvailableProducts').get(AvailableProducts)
+productRouter.route('/getAvailableProducts').get(AvailableProducts);
 
 productRouter
   .route('/')
@@ -22,15 +22,12 @@ productRouter
   .get(getAllProducts)
   .delete(IsLoggedIn, deleteAllProduct);
 
-  productRouter
-  .route('/recommended')
-  .get(getRecommendedProducts);
+productRouter.route('/recommended').get(getRecommendedProducts);
 
 productRouter
   .route('/:productId')
   .get(getProduct)
   .put(IsLoggedIn, checkRole(['Vendor']), updateProduct)
   .delete(IsLoggedIn, deleteProduct);
-
 
 export default productRouter;

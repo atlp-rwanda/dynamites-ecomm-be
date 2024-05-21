@@ -114,8 +114,6 @@ export const confirmEmail = async (req: Request, res: Response) => {
   }
 };
 
-
-
 export const Login = errorHandler(async (req: Request, res: Response) => {
   const user = await userRepository.findOne({
     where: { email: req.body['email'] },
