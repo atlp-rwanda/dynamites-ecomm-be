@@ -260,4 +260,58 @@ describe('Product Controller Tests', () => {
     expect(response.statusCode).toEqual(200);
     expect(response.body.message).toEqual('All product deleted successfully');
   });
+
+
+  it('should retrieve recommended products', async () => {
+    const productData = {
+      name: 'Seasonal Product',
+      image: 'seasonal_product.jpg',
+      gallery: [],
+      shortDesc: 'This is a seasonal product',
+      longDesc: 'Detailed description of the seasonal product',
+      categoryId: categoryId,
+      quantity: 10,
+      regularPrice: 5,
+      salesPrice: 4,
+      tags: ['Summer'], 
+      type: 'Simple',
+      isAvailable: true,
+    };
+  
+    await request(app)
+      .post('/api/v1/product')
+      .set('Authorization', `Bearer ${token}`)
+      .send(productData);
+  
+    const response = await request(app).get('/api/v1/product/recommended');
+    expect(response.statusCode).toEqual(200);
+
+    expect(response.body.message).toEqual('Recommended products retrieved successfully');
+  
+    expect(Array.isArray(response.body.data)).toBeTruthy();
+    expect(response.body.data[0].tags).toContain('Summer');
+  });
+
+  it('should retrieve all available products', async () => {
+    const response = await request(app).get('/api/v1/product/getAvailableProducts');
+
+    expect(response.statusCode).toEqual(200);
+    expect(response.body).toHaveProperty('status', 'success');
+    expect(response.body).toHaveProperty('availableProducts');
+    expect(response.body).toHaveProperty('totalPages');
+    expect(response.body).toHaveProperty('currentPage');
+    expect(response.header['content-type']).toEqual(expect.stringContaining('json'));
+  });
+
+  it('should parse limit and page from query parameters', async () => {
+    const limit = 5;
+    const page = 1;
+    const response = await request(app).get(`/api/v1/product/getAvailableProducts?limit=${limit}&page=${page}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.currentPage).toBe(page);
+    expect(response.body).toHaveProperty('availableProducts');
+    expect(response.body.availableProducts.length).toBeLessThanOrEqual(limit); 
+  });
+  
 });
