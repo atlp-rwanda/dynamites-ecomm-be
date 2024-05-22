@@ -12,6 +12,7 @@ function errorHandler(func: MiddlewareFunction): MiddlewareFunction {
     } catch (error) {
       const message =
         (error as { detail?: string }).detail || 'Internal Server Error';
+        console.log("Error",error)
       return res.status(500).send(message);
     }
   };

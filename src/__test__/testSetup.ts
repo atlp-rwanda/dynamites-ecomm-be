@@ -27,7 +27,6 @@ export async function beforeAllHook() {
 // Get Vendor Token function
 export async function getVendorToken() {
   const userRepository = await DbConnection.connection.getRepository(UserModel);
-
   const formData = {
     name: 'Vendor',
     permissions: ['test-permission1', 'test-permission2'],
