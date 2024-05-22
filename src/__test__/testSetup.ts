@@ -9,22 +9,55 @@ import app from '../app';
 export async function beforeAllHook() {
   await DbConnection.instance.initializeDb();
 
-  // Get repositories
-  const userRepository = await DbConnection.connection.getRepository(UserModel);
-  const roleRepository = await DbConnection.connection.getRepository(Role);
-  const categoryRepository =
-    await DbConnection.connection.getRepository(Category);
-  const productRepository =
-    await DbConnection.connection.getRepository(Product);
+  const userRepository = DbConnection.connection.getRepository(UserModel);
+  const roleRepository = DbConnection.connection.getRepository(Role);
+  const categoryRepository = DbConnection.connection.getRepository(Category);
+  const productRepository = DbConnection.connection.getRepository(Product);
 
-  // Delete all users,roles and categories
   await userRepository.createQueryBuilder().delete().execute();
   await roleRepository.createQueryBuilder().delete().execute();
   await categoryRepository.createQueryBuilder().delete().execute();
   await productRepository.createQueryBuilder().delete().execute();
 }
+export async function getAdminToken() {
+  const userRepository = await DbConnection.connection.getRepository(UserModel);
+
+  const formData = {
+    name: 'Admin',
+    permissions: ['Deactivate', 'Activate'],
+  };
+
+  await request(app).post('/api/v1/roles/create_role').send(formData);
+  const userData = {
+    firstName: 'Test',
+    lastName: 'User',
+    email: 'admin@gmail.com',
+    password: 'TestPassword123',
+    userType: 'Admin',
+  };
+  await request(app).post('/api/v1/register').send(userData);
+
+  const updatedUser = await userRepository.findOne({
+    where: { email: userData.email },
+  });
+
+  if (!updatedUser) throw new Error('User not found');
+
+  updatedUser.isVerified = true;
+  await userRepository.save(updatedUser);
+
+  const loginResponse = await request(app).post('/api/v1/login').send({
+    email: userData.email,
+    password: userData.password,
+  });
+
+  const adminToken = loginResponse.body.token;
+
+  return adminToken;
+}
 
 // Get Vendor Token function
+
 export async function getVendorToken() {
   const userRepository = await DbConnection.connection.getRepository(UserModel);
   const formData = {
@@ -76,15 +109,54 @@ export async function getVendorToken() {
   return verifyResponse.body.token;
 }
 
+export const getBuyerToken = async () => {
+  const userRepository = await DbConnection.connection.getRepository(UserModel);
+  const formData = {
+    name: 'Buyer',
+    permissions: ['test-permission1', 'test-permission2'],
+  };
+  await request(app)
+    .post('/api/v1/roles/create_role')
+    .send(formData);
+
+  const userData = {
+    firstName: 'Tester',
+    lastName: 'Test',
+    email: 'test4@gmail.com',
+    password: 'TestPassword123',
+    userType: 'buyer',
+  };
+  await request(app).post('/api/v1/register').send(userData);
+
+  const updatedUser = await userRepository.findOne({
+    where: { email: userData.email },
+  });
+  if (updatedUser) {
+    updatedUser.isVerified = true;
+    await userRepository.save(updatedUser);
+  }
+
+  const loginResponse = await request(app).post('/api/v1/login').send({
+    email: userData.email,
+    password: userData.password,
+  });
+
+  return loginResponse.body.token;
+};
+
 export async function afterAllHook() {
   await DbConnection.connection.transaction(async (transactionManager) => {
     const userRepository = transactionManager.getRepository(UserModel);
+    const roleRepository = transactionManager.getRepository(Role);
     const categoryRepository = transactionManager.getRepository(Category);
     const productRepository = transactionManager.getRepository(Product);
 
     await userRepository.createQueryBuilder().delete().execute();
+    await roleRepository.createQueryBuilder().delete().execute();
+
     await categoryRepository.createQueryBuilder().delete().execute();
     await productRepository.createQueryBuilder().delete().execute();
+    await userRepository.createQueryBuilder().delete().execute();
   });
   await DbConnection.instance.disconnectDb();
 }

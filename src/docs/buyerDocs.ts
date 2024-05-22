@@ -1,17 +1,35 @@
 /**
  * @swagger
- * tags:
- *   name: buyer
- *   description: Category management
+ * /api/v1/buyer/get_product/{id}:
+ *   get:
+ *     summary: Get a specific product
+ *     tags: [Buyer]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         type: string
+ *         required: true
+ *         description: ID of the product to get
+ *     responses:
+ *       '200':
+ *         description: Successful
+ *       '404':
+ *         description: Product not found
+ *       '500':
+ *         description: Internal Server Error
  */
 
+
 /**
- * @openapi
+ * @swagger
  * /buyer/addItemToWishList:
  *   post:
- *     tags: [buyer]
- *     @security bearerAuth
- *     summary: Adds an item to the wishlist
+ *     summary: Get a specific product
+ *     tags: [Buyer]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -19,31 +37,29 @@
  *           schema:
  *             type: object
  *             properties:
- *               userId:
- *                 type: integer
  *               productId:
  *                 type: integer
  *               time:
  *                 type: string
- *               categoryId:
- *                 type: integer
  *     responses:
- *       201:
+ *       '200':
  *         description: Wishlist item added successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/BuyerWishList'
+ *       '400':
+ *         description: Bad request
+ *       '404':
+ *         description: Wishlist not found
+ *       '500':
+ *         description: Internal server error
  */
 
-
 /**
- * @openapi
- * /buyer/removeToWishList:
+ * @swagger
+ * /api/v1/buyer/removeToWishList:
  *   delete:
- *     tags: [buyer]
- *     @security bearerAuth
- *     summary: Removes a product from the wishlist
+ *     summary: Remove a product to WishList
+ *     tags: [Buyer]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -51,33 +67,47 @@
  *           schema:
  *             type: object
  *             properties:
- *               userId:
- *                 type: integer
  *               productId:
  *                 type: integer
  *     responses:
- *       200:
- *         description: Product successfully removed from wishlist
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/BuyerWishList'
+ *       '200':
+ *         description: Successful Removed a Product
+ *       '404':
+ *         description: Product not found
+ *       '500':
+ *         description: Internal Server Error
  */
 
 /**
- * @openapi
- * /buyer/getWishList:
+ * @swagger
+ * /api/v1/buyer/getWishList:
  *   get:
- *      tags: [buyer]
- *     @security bearerAuth
- *     summary: Retrieves all wishlists
+ *     summary: Get a All Wish List  
+ *     tags: [Buyer]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
- *       200:
- *         description: Data retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/BuyerWishList'
+ *       '200':
+ *         description: Successful
+ *       '404':
+ *         description: Product not found
+ *       '500':
+ *         description: Internal Server Error
+ */
+
+/**
+ * @swagger
+ * /api/v1/buyer/getOneWishList:
+ *   get:
+ *     summary: Get One Wish List  
+ *     tags: [Buyer]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Successful
+ *       '404':
+ *         description: Product not found
+ *       '500':
+ *         description: Internal Server Error
  */

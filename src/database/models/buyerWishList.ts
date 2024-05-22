@@ -9,16 +9,12 @@ export default class BuyerWishList {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @OneToOne(() => UserModel)
-    @JoinColumn()
+    @ManyToOne(() => UserModel)
     user: UserModel;
 
     @ManyToMany(() => Product)
     @JoinTable()
     product: Product[];
-
-    @ManyToOne(() => Category) 
-    category: Category;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })  
     time: Date;
