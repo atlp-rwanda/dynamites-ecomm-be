@@ -201,6 +201,7 @@ export const verify2FA = errorHandler(async (req: Request, res: Response) => {
   return res.status(200).json({ token });
 });
 
+
 // Delete All Users
 export const deleteAllUsers = async (req: Request, res: Response) => {
   try {

@@ -5,7 +5,6 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './docs/swaggerconfig';
 import 'reflect-metadata';
 import router from './routes/index';
-
 import fs from 'fs';
 import path from 'path';
 import authRoutes from './routes/auth-routes';
@@ -79,6 +78,7 @@ app.get('/', (req: Request, res: Response) => {
 // Middleware to handle all endpoint routes
 app.use('/api/v1', router);
 app.use('/api/v1', userRouter);
+
 // Endpoints for serving social login
 app.use('/auth', authRoutes);
 

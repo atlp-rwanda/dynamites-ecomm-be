@@ -6,6 +6,7 @@ import Product from '../database/models/productEntity';
 import { Cart } from '../database/models';
 import request from 'supertest';
 import app from '../app';
+import {Order} from '../database/models/orderEntity';
 
 export async function beforeAllHook() {
   await DbConnection.instance.initializeDb();
@@ -15,12 +16,15 @@ export async function beforeAllHook() {
   const categoryRepository = DbConnection.connection.getRepository(Category);
   const productRepository = DbConnection.connection.getRepository(Product);
   const cartRepository = DbConnection.connection.getRepository(Cart);
+  const orderRepository =DbConnection.connection.getRepository(Order)
 
   await userRepository.createQueryBuilder().delete().execute();
   await roleRepository.createQueryBuilder().delete().execute();
   await categoryRepository.createQueryBuilder().delete().execute();
   await productRepository.createQueryBuilder().delete().execute();
   await cartRepository.createQueryBuilder().delete().execute();
+  await orderRepository.createQueryBuilder().delete().execute();
+
 }
 export async function getAdminToken() {
   const userRepository = await DbConnection.connection.getRepository(UserModel);
@@ -149,12 +153,16 @@ export async function afterAllHook() {
     const categoryRepository = transactionManager.getRepository(Category);
     const productRepository = transactionManager.getRepository(Product);
     const cartRepository = transactionManager.getRepository(Cart);
+    const orderRepository = transactionManager.getRepository(Order);
+
 
     await userRepository.createQueryBuilder().delete().execute();
     await roleRepository.createQueryBuilder().delete().execute();
     await categoryRepository.createQueryBuilder().delete().execute();
     await productRepository.createQueryBuilder().delete().execute();
     await cartRepository.createQueryBuilder().delete().execute();
+    await orderRepository.createQueryBuilder().delete().execute();
+
   });
   await DbConnection.instance.disconnectDb();
 }
