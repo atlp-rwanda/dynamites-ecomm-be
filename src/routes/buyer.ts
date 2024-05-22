@@ -1,11 +1,16 @@
 import { Router } from 'express'
 import {
-    CreateWishList ,
-    RemoveProductFromWishList
+    AddItemInWishList ,
+    RemoveProductFromWishList,
+    getAllWishList
 } from '../controller/buyerWishList'
 import { IsLoggedIn } from '../middlewares/isLoggedIn';
 
 
-const route = Router()
-route.post('/addToWishList',IsLoggedIn, CreateWishList);
-route.get('/removeToWishList',IsLoggedIn,RemoveProductFromWishList);
+const BuyerWishListroute = Router()
+BuyerWishListroute.post('/addItemToWishList',IsLoggedIn, AddItemInWishList);
+BuyerWishListroute.delete('/removeToWishList',IsLoggedIn,RemoveProductFromWishList);
+BuyerWishListroute.get('/getWishList',getAllWishList)
+
+
+export default BuyerWishListroute

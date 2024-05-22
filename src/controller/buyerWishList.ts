@@ -1,32 +1,43 @@
 import { check, validationResult } from 'express-validator';
 import { Request, Response } from 'express';
-import BuyerWishList  from '../database/models/buyerWishList';
-import  UserModel from '../database/models/userModel';  
-import  Product  from '../database/models/productEntity';  
-import { getRepository } from 'typeorm';
-import errorHandler from '../middlewares/errorHandler';  
+import BuyerWishList from '../database/models/buyerWishList';
+import UserModel from '../database/models/userModel';
+import Product from '../database/models/productEntity';
+import errorHandler from '../middlewares/errorHandler';
+import dbConnection from '../database';
 
-const createBuyerRules = [
-  check('userId').isLength({ min: 1 }).withMessage('User is required'),
-  check('productId').isLength({ min: 1 }).withMessage('Product is required'),
+const userRepository = dbConnection.getRepository(UserModel);
+const productRepository = dbConnection.getRepository(Product);
+const buyerWishListRepository = dbConnection.getRepository(BuyerWishList);
+
+const CreateWishListRule = [
+  check('userId')
+    .isLength({ min: 1 })
+    .isInt({ min: 1 })
+    .withMessage('User ID is not valid'),
+  check('categoryId')
+    .isInt({ min: 1 })
+    .withMessage('Valid category ID is required'),
 ];
 
-export const CreateWishList = [
-  ...createBuyerRules,
+const AddToWishListRules = [
+  check('userId').isLength({ min: 1 }).withMessage('User ID is required'),
+  check('productId').isLength({ min: 1 }).withMessage('Product ID is required'),
+];
+
+export const AddItemInWishList = [
+  ...AddToWishListRules,
   errorHandler(async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { userId, productId, time } = req.body;
+    const { userId, productId, time, categoryId } = req.body;
+    const wishListTime = time ? new Date(time) : new Date();
 
-    const userRepository = getRepository(UserModel);
-    const productRepository = getRepository(Product);
-    const buyerWishListRepository = getRepository(BuyerWishList);
-
-    const user = await userRepository.findOne(userId);
-    const product = await productRepository.findOne(productId);
+    const user = await userRepository.findOne({ where: { id: userId } });
+    const product = await productRepository.findOne({ where: { id: productId } });
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -36,15 +47,31 @@ export const CreateWishList = [
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    const wishList = new BuyerWishList();
-    wishList.user = user;
-    wishList.product = [product];
-    wishList.time = time;
+    const existingWishListEntry = await buyerWishListRepository.findOne({
+      where: { user: { id: userId } },
+      relations: ['product'],
+    });
 
-    const savedWishList = await buyerWishListRepository.save(wishList);
+    if (existingWishListEntry) {
+      const productExists = existingWishListEntry.product.some(p => p.id === productId);
+      if (productExists) {
+        return res.status(409).json({ message: 'Product is already in the wishlist' });
+      }
+      existingWishListEntry.product.push(product);
+      existingWishListEntry.time = wishListTime;
+      const updatedWishList = await buyerWishListRepository.save(existingWishListEntry);
+      return res.status(200).json({ message: 'Product added to existing wishlist', data: updatedWishList });
+    }
+
+    const newWishList = new BuyerWishList();
+    newWishList.user = user;
+    newWishList.product = [product];
+    newWishList.time = wishListTime;
+
+    const savedWishList = await buyerWishListRepository.save(newWishList);
 
     return res.status(201).json({
-      message: 'WishList successfully created',
+      message: 'Wishlist successfully created',
       data: savedWishList,
     });
   }),
@@ -55,8 +82,8 @@ const removeProductRules = [
     check('productId').isLength({ min: 1 }).withMessage('Product ID is required'),
   ];
   
-
-export const RemoveProductFromWishList = [
+  
+  export const RemoveProductFromWishList = [
     ...removeProductRules,
     errorHandler(async (req: Request, res: Response) => {
       const errors = validationResult(req);
@@ -66,36 +93,22 @@ export const RemoveProductFromWishList = [
   
       const { userId, productId } = req.body;
   
-      const buyerWishListRepository = getRepository(BuyerWishList);
-      const productRepository = getRepository(Product);
-  
-      // Find the user's wishlist
       const wishList = await buyerWishListRepository.findOne({
         where: { user: { id: userId } },
-        relations: ['products'],
+        relations: ['product'],
       });
   
       if (!wishList) {
         return res.status(404).json({ message: 'Wishlist not found' });
       }
   
-      // Find the product to be removed
-      const product = await productRepository.findOne(productId);
-  
-      if (!product) {
-        return res.status(404).json({ message: 'Product not found' });
-      }
-  
-      // Check if the product exists in the wishlist
       const productIndex = wishList.product.findIndex(p => p.id === productId);
       if (productIndex === -1) {
         return res.status(404).json({ message: 'Product not found in wishlist' });
       }
   
-      // Remove the product from the wishlist
+
       wishList.product.splice(productIndex, 1);
-  
-      // Save the updated wishlist
       await buyerWishListRepository.save(wishList);
   
       return res.status(200).json({
@@ -104,4 +117,32 @@ export const RemoveProductFromWishList = [
       });
     }),
   ];
+  
+
+
+  export const getAllWishList = 
+  errorHandler(async (req:Request ,res:Response)=>{
+    const wishList = await buyerWishListRepository.find({
+      select: {
+        product:true,
+        time:true,
+        user:{
+          lastName:true,
+          isVerified:true,
+          picture:true,
+          userType:{
+            name:true,
+          }
+        },
+        category:{
+          name:true
+        }
+
+      },
+      relations: ['user', 'product'],
+    });
+    return res
+      .status(200)
+      .json({ message: 'Data retrieved successfully', data: wishList });
+  })
   

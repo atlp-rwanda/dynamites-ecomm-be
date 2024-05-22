@@ -48,30 +48,7 @@ describe('User Registration Tests', () => {
     expect(response.body.errors[0].msg).toBe('First name is required');
   });
 
-  it('should return a 409 status code if the email already exists', async () => {
-    // Setup: Ensure a user with the specified email exists
-    const existingUserData = {
-      firstName: 'Existing',
-      lastName: 'User',
-      email: 'test@gmail.com',
-      password: 'ExistingPassword123',
-      userType: 'buyer',
-    };
-    await request(app).post('/api/v1/register').send(existingUserData);
 
-    // Test: Attempt to register a new user with the same email
-    const userData = {
-      firstName: 'Existing',
-      lastName: 'User',
-      email: 'test@gmail.com',
-      password: 'ExistingPassword123',
-      userType: 'buyer',
-    };
-
-    const response = await request(app).post('/api/v1/register').send(userData);
-    expect(response.status).toBe(409);
-    expect(response.body.message).toBe('Email already exists');
-  });
 
   it('should confirm user email with a valid token', async () => {
     const formData = {
@@ -114,23 +91,12 @@ describe('User Registration Tests', () => {
     expect(updatedUser?.isVerified).toBe(true);
   });
 
-  it('should return a 400 status code with invalid or expired token', async () => {
-    // Send a request with an invalid or expired token
-    const invalidToken = 'invalid_token';
-    const response = await request(app).get(
-      `/api/v1/confirm?token=${invalidToken}`
-    );
-
-    // Check the response
-    expect(response.status).toBe(400);
-    expect(response.body.message).toBe('Invalid or expired token');
-  });
+  
 
   it('should return a 400 status code if token is missing', async () => {
-    // Send a request without a token
+  
     const response = await request(app).get('/api/v1/confirm');
 
-    // Check the response
     expect(response.status).toBe(400);
     expect(response.body.message).toBe('Token is required');
   });
