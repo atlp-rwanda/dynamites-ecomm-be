@@ -9,8 +9,8 @@
     "build": "tsc",
     "lint": "eslint --config .eslintrc.json .",
     "format": "prettier --write .",
-    "test": "jest  --no-cache --detectOpenHandles",
-    "test:ci": "jest --coverage --detectOpenHandles"
+    "test": "NODE_ENV=test jest  --no-cache --detectOpenHandles",
+    "test:ci": "NODE_ENV=test jest --coverage --detectOpenHandles"
   },
   "repository": {
     "type": "git",
