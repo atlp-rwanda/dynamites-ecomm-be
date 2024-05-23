@@ -59,22 +59,15 @@
     "preset": "ts-jest",
     "testEnvironment": "node",
     "testTimeout": 50000,
-    "testPathIgnorePatterns": [
-      "/src/emails/"
-    ],
-    "collectCoverageFrom": [
-      "!src/emails/**",
-      "!src/middlewares/**",
-      "!dist/**"
-    ],
     "coverageReporters": [
       "json-summary",
       "text",
       "lcov"
     ],
-    "coveragePathIgnorePatterns" : [
-      "/node_modules/",  
-      "/src/emails/"
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/src/emails/",
+      "/src/middlewares/"
     ],
     "testPathIgnorePatterns": [
       "/node_modules/",
