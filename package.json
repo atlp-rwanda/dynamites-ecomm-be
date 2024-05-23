@@ -63,6 +63,14 @@
       "json-summary",
       "text",
       "lcov"
+    ],
+    "coveragePathIgnorePatterns" : [
+      "/node_modules/",  
+      "/src/emails/"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/src/emails/"
     ]
   },
   "devDependencies": {
