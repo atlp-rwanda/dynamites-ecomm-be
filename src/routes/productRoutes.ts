@@ -8,9 +8,12 @@ import {
   updateProduct,
   getRecommendedProducts,
   AvailableProducts,
+  updateProductAvailability,
+  checkProductAvailability
 } from '../controller/productController';
 import { IsLoggedIn } from '../middlewares/isLoggedIn';
 import { checkRole } from '../middlewares/authorize';
+import validateAvailability from '../middlewares/availabilityValidator';
 
 const productRouter = Router();
 
@@ -29,5 +32,10 @@ productRouter
   .get(getProduct)
   .put(IsLoggedIn, checkRole(['Vendor']), updateProduct)
   .delete(IsLoggedIn, deleteProduct);
+
+productRouter
+  .route('/:productId/availability')
+  .get(IsLoggedIn, checkProductAvailability)
+  .put(IsLoggedIn, checkRole(['Vendor']), validateAvailability, updateProductAvailability)
 
 export default productRouter;

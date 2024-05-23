@@ -187,6 +187,122 @@
 
 /**
  * @swagger
+ * /api/v1/product/{productId}/availability:
+ *   put:
+ *     summary: Update Product Availability
+ *     tags: [Product]
+ *     security:
+ *      - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the product
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               availability:
+ *                 type: boolean
+ *     responses:
+ *       '201':
+ *         description: Availability modified successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A message indicating successful availability modification
+ *       '400':
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       msg:
+ *                         type: string
+ *                         description: The error message
+ *       '403':
+ *         description: Forbidden - Product not owned by vendor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A message indicating the product is not owned by the vendor
+ *       '404':
+ *         description: Not Found - Product not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A message indicating the product was not found
+ *
+ *   get:
+ *     summary: Check Product Availability
+ *     tags: [Product]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the product
+ *     responses:
+ *       '200':
+ *         description: Product availability retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 availability:
+ *                   type: boolean    
+ *                   description: A boolean indicating the availability of the product
+ *       '403':
+ *         description: Forbidden - Product not owned by vendor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A message indicating the product is not owned by the vendor
+ *       '404':
+ *         description: Not Found - Product not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A message indicating the product was not found
+ */
+
+/**
+ * @swagger
  * /api/v1/product/recommended:
  *   get:
  *     summary: Get recommended products according to season

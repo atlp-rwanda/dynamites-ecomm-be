@@ -5,10 +5,20 @@ import UserModel from '../database/models/userModel';
 import dbConnection from '../database';
 import { check, validationResult } from 'express-validator';
 import errorHandler from '../middlewares/errorHandler';
+import productQuantityWatch from '../middlewares/productAvailabilityWatch';
 
-const productRepository = dbConnection.getRepository(Product);
-const categoryRepository = dbConnection.getRepository(Category);
+
+
+
 const userRepository = dbConnection.getRepository(UserModel);
+const productRepository = dbConnection.getRepository(Product);
+
+type User = {
+  id: number;
+  [key: string]: unknown;
+};
+
+const categoryRepository = dbConnection.getRepository(Category);
 
 interface ProductRequestBody {
   name: string;
@@ -209,7 +219,7 @@ export const updateProduct = [
     product.isAvailable = isAvailable;
 
     const updatedProduct = await productRepository.save(product);
-
+    await productQuantityWatch(updatedProduct);
     return res.status(200).json({
       message: 'Product successfully updated',
       data: updatedProduct,
@@ -355,7 +365,68 @@ export const AvailableProducts = errorHandler(
       message: 'Items retrieved successfully.',
       availableProducts,
       totalPages: Math.ceil(totalCount / limit),
-      currentPage: page,
-    });
+      currentPage: page
+  });
+}) 
+
+// From Bernard #38
+
+export const updateProductAvailability = async (req: Request, res: Response) => {
+  const { productId } = req.params;
+  const { availability } = req.body;
+  const user = await userRepository.findOne({
+    where: { id: (req.user as User).id},
+  });
+
+  if (!user) {
+    return res.status(401);
   }
-);
+
+  const product = await productRepository.findOne({
+    where: { id: Number(productId) },
+    relations: ['vendor']
+  });
+
+  if (!product) {
+    return res.status(404).json({ msg: 'Product not found' });
+  }
+
+  if (product.vendor.id !== user.id) {
+    return res.status(403).json({ msg: 'Product not owned by vendor' });
+  }
+
+  product.isAvailable = availability;
+  await productRepository.save(product);
+
+  res.json({ msg: 'Product availability updated' });
+};
+
+
+export const checkProductAvailability = async (req: Request, res: Response) => {
+  const { productId } = req.params;
+
+  const product = await productRepository.findOne({
+    where: { id: Number(productId) },
+    relations: ['vendor']
+  });
+
+
+  const user = await userRepository.findOne({
+    where: { id: (req.user as User).id},
+  });
+
+  if (!user) {
+    return res.status(404).json({ msg: 'User not found' });
+  }
+
+  if (!product) {
+    return res.status(404).json({ msg: 'Product not found' });
+  }
+  if (product.vendor.id!== user.id) {
+    return res.status(403).json({ msg: 'Product not owned by vendor' });
+  }
+
+  const availability = product.isAvailable;
+
+  res.json({ availability, productId });
+};

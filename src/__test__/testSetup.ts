@@ -60,8 +60,12 @@ export async function getAdminToken() {
 }
 
 // Get Vendor Token function
-
-export async function getVendorToken() {
+export async function getVendorToken(
+  email: string = 'test1@gmail.com',
+  password: string = 'TestPassword123',
+  firstName: string = 'Test',
+  lastName: string = 'User'
+) {
   const userRepository = await DbConnection.connection.getRepository(UserModel);
 
   const formData = {
@@ -71,10 +75,10 @@ export async function getVendorToken() {
   await request(app).post('/api/v1/roles/create_role').send(formData);
 
   const userData = {
-    firstName: 'Test',
-    lastName: 'User',
-    email: 'test1@gmail.com',
-    password: 'TestPassword123',
+    firstName: firstName,
+    lastName: lastName,
+    email: email,
+    password: password,
     userType: 'vendor',
   };
   await request(app).post('/api/v1/register').send(userData);
@@ -150,7 +154,6 @@ export async function afterAllHook() {
     await roleRepository.createQueryBuilder().delete().execute();
     await categoryRepository.createQueryBuilder().delete().execute();
     await productRepository.createQueryBuilder().delete().execute();
-    await userRepository.createQueryBuilder().delete().execute();
     await cartRepository.createQueryBuilder().delete().execute();
   });
   await DbConnection.instance.disconnectDb();
