@@ -20,3 +20,49 @@
  *       '500':
  *         description: Internal Server Error
  */
+
+/**
+ * @swagger
+ * /api/v1/buyer/payment:
+ *   post:
+ *     summary: Create a charge
+ *     tags: [Buyer]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: Stripe token
+ *               amount:
+ *                 type: number
+ *                 description: Amount in dollars
+ *             required:
+ *               - token
+ *               - amount
+ *     responses:
+ *       '200':
+ *         description: Successful operation
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: Whether the charge was successful
+ *                 charge:
+ *                   type: object
+ *                   description: The charge object returned by Stripe
+ *               required:
+ *                 - success
+ *                 - charge
+ *       '400':
+ *         description: Invalid input
+ *       '500':
+ *         description: Internal Server Error
+ */
