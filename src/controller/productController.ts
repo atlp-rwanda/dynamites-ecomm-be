@@ -5,10 +5,20 @@ import UserModel from '../database/models/userModel';
 import dbConnection from '../database';
 import { check, validationResult } from 'express-validator';
 import errorHandler from '../middlewares/errorHandler';
+import productQuantityWatch from '../middlewares/productAvailabilityWatch';
 
-const productRepository = dbConnection.getRepository(Product);
-const categoryRepository = dbConnection.getRepository(Category);
+
+
+
 const userRepository = dbConnection.getRepository(UserModel);
+const productRepository = dbConnection.getRepository(Product);
+
+type User = {
+  id: number;
+  [key: string]: unknown;
+};
+
+const categoryRepository = dbConnection.getRepository(Category);
 
 interface ProductRequestBody {
   name: string;
@@ -209,7 +219,7 @@ export const updateProduct = [
     product.isAvailable = isAvailable;
 
     const updatedProduct = await productRepository.save(product);
-
+    await productQuantityWatch(updatedProduct);
     return res.status(200).json({
       message: 'Product successfully updated',
       data: updatedProduct,
@@ -238,7 +248,7 @@ export const getAllProducts = errorHandler(
 
 export const getProduct = errorHandler(async (req: Request, res: Response) => {
   const productId: number = parseInt(req.params.productId);
-  
+
   const product = await productRepository.findOne({
     where: { id: productId },
     select: {
@@ -289,7 +299,6 @@ export const deleteAllProduct = errorHandler(
   }
 );
 
-
 export const getRecommendedProducts = errorHandler(
   async (req: Request, res: Response) => {
     const today = new Date();
@@ -313,9 +322,14 @@ export const getRecommendedProducts = errorHandler(
 
     const recommendedTags = holidayTags[month.toString()] || [];
     const allProducts = await productRepository.find();
-    const recommendedProducts = allProducts.filter(product => 
-      product.isAvailable && 
-      product.tags.some(tag => recommendedTags.map(tag => tag.toLowerCase()).includes(tag.toLowerCase()))
+    const recommendedProducts = allProducts.filter(
+      (product) =>
+        product.isAvailable &&
+        product.tags.some((tag) =>
+          recommendedTags
+            .map((tag) => tag.toLowerCase())
+            .includes(tag.toLowerCase())
+        )
     );
 
     return res.status(200).json({
@@ -325,28 +339,28 @@ export const getRecommendedProducts = errorHandler(
   }
 );
 
-export const AvailableProducts =   errorHandler(async (req: Request, res: Response) => {
-  let limit: number
-  let page: number
+export const AvailableProducts = errorHandler(
+  async (req: Request, res: Response) => {
+    let limit: number;
+    let page: number;
 
-  if(req.query.limit == undefined && req.query.page == undefined) 
-    {
-    limit=10
-    page=1
+    if (req.query.limit == undefined && req.query.page == undefined) {
+      limit = 10;
+      page = 1;
+    } else {
+      limit = parseInt(req.query.limit as string);
+      page = parseInt(req.query.page as string);
     }
-  else{
-    limit=parseInt(req.query.limit as string)
-    page=parseInt(req.query.page as string)
-  }
-  const [availableProducts, totalCount] = await productRepository.findAndCount({
-      where:{isAvailable:true},
-      take: limit,
-      skip: (page - 1) * limit,
-      select:{vendor:{firstName:true,lastName:true,picture:true}},
-      relations: ['category','vendor'],
-  });
+    const [availableProducts, totalCount] =
+      await productRepository.findAndCount({
+        where: { isAvailable: true },
+        take: limit,
+        skip: (page - 1) * limit,
+        select: { vendor: { firstName: true, lastName: true, picture: true } },
+        relations: ['category', 'vendor'],
+      });
 
-  return res.status(200).json({
+    return res.status(200).json({
       status: 'success',
       message: 'Items retrieved successfully.',
       availableProducts,
@@ -354,3 +368,65 @@ export const AvailableProducts =   errorHandler(async (req: Request, res: Respon
       currentPage: page
   });
 }) 
+
+// From Bernard #38
+
+export const updateProductAvailability = async (req: Request, res: Response) => {
+  const { productId } = req.params;
+  const { availability } = req.body;
+  const user = await userRepository.findOne({
+    where: { id: (req.user as User).id},
+  });
+
+  if (!user) {
+    return res.status(401);
+  }
+
+  const product = await productRepository.findOne({
+    where: { id: Number(productId) },
+    relations: ['vendor']
+  });
+
+  if (!product) {
+    return res.status(404).json({ msg: 'Product not found' });
+  }
+
+  if (product.vendor.id !== user.id) {
+    return res.status(403).json({ msg: 'Product not owned by vendor' });
+  }
+
+  product.isAvailable = availability;
+  await productRepository.save(product);
+
+  res.json({ msg: 'Product availability updated' });
+};
+
+
+export const checkProductAvailability = async (req: Request, res: Response) => {
+  const { productId } = req.params;
+
+  const product = await productRepository.findOne({
+    where: { id: Number(productId) },
+    relations: ['vendor']
+  });
+
+
+  const user = await userRepository.findOne({
+    where: { id: (req.user as User).id},
+  });
+
+  if (!user) {
+    return res.status(404).json({ msg: 'User not found' });
+  }
+
+  if (!product) {
+    return res.status(404).json({ msg: 'Product not found' });
+  }
+  if (product.vendor.id!== user.id) {
+    return res.status(403).json({ msg: 'Product not owned by vendor' });
+  }
+
+  const availability = product.isAvailable;
+
+  res.json({ availability, productId });
+};

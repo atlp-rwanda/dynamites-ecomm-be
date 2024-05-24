@@ -24,7 +24,11 @@ declare module 'express-serve-static-core' {
   }
 }
 
-export const revokeAccess = (req: Request, res: Response, next: NextFunction) => {
+export const revokeAccess = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const token = req.headers.authorization?.split(' ')[1];
 
   if (!token) {
@@ -32,21 +36,26 @@ export const revokeAccess = (req: Request, res: Response, next: NextFunction) =>
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as jwt.Secret) as DecodedJwtPayload;
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET as jwt.Secret
+    ) as DecodedJwtPayload;
 
-    if (!decoded ||!decoded.user) {
+    if (!decoded || !decoded.user) {
       return res.status(401).json({ message: 'Unauthorized: Invalid token' });
     }
 
     const user = decoded.user;
     req.user = user;
-    if (user.status!== 'active') {
+    if (user.status !== 'active') {
       const userId = user.id;
       if (activeTokens[userId]) {
         delete activeTokens[userId];
       }
-      
-      return res.status(401).json({ message: 'Unauthorized: User account is deactivated' });
+
+      return res
+        .status(401)
+        .json({ message: 'Unauthorized: User account is deactivated' });
     }
 
     const userId = user.id;
@@ -56,7 +65,6 @@ export const revokeAccess = (req: Request, res: Response, next: NextFunction) =>
     activeTokens[userId].push(token);
 
     next();
-    
   } catch (error) {
     return res.status(401).json({ message: 'Unauthorized: Invalid token' });
   }

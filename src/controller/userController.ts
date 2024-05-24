@@ -71,7 +71,7 @@ export const registerUser = [
     );
 
     const confirmLink = `${process.env.APP_URL}/api/v1/confirm?token=${token}`;
-    await sendEmail('confirm', email, { name: firstName, link: confirmLink });
+    process.env.NODE_ENV !== 'test' && await sendEmail('confirm', email, { name: firstName, link: confirmLink });
 
     res.status(201).json({
       message: 'User successfully registered',
@@ -114,8 +114,6 @@ export const confirmEmail = async (req: Request, res: Response) => {
   }
 };
 
-
-
 export const Login = errorHandler(async (req: Request, res: Response) => {
   const user = await userRepository.findOne({
     where: { email: req.body['email'] },
@@ -136,10 +134,12 @@ export const Login = errorHandler(async (req: Request, res: Response) => {
     );
 
     const confirmLink = `${process.env.APP_URL}/api/v1/confirm?token=${token}`;
-    await sendEmail('confirm', user.email, {
-      name: user.firstName,
-      link: confirmLink,
-    });
+    if (process.env.NODE_ENV !== 'test'){
+      await sendEmail('confirm', user.email, {
+        name: user.firstName,
+        link: confirmLink,
+      });
+    }
     return res.status(401).send({
       message: 'Please verify your email. Confirmation link has been sent.',
     });
@@ -150,10 +150,12 @@ export const Login = errorHandler(async (req: Request, res: Response) => {
 
     await userRepository.update(user.id, { twoFactorCode });
 
-    await sendCode(user.email, 'Your 2FA Code', './templates/2fa.html', {
-      name: user.firstName,
-      twoFactorCode: twoFactorCode.toString(),
-    });
+    if (process.env.NODE_ENV !== 'test') {
+      await sendCode(user.email, 'Your 2FA Code', './templates/2fa.html', {
+        name: user.firstName,
+        twoFactorCode: twoFactorCode.toString(),
+      });
+    }
 
     res
       .status(200)

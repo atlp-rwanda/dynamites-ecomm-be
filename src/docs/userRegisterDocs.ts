@@ -169,4 +169,3 @@
  *       '500':
  *         description: An error occurred while deleting the record.
  */
-
