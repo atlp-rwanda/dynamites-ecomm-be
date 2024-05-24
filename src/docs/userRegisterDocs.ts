@@ -169,3 +169,110 @@
  *       '500':
  *         description: An error occurred while deleting the record.
  */
+
+/**
+ * @swagger
+ * /api/v1/user/recover:
+ *   post:
+ *     summary: Generate Recover Password Token
+ *     tags: [User]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *     responses:
+ *       '200':
+ *         description: Password reset link generated Successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A message indicating successful email confirmation
+ *                 recoverToken:
+ *                   type: string
+ *                   description: JWT token for password recovery
+ *       '404':
+ *         description: Not Found - User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message indicating user not found
+ *       '500':
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message indicating a server error
+ */
+/**
+ * @swagger
+ * /api/v1/user/recover/confirm:
+ *   put:
+ *     summary: Update Password with New Password
+ *     tags: [User]
+ *     parameters:
+ *       - in: query
+ *         name: recoverToken
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: JWT token received in the Recover email
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               password:
+ *                 type: string
+ *                 format: password
+ *     responses:
+ *       '200':
+ *         description: Password reset successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A message indicating successful password reset
+ *       '400':
+ *         description: Missing Token or User Not Found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message indicating a missing token or user not found
+ *       '500':
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: An error message indicating a server error
+ */
