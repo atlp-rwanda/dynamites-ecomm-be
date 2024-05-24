@@ -9,9 +9,9 @@
     "build": "tsc",
     "lint": "eslint --config .eslintrc.json .",
     "format": "prettier --write .",
-    "test": "NODE_ENV=test jest  --no-cache --detectOpenHandles",
-    "test:ci": "NODE_ENV=test jest --coverage --detectOpenHandles"
-  },
+    "test": "cross-env NODE_ENV=test jest  --no-cache --detectOpenHandles",
+    "test:ci": "cross-env NODE_ENV=test jest --coverage --detectOpenHandles"
+  }, 
   "repository": {
     "type": "git",
     "url": "git+https://github.com/atlp-rwanda/dynamites-ecomm-be.git"
@@ -64,8 +64,8 @@
       "text",
       "lcov"
     ],
-    "coveragePathIgnorePatterns" : [
-      "/node_modules/",  
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
       "/src/emails/"
     ],
     "testPathIgnorePatterns": [
@@ -91,6 +91,7 @@
     "@types/swagger-ui-express": "^4.1.6",
     "@typescript-eslint/eslint-plugin": "^7.7.1",
     "@typescript-eslint/parser": "^7.7.1",
+    "cross-env": "^7.0.3",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",

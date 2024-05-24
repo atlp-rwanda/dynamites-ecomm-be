@@ -22,9 +22,6 @@ beforeAll(async () => {
     buyerToken = await getBuyerToken();
     vendorToken = await getVendorToken();
 
-  console.log("Vendot Token",vendorToken)
-  console.log("buyer Toked",buyerToken)
-
     const categoryData = {
       name: 'Category4',
       description: 'category description',
@@ -77,31 +74,30 @@ beforeAll(async () => {
 
     it('should add an item to the wishlist', async () => {
 
-      const testProductId = 1; 
+  
 
       const res = await request(app)
       .post('/api/v1/buyer/addItemToWishList')
       .set('Authorization', `Bearer ${buyerToken}`) 
       .send({
-          productId: testProductId,
+          productId: productId,
           time: '2024-05-21T12:00:00Z',
         
         });
 
       expect(res.statusCode).toEqual(201);
-      expect(res.body.message).toContain('WishList successfully created');
+      expect(res.body.message).toContain('Wishlist successfully created');
     });
   });
 
   describe('DELETE /api/v1/buyer/removeToWishList', () => {
     it('should remove a product from the wishlist', async () => {
-      const testProductId = 1;
 
       const res = await request(app)
       .delete('/api/v1/buyer/removeToWishList')
       .set('Authorization', `Bearer ${buyerToken}`)
       .send({
-          productId: testProductId,
+          productId: productId,
         });
 
       expect(res.statusCode).toEqual(200);
