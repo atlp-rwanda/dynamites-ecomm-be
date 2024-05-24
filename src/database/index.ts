@@ -15,6 +15,7 @@ export class DbConnection {
     database: config.name,
     migrations: [__dirname + '/migrations/'],
     entities: [__dirname + '/models/*{.js,.ts}'],
+    ssl: { rejectUnauthorized: false },
   });
 
   private constructor() {}

@@ -233,7 +233,111 @@ describe('Product Controller Tests', () => {
     expect(response.statusCode).toEqual(400);
     expect(response.body.errors).toBeDefined();
   });
+  it('should update product availability', async () => {
+    const availabilityData = {
+      availability: false,
+    };
 
+    const response = await request(app)
+      .put(`/api/v1/product/${productId}/availability`)
+      .set('Authorization', `Bearer ${token}`)
+      .send(availabilityData);
+
+    expect(response.status).toBe(200);
+    expect(response.body.msg).toBe('Product availability updated');
+  });
+
+  it('should return product availability', async () => {
+    const response = await request(app)
+      .get(`/api/v1/product/${productId}/availability`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.availability).toBeDefined();
+    expect(response.body.productId).toBe(`${productId}`);
+  });
+
+  it('should update availability based on quantity', async () => {
+    const zero = 0
+    const nonZero = 3
+    const zeroQuantity = {
+      name: 'Updated Product Name',
+      image: 'Updated.jpg',
+      gallery: [],
+      shortDesc: 'This is a updated',
+      longDesc: 'Detailed description of the Updated product',
+      categoryId: categoryId,
+      quantity: zero,
+      regularPrice: 10,
+      salesPrice: 7,
+      tags: ['tag1', 'tag2'],
+      type: 'Variable',
+      isAvailable: true,
+    };
+    const nonZeroQuantity = {...zeroQuantity, quantity: nonZero}
+    const response = await request(app)
+      .put(`/api/v1/product/${productId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send(zeroQuantity);
+
+    expect(response.body.data.isAvailable).toEqual(false);
+
+    const response2 = await request(app)
+      .put(`/api/v1/product/${productId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send(nonZeroQuantity);
+
+    expect(response2.body.data.isAvailable).toEqual(true);
+  });
+
+  it('should return validation errors for invalid availability data', async () => {
+    const invalidUpdateData = {
+      name: '',
+    };
+    const response = await request(app)
+      .put(`/api/v1/product/${productId}/availability`)
+      .set('Authorization', `Bearer ${token}`)
+      .send(invalidUpdateData);
+    expect(response.statusCode).toEqual(400);
+    expect(response.body.errors).toBeDefined();
+  });
+  it('should return 401 if user is not found', async () => {
+    const nonExistentUserId = 9999;
+
+    const response = await request(app)
+      .get(`/api/v1/product/${productId}/availability`)
+      .set('Authorization', `Bearer ${nonExistentUserId}`);
+
+    expect(response.status).toBe(401);
+  });
+
+  it('should return 404 if product is not found', async () => {
+    const nonExistentProductId = 9999;
+
+    const response = await request(app)
+      .get(`/api/v1/product/${nonExistentProductId}/availability`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.status).toBe(404);
+    expect(response.body.msg).toBe('Product not found');
+  });
+
+  it('should return 403 if product is not owned by vendor', async () => {
+    // Create a user with a different ID
+    const otherToken = await getVendorToken(
+      'test2@gmail.com',
+      'TestPassword123',
+      'Test2',
+      'User2'
+    );
+
+    const response = await request(app)
+      .get(`/api/v1/product/${productId}/availability`)
+      .set('Authorization', `Bearer ${otherToken}`);
+
+    expect(response.status).toBe(403);
+    expect(response.body.msg).toBe('Product not owned by vendor');
+  });
   it('should delete a product by ID', async () => {
     const response = await request(app)
       .delete(`/api/v1/product/${productId}`)
@@ -261,7 +365,6 @@ describe('Product Controller Tests', () => {
     expect(response.body.message).toEqual('All product deleted successfully');
   });
 
-
   it('should retrieve recommended products', async () => {
     const productData = {
       name: 'Seasonal Product',
@@ -273,45 +376,52 @@ describe('Product Controller Tests', () => {
       quantity: 10,
       regularPrice: 5,
       salesPrice: 4,
-      tags: ['Summer'], 
+      tags: ['Summer'],
       type: 'Simple',
       isAvailable: true,
     };
-  
+
     await request(app)
       .post('/api/v1/product')
       .set('Authorization', `Bearer ${token}`)
       .send(productData);
-  
+
     const response = await request(app).get('/api/v1/product/recommended');
     expect(response.statusCode).toEqual(200);
 
-    expect(response.body.message).toEqual('Recommended products retrieved successfully');
-  
+    expect(response.body.message).toEqual(
+      'Recommended products retrieved successfully'
+    );
+
     expect(Array.isArray(response.body.data)).toBeTruthy();
     expect(response.body.data[0].tags).toContain('Summer');
   });
 
   it('should retrieve all available products', async () => {
-    const response = await request(app).get('/api/v1/product/getAvailableProducts');
+    const response = await request(app).get(
+      '/api/v1/product/getAvailableProducts'
+    );
 
     expect(response.statusCode).toEqual(200);
     expect(response.body).toHaveProperty('status', 'success');
     expect(response.body).toHaveProperty('availableProducts');
     expect(response.body).toHaveProperty('totalPages');
     expect(response.body).toHaveProperty('currentPage');
-    expect(response.header['content-type']).toEqual(expect.stringContaining('json'));
+    expect(response.header['content-type']).toEqual(
+      expect.stringContaining('json')
+    );
   });
 
   it('should parse limit and page from query parameters', async () => {
     const limit = 5;
     const page = 1;
-    const response = await request(app).get(`/api/v1/product/getAvailableProducts?limit=${limit}&page=${page}`);
+    const response = await request(app).get(
+      `/api/v1/product/getAvailableProducts?limit=${limit}&page=${page}`
+    );
 
     expect(response.status).toBe(200);
     expect(response.body.currentPage).toBe(page);
     expect(response.body).toHaveProperty('availableProducts');
-    expect(response.body.availableProducts.length).toBeLessThanOrEqual(limit); 
+    expect(response.body.availableProducts.length).toBeLessThanOrEqual(limit);
   });
-  
 });
