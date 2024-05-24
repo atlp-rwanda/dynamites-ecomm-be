@@ -9,7 +9,7 @@ declare module 'express' {
   }
 }
 
-const PORT = process.env.APP_PORT;
+const PORT = process.env.PORT;
 
 (async () => {
   // connecting to the database
