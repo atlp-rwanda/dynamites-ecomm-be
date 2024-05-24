@@ -71,5 +71,6 @@ describe('Buyer Controller test', () => {
       .set('Authorization', `Bearer ${buyerToken}`);
     expect(response.status).toBe(404);
     expect(response.body.msg).toBe('Product not found');
+  
   });
 });

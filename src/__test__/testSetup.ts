@@ -69,7 +69,6 @@ export async function getVendorToken(
   lastName: string = 'User'
 ) {
   const userRepository = await DbConnection.connection.getRepository(UserModel);
-
   const formData = {
     name: 'Vendor',
     permissions: ['test-permission1', 'test-permission2'],
