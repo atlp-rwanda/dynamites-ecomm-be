@@ -33,6 +33,8 @@ userRouter.put(
   checkRole(['Admin']),
   deactivateAccount
 );
+userRouter.post('/recover', recoverPassword);
+userRouter.post('/recover/confirm/', updateNewPassword);
 
 userRouter.post('/recover', recoverPassword);
 userRouter.post('/recover/confirm/', updateNewPassword);
