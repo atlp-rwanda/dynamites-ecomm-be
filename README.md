@@ -1,4 +1,5 @@
-# Dynamites API [![CI for ecomm-project for Dynamite](https://github.com/atlp-rwanda/dynamites-ecomm-be/actions/workflows/workflow_for_ecomm.yml/badge.svg?branch=develop)](https://github.com/atlp-rwanda/dynamites-ecomm-be/actions/workflows/workflow_for_ecomm.yml) ![check-code-coverage](https://img.shields.io/badge/code--coverage-89.13%25-green)
+![check-code-coverage](https://img.shields.io/badge/code--coverage-96.25%25-brightgreen)
+# Dynamites API  
 
 ## Overview
 

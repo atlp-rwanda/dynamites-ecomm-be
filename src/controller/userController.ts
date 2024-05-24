@@ -200,3 +200,69 @@ export const verify2FA = errorHandler(async (req: Request, res: Response) => {
   });
   return res.status(200).json({ token });
 });
+
+// Delete All Users
+export const deleteAllUsers = async (req: Request, res: Response) => {
+  try {
+    const deletedUsers = await userRepository.delete({});
+    return res.status(200).json({
+      message: 'All users deleted successfully',
+      count: deletedUsers.affected,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: 'Failed to delete users' });
+  }
+};
+
+// Get All Users
+export const getAllUsers = errorHandler(async (req: Request, res: Response) => {
+  const users = await userRepository.find();
+  return res.status(200).json({message: 'Users fetched successfully', users});
+});
+
+export const recoverPassword = errorHandler(async (req: Request, res: Response) => {
+  const { email } = req.body as { email: string };
+
+  const user = await userRepository.findOne({ where: { email } });
+
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  // Generate a JWT token with the user's email as the payload
+  const recoverToken = jwt.sign({ email : user.email }, process.env.JWT_SECRET as jwt.Secret, { expiresIn: '1h' });
+  
+  const confirmLink = `${process.env.APP_URL}/api/v1/user/recover/confirm?recoverToken=${recoverToken}`;
+  
+  return res.status(200).json({ message: 'Password reset token generated successfully', confirmLink });
+
+});
+
+//password Recover Confirmation
+export const updateNewPassword = errorHandler(async (req: Request, res: Response) => {
+  const recoverToken = req.query.recoverToken as string;
+const { password } = req.body as { password: string };
+
+if (!recoverToken) {
+  return res.status(404).json({ message: 'Invalid or expired token' });
+}
+
+const decoded = jwt.verify(recoverToken, process.env.JWT_SECRET as jwt.Secret) as {
+  email : string;
+};
+const user = await userRepository.findOne({
+  where: { email: decoded.email },
+});
+
+if (!user) {
+  return res.status(404).json({ message: 'User not found' });
+}
+ 
+const hashedPassword : string = await bcrypt.hash(password, 10);
+user.password = hashedPassword;
+
+await userRepository.save(user);
+
+return res.status(200).json({ message: 'Password updated successfully' });
+
+});
