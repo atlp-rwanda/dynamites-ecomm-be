@@ -60,7 +60,6 @@ describe('Buyer Controller test', () => {
       .get(`/api/v1/buyer/get_product/${productId}`)
       .set('Authorization', `Bearer ${buyerToken}`);
 
-
     expect(getResponse.statusCode).toEqual(200);
     expect(getResponse.body.msg).toEqual('Product retrieved successfully');
   });

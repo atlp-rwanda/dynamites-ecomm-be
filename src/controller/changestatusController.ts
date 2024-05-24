@@ -1,4 +1,3 @@
-
 import { Request, Response } from 'express';
 import UserModel from '../database/models/userModel';
 import dbConnection from '../database';
@@ -23,7 +22,9 @@ export const activateAccount = [
     }
 
     if (user.status === 'active') {
-      return res.status(400).json({ message: 'User account is already active' });
+      return res
+        .status(400)
+        .json({ message: 'User account is already active' });
     }
 
     user.status = 'active';
@@ -52,7 +53,9 @@ export const deactivateAccount = [
     }
 
     if (user.status === 'inactive') {
-      return res.status(400).json({ message: 'User account is already inactive' });
+      return res
+        .status(400)
+        .json({ message: 'User account is already inactive' });
     }
 
     user.status = 'inactive';
@@ -63,8 +66,3 @@ export const deactivateAccount = [
       .json({ message: 'User account deactivated successfully' });
   }),
 ];
-
-
-
-
-

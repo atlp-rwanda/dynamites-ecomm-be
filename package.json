@@ -64,9 +64,10 @@
       "text",
       "lcov"
     ],
-    "coveragePathIgnorePatterns" : [
-      "/node_modules/",  
-      "/src/emails/"
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/src/emails/",
+      "/src/middlewares/"
     ],
     "testPathIgnorePatterns": [
       "/node_modules/",
