@@ -1,4 +1,6 @@
-![check-code-coverage](https://img.shields.io/badge/code--coverage-96.25%25-brightgreen)
+[![CI for ecomm-project for Dynamite](https://github.com/atlp-rwanda/dynamites-ecomm-be/actions/workflows/workflow_for_ecomm.yml/badge.svg)](https://github.com/atlp-rwanda/dynamites-ecomm-be/actions/workflows/workflow_for_ecomm.yml)
+
+[![codecov](https://codecov.io/gh/atlp-rwanda/dynamites-ecomm-be/graph/badge.svg?token=I1G8CMQKBH)](https://codecov.io/gh/atlp-rwanda/dynamites-ecomm-be)
 # Dynamites API  
 
 ## Overview
@@ -7,7 +9,7 @@ Welcome to Dynamites API! This project provides the backend API for the dynamite
 
 ## Documentation
 
-Find the API documentation at https://dynamites-ecomm-be-backend-hosting.onrender.com/api-docs
+Find the API documentation at https://dynamites-ecomm-be.onrender.com/api-docs
 
 ## Installation
 
