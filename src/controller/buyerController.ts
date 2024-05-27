@@ -55,7 +55,7 @@ export const handlePayment = errorHandler(
     order.paid = true;
     await orderRepository.save(order);
 
-    return res.status(200).json({ success: true, charge });
+    return res.status(200).json({ success: true, paid: true, charge});
   }
 );
  

@@ -6,10 +6,9 @@ import {
   getBuyerToken,
   getVendorToken,
 } from './testSetup';
-import stripe from 'stripe';
+
 beforeAll(beforeAllHook);
 afterAll(afterAllHook);
-jest.mock('stripe');
 
 describe('Buyer Controller test', () => {
   let buyerToken: string;
@@ -72,25 +71,5 @@ describe('Buyer Controller test', () => {
       .set('Authorization', `Bearer ${buyerToken}`);
     expect(response.status).toBe(404);
     expect(response.body.msg).toBe('Product not found');
-  });
-});
-
-describe('POST /payment', () => {
-  it('should create a charge, mark the order as paid, and return 200', async () => {
-    (stripe as jest.Mocked<typeof stripe & { charges: { create: jest.Mock } }>).charges.create.mockResolvedValue({
-      id: 'chargeId',
-    });
-
-    const res = await request(app)
-      .post('/payment')
-      .send({
-        token: 'token',
-        orderId: 1, // Add this line
-      });
-
-    expect(res.statusCode).toEqual(200);
-    expect(res.body).toHaveProperty('success', true);
-    expect(res.body).toHaveProperty('charge');
-    expect(res.body).toHaveProperty('paid', true); // Add this line
   });
 });

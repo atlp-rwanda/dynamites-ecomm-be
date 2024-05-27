@@ -7,9 +7,6 @@ import { check, validationResult } from 'express-validator';
 import errorHandler from '../middlewares/errorHandler';
 import productQuantityWatch from '../middlewares/productAvailabilityWatch';
 
-
-
-
 const userRepository = dbConnection.getRepository(UserModel);
 const productRepository = dbConnection.getRepository(Product);
 

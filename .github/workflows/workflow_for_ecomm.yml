@@ -40,7 +40,7 @@ jobs:
       APP_URL: ${{ secrets.APP_URL }}
       ALL: ${{ secrets.ALL }}
       DOCS: ${{ secrets.DOCS }}
-      APP_PORT: ${{ secrets.APP_PORT }}
+      PORT: ${{ secrets.PORT }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
       DB_PORT_TEST: ${{ secrets.DB_PORT_TEST }}
       DB_USER_TEST: ${{ secrets.DB_USER_TEST }}
