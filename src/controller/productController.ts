@@ -70,6 +70,7 @@ export const createProduct = [
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
+    
     const vendorId = req.user!.id;
 
     const {
@@ -248,7 +249,7 @@ export const getAllProducts = errorHandler(
 
 export const getProduct = errorHandler(async (req: Request, res: Response) => {
   const productId: number = parseInt(req.params.productId);
-  
+
   const product = await productRepository.findOne({
     where: { id: productId },
     select: {
@@ -299,7 +300,6 @@ export const deleteAllProduct = errorHandler(
   }
 );
 
-
 export const getRecommendedProducts = errorHandler(
   async (req: Request, res: Response) => {
     const today = new Date();
@@ -323,9 +323,14 @@ export const getRecommendedProducts = errorHandler(
 
     const recommendedTags = holidayTags[month.toString()] || [];
     const allProducts = await productRepository.find();
-    const recommendedProducts = allProducts.filter(product => 
-      product.isAvailable && 
-      product.tags.some(tag => recommendedTags.map(tag => tag.toLowerCase()).includes(tag.toLowerCase()))
+    const recommendedProducts = allProducts.filter(
+      (product) =>
+        product.isAvailable &&
+        product.tags.some((tag) =>
+          recommendedTags
+            .map((tag) => tag.toLowerCase())
+            .includes(tag.toLowerCase())
+        )
     );
 
     return res.status(200).json({
@@ -335,28 +340,28 @@ export const getRecommendedProducts = errorHandler(
   }
 );
 
-export const AvailableProducts =   errorHandler(async (req: Request, res: Response) => {
-  let limit: number
-  let page: number
+export const AvailableProducts = errorHandler(
+  async (req: Request, res: Response) => {
+    let limit: number;
+    let page: number;
 
-  if(req.query.limit == undefined && req.query.page == undefined) 
-    {
-    limit=10
-    page=1
+    if (req.query.limit == undefined && req.query.page == undefined) {
+      limit = 10;
+      page = 1;
+    } else {
+      limit = parseInt(req.query.limit as string);
+      page = parseInt(req.query.page as string);
     }
-  else{
-    limit=parseInt(req.query.limit as string)
-    page=parseInt(req.query.page as string)
-  }
-  const [availableProducts, totalCount] = await productRepository.findAndCount({
-      where:{isAvailable:true},
-      take: limit,
-      skip: (page - 1) * limit,
-      select:{vendor:{firstName:true,lastName:true,picture:true}},
-      relations: ['category','vendor'],
-  });
+    const [availableProducts, totalCount] =
+      await productRepository.findAndCount({
+        where: { isAvailable: true },
+        take: limit,
+        skip: (page - 1) * limit,
+        select: { vendor: { firstName: true, lastName: true, picture: true } },
+        relations: ['category', 'vendor'],
+      });
 
-  return res.status(200).json({
+    return res.status(200).json({
       status: 'success',
       message: 'Items retrieved successfully.',
       availableProducts,

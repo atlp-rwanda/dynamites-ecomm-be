@@ -6,6 +6,7 @@ import {
   getBuyerToken,
   getVendorToken,
 } from './testSetup';
+import stripe from 'stripe';
 beforeAll(beforeAllHook);
 afterAll(afterAllHook);
 jest.mock('stripe');
@@ -61,7 +62,6 @@ describe('Buyer Controller test', () => {
       .get(`/api/v1/buyer/get_product/${productId}`)
       .set('Authorization', `Bearer ${buyerToken}`);
 
-
     expect(getResponse.statusCode).toEqual(200);
     expect(getResponse.body.msg).toEqual('Product retrieved successfully');
   });
@@ -77,7 +77,7 @@ describe('Buyer Controller test', () => {
 
 describe('POST /payment', () => {
   it('should create a charge and return 200', async () => {
-    (stripe as jest.Mocked<typeof stripe>).charges.create.mockResolvedValue({
+    (stripe as jest.Mocked<typeof stripe & { charges: { create: jest.Mock } }>).charges.create.mockResolvedValue({
       id: 'chargeId',
     });
 

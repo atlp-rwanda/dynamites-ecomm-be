@@ -4,6 +4,10 @@ import {
   confirmEmail,
   Login,
   verify2FA,
+  recoverPassword,
+  updateNewPassword,
+  getAllUsers,
+  deleteAllUsers,
 } from '../controller/userController';
 
 import {
@@ -18,6 +22,8 @@ userRouter.post('/register', registerUser);
 userRouter.get('/confirm', confirmEmail);
 userRouter.post('/login', Login);
 userRouter.post('/verify2FA/:userId', verify2FA);
+userRouter.get('/getAllUsers', getAllUsers);
+userRouter.delete('/deleteUsers', deleteAllUsers);
 userRouter.put(
   '/activate/:userId',
   IsLoggedIn,
@@ -31,5 +37,6 @@ userRouter.put(
   checkRole(['Admin']),
   deactivateAccount
 );
-
+userRouter.post('/recover', recoverPassword);
+userRouter.put('/recover/confirm', updateNewPassword)
 export default userRouter;

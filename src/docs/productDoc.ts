@@ -314,7 +314,6 @@
  *         description: Internal server error
  */
 
-
 /**
  * @swagger
  * /api/v1/product/getAvailableProducts:

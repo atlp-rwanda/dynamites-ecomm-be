@@ -1,4 +1,5 @@
-# Dynamites API [![Coverage Status](https://coveralls.io/repos/github/atlp-rwanda/dynamites-ecomm-be/badge.svg)](https://coveralls.io/github/atlp-rwanda/dynamites-ecomm-be)
+![check-code-coverage](https://img.shields.io/badge/code--coverage-96.25%25-brightgreen)
+# Dynamites API  
 
 ## Overview
 
