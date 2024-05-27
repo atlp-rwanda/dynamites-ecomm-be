@@ -5,6 +5,7 @@ import productRoutes from './productRoutes';
 import categoryRoutes from './categoryRoutes';
 import buyerRoutes from './buyerRoutes';
 import cartRoutes from '../routes/cartRoutes';
+import couponRouter from './couponRoute'
 
 const router = Router();
 
@@ -14,5 +15,6 @@ router.use('/product', productRoutes);
 router.use('/category', categoryRoutes);
 router.use('/buyer', buyerRoutes);
 router.use('/cart', cartRoutes);
+router.use('/coupons', couponRouter)
 
 export default router;
