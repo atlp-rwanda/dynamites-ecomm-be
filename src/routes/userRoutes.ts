@@ -7,7 +7,7 @@ import {
   recoverPassword,
   updateNewPassword,
   getAllUsers,
-  deleteAllUsers,
+  deleteAllUsers
 } from '../controller/userController';
 
 import {

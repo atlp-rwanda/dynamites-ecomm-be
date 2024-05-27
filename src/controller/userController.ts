@@ -221,6 +221,7 @@ export const getAllUsers = errorHandler(async (req: Request, res: Response) => {
   return res.status(200).json({message: 'Users fetched successfully', users});
 });
 
+
 export const recoverPassword = errorHandler(async (req: Request, res: Response) => {
   const { email } = req.body as { email: string };
 

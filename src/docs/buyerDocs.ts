@@ -38,12 +38,12 @@
  *               token:
  *                 type: string
  *                 description: Stripe token
- *               amount:
+ *               orderId:
  *                 type: number
- *                 description: Amount in dollars
+ *                 description: Order ID
  *             required:
  *               - token
- *               - amount
+ *               - orderId
  *     responses:
  *       '200':
  *         description: Successful operation
@@ -62,7 +62,9 @@
  *                 - success
  *                 - charge
  *       '400':
- *         description: Invalid input
+ *         description: Invalid input or order has already been paid
+ *       '404':
+ *         description: Order not found
  *       '500':
  *         description: Internal Server Error
  */

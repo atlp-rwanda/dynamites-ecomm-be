@@ -3,9 +3,11 @@ import dbConnection from '../database';
 import Product from '../database/models/productEntity';
 import errorHandler from '../middlewares/errorHandler';
 import Stripe from 'stripe';
+import { Order } from '../database/models/orderEntity';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2020-08-27' });
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', { apiVersion: '2024-04-10' });
 const productRepository = dbConnection.getRepository(Product);
+const orderRepository = dbConnection.getRepository(Order);
 
 export const getOneProduct = errorHandler(
   async (req: Request, res: Response) => {
@@ -26,12 +28,22 @@ export const getOneProduct = errorHandler(
   }
 );
 
+
 export const handlePayment = errorHandler(
   async (req: Request, res: Response) => {
-    const { token, amount } = req.body;
+    const { token, orderId } = req.body;
 
-    // Convert amount in dollars to cents
-    const amountInCents = amount * 100;
+    const order = await orderRepository.findOne({ where: { id: orderId } });
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+
+    if (order.paid) {
+      return res.status(400).json({ success: false, message: 'Order has already been paid' });
+    }
+
+    const amountInCents = order.totalAmount * 100;
 
     const charge = await stripe.charges.create({
       amount: amountInCents,
@@ -39,6 +51,9 @@ export const handlePayment = errorHandler(
       description: 'Test Charge',
       source: token,
     });
+
+    order.paid = true;
+    await orderRepository.save(order);
 
     return res.status(200).json({ success: true, charge });
   }

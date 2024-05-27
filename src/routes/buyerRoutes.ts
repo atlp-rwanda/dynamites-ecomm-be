@@ -7,7 +7,7 @@ import { handlePayment } from '../controller/buyerController';
 
 const buyerRouter = Router();
 
-// buyerRouter.use(IsLoggedIn, checkRole(['Buyer']));
+buyerRouter.use(IsLoggedIn, checkRole(['Buyer']));
 
 buyerRouter.get('/get_product/:id', getOneProduct);
 

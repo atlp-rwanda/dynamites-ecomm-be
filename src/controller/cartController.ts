@@ -4,16 +4,14 @@ import dbConnection from '../database';
 import errorHandler from '../middlewares/errorHandler';
 import Product from '../database/models/productEntity';
 import UserModel from '../database/models/userModel';
-// import applyCoupon from '../utilis/couponCalculator';
 import { Order } from '../database/models/orderEntity';
 import { OrderDetails } from '../database/models/orderDetailsEntity';
-import Coupon from '../database/models/couponEntity';
+import applyCoupon from '../utilis/couponCalculator';
 
 const cartRepository = dbConnection.getRepository(Cart);
 const productRepository = dbConnection.getRepository(Product);
 const userRepository = dbConnection.getRepository(UserModel);
 const orderRepository = dbConnection.getRepository(Order);
-const couponRepository = dbConnection.getRepository(Coupon);
 
 export const addToCart = errorHandler(async (req: Request, res: Response) => {
   const { productId, quantity } = req.body;
@@ -166,20 +164,7 @@ export const checkout = errorHandler(async (req: Request, res: Response) => {
 
     // Apply any applicable coupon for each product
     if (couponCode) {
-      const coupon = await couponRepository.findOne({
-        where: { code: couponCode },
-        relations: ['applicableProducts'],
-      });
-
-      if (coupon) {
-        const applicableProduct = coupon.applicableProducts.find(
-          (applicableProduct) => applicableProduct.id === product.id
-        );
-
-        if (applicableProduct) {
-          price = price * (1 - coupon.percentage / 100);
-        }
-      }
+      price = await applyCoupon(product, couponCode, price);
     }
 
     totalAmount += price;
@@ -201,6 +186,8 @@ export const checkout = errorHandler(async (req: Request, res: Response) => {
   order.paymentInfo = paymentInfo;
   order.trackingNumber = trackingNumber;
   order.orderDetails = orderDetails;
+  order.status = 'Pending';
+  
 
   const savedOrder = await orderRepository.save(order);
 
@@ -254,3 +241,5 @@ export const cancelOrder = errorHandler(async (req: Request, res: Response) => {
 
   return res.status(200).json({ msg: 'Order canceled successfully' });
 });
+
+

@@ -76,7 +76,7 @@ describe('Buyer Controller test', () => {
 });
 
 describe('POST /payment', () => {
-  it('should create a charge and return 200', async () => {
+  it('should create a charge, mark the order as paid, and return 200', async () => {
     (stripe as jest.Mocked<typeof stripe & { charges: { create: jest.Mock } }>).charges.create.mockResolvedValue({
       id: 'chargeId',
     });
@@ -85,11 +85,12 @@ describe('POST /payment', () => {
       .post('/payment')
       .send({
         token: 'token',
-        amount: 20,
+        orderId: 1, // Add this line
       });
 
     expect(res.statusCode).toEqual(200);
     expect(res.body).toHaveProperty('success', true);
     expect(res.body).toHaveProperty('charge');
+    expect(res.body).toHaveProperty('paid', true); // Add this line
   });
 });
