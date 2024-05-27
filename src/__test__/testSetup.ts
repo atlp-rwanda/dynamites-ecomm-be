@@ -1,26 +1,11 @@
-import { DbConnection } from '../database/index';
+import dbConnection, { DbConnection } from '../database/index';
 import UserModel from '../database/models/userModel';
-import { Role } from '../database/models';
-import Category from '../database/models/categoryEntity';
-import Product from '../database/models/productEntity';
-import { Cart } from '../database/models';
 import request from 'supertest';
 import app from '../app';
 
 export async function beforeAllHook() {
   await DbConnection.instance.initializeDb();
-
-  const userRepository = DbConnection.connection.getRepository(UserModel);
-  const roleRepository = DbConnection.connection.getRepository(Role);
-  const categoryRepository = DbConnection.connection.getRepository(Category);
-  const productRepository = DbConnection.connection.getRepository(Product);
-  const cartRepository = DbConnection.connection.getRepository(Cart);
-
-  await userRepository.createQueryBuilder().delete().execute();
-  await roleRepository.createQueryBuilder().delete().execute();
-  await categoryRepository.createQueryBuilder().delete().execute();
-  await productRepository.createQueryBuilder().delete().execute();
-  await cartRepository.createQueryBuilder().delete().execute();
+  await dbConnection.synchronize(true) // This will drop all tables
 }
 export async function getAdminToken() {
   const userRepository = await DbConnection.connection.getRepository(UserModel);
@@ -143,18 +128,5 @@ export const getBuyerToken = async () => {
 };
 
 export async function afterAllHook() {
-  await DbConnection.connection.transaction(async (transactionManager) => {
-    const userRepository = transactionManager.getRepository(UserModel);
-    const roleRepository = transactionManager.getRepository(Role);
-    const categoryRepository = transactionManager.getRepository(Category);
-    const productRepository = transactionManager.getRepository(Product);
-    const cartRepository = transactionManager.getRepository(Cart);
-
-    await userRepository.createQueryBuilder().delete().execute();
-    await roleRepository.createQueryBuilder().delete().execute();
-    await categoryRepository.createQueryBuilder().delete().execute();
-    await productRepository.createQueryBuilder().delete().execute();
-    await cartRepository.createQueryBuilder().delete().execute();
-  });
   await DbConnection.instance.disconnectDb();
 }
