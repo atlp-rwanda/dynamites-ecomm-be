@@ -7,6 +7,7 @@ import buyerRoutes from './buyerRoutes';
 import cartRoutes from '../routes/cartRoutes';
 import couponRouter from './couponRoute'
 import checkoutRoutes from './checkoutRoutes'
+
 const router = Router();
 
 router.use('/user', userRouter);
