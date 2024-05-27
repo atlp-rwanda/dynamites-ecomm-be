@@ -66,8 +66,7 @@
     ],
     "coveragePathIgnorePatterns": [
       "/node_modules/",
-      "/src/emails/",
-      "/src/middlewares/"
+      "/src/emails/"
     ],
     "testPathIgnorePatterns": [
       "/node_modules/",

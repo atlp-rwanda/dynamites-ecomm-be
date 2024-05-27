@@ -12,6 +12,7 @@ import authRoutes from './routes/auth-routes';
 import cookieSession from 'cookie-session';
 import passport from 'passport';
 import userRouter from './routes/userRoutes';
+import  searchRoutes from './routes/searchRoutes'
 // Require Passport midleware
 import './middlewares/passport-setup';
 
@@ -79,6 +80,8 @@ app.get('/', (req: Request, res: Response) => {
 // Middleware to handle all endpoint routes
 app.use('/api/v1', router);
 app.use('/api/v1', userRouter);
+app.use('/api/v1', searchRoutes);
+
 // Endpoints for serving social login
 app.use('/auth', authRoutes);
 
