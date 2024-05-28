@@ -7,6 +7,8 @@ import buyerRoutes from './buyerRoutes';
 import cartRoutes from '../routes/cartRoutes';
 import couponRouter from './couponRoute';
 import chekoutRoutes from './checkoutRoutes';
+import reviewRoute from './reviewRoutes';
+
 const router = Router();
 
 router.use('/user', userRouter);
@@ -17,5 +19,6 @@ router.use('/buyer', buyerRoutes);
 router.use('/cart', cartRoutes);
 router.use('/coupons', couponRouter);
 router.use('/checkout', chekoutRoutes);
+router.use('/review',reviewRoute)
 
 export default router;

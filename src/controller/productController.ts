@@ -259,8 +259,15 @@ export const getProduct = errorHandler(async (req: Request, res: Response) => {
       vendor: {
         firstName: true,
       },
+      reviews:{
+        content:true,
+        rating:true,
+        user:{
+          firstName:true
+        }
+      },
     },
-    relations: ['category', 'vendor'],
+    relations: ['category', 'vendor','reviews'],
   });
 
   if (!product) {

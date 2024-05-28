@@ -5,9 +5,11 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import Category from './categoryEntity';
 import UserModel from './userModel';
+import { Review } from './reviewEntity';
 
 @Entity()
 export default class Product {
@@ -49,6 +51,12 @@ export default class Product {
 
   @Column({ default: true })
   isAvailable: boolean;
+   
+  @Column('float',{ default:0})
+  averageRating: number;
+
+  @OneToMany(() => Review, review => review.product)
+  reviews: Review[];
 
   @ManyToOne(() => UserModel, { onDelete: 'CASCADE' })
   vendor: UserModel;
