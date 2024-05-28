@@ -8,6 +8,7 @@ import {
   updateNewPassword,
   getAllUsers,
   deleteAllUsers,
+  updateProfile,
 } from '../controller/userController';
 
 import {
@@ -39,4 +40,6 @@ userRouter.put(
 );
 userRouter.post('/recover', recoverPassword);
 userRouter.put('/recover/confirm', updateNewPassword)
+
+userRouter.put('/updateProfile/:id',updateProfile);
 export default userRouter;

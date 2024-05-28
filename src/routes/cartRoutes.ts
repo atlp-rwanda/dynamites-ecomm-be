@@ -11,10 +11,8 @@ import {
 } from '../controller/cartController';
 
 const cartRouter = Router();
-
 cartRouter.use(IsLoggedIn, checkRole(['Buyer']));
 
 cartRouter.route('/').post(addToCart).get(getCartItems).delete(removeAllItems);
 cartRouter.route('/:itemId').delete(removeItem).patch(updateQuantity);
-
 export default cartRouter;

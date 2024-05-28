@@ -5,7 +5,6 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './docs/swaggerconfig';
 import 'reflect-metadata';
 import router from './routes/index';
-
 import fs from 'fs';
 import path from 'path';
 import authRoutes from './routes/auth-routes';

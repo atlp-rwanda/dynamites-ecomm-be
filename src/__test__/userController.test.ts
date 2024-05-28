@@ -415,3 +415,83 @@ describe('Get All Users Tests', () => {
     expect(response.body.message).toEqual('All users deleted successfully');
   });
 });
+describe('update user Profile', () => {
+  interface IUser {
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    password?: string;
+    userType?: Role; 
+    googleId?: string;
+    facebookId?: string;
+    picture?: string;
+    provider?: string;
+    isVerified: boolean;
+    twoFactorCode?: number; 
+  }
+
+  interface Role {
+    id: number;
+    name: string;
+    permissions: string[];
+  }
+
+
+let user: IUser | undefined | null;
+const userData = {
+firstName: 'jan',
+lastName: 'bosco',
+email: 'bosco@gmail.com',
+password: 'boscoPassword123',
+};
+
+beforeEach(async () => {
+
+await request(app).post('/api/v1/register').send(userData);
+user = await userRepository.findOne({ where: { email: userData.email } });
+});
+
+it('should update the user profile successfully', async () => {
+if (user) {
+  const newUserData = {
+    firstName: 'NewFirstName',
+    lastName: 'NewLastName',
+    email: 'newemail@example.com',
+    password: 'bosco@gmail.com',
+  };
+
+  const response = await request(app)
+    .put(`/api/v1/updateProfile/${user?.id}`)
+    .send(newUserData);
+  expect(response.statusCode).toBe(201);
+  expect(response.body.message).toBe('User updated successfully');
+}
+});
+
+it('should return 404 when user not found', async () => {
+const Id = 999;  
+const response = await request(app)
+  .put(`/api/v1/updateProfile/${Id}`)
+  .send(userData);
+expect(response.statusCode).toBe(404);
+expect(response.body.error).toBe('User not found');
+});
+
+it('should return 400 when email already exists', async () => {
+if (user) {
+  const newUserData = {
+    firstName: 'NewFirstName',
+    lastName: 'NewLastName',
+    email: 'newemail@example.com', 
+    password: 'bosco@gmail.com',
+  };
+
+  const response = await request(app)
+    .put(`/api/v1/updateProfile/${user.id}`)
+    .send(newUserData);
+  expect(response.statusCode).toBe(400); 
+  expect(response.body.error).toBe('Email is already taken'); 
+}
+});
+});

@@ -5,7 +5,7 @@ import app from '../app';
 
 export async function beforeAllHook() {
   await DbConnection.instance.initializeDb();
-  await dbConnection.synchronize(true) // This will drop all tables
+  await dbConnection.synchronize(true); // This will drop all tables
 }
 export async function getAdminToken() {
   const userRepository = await DbConnection.connection.getRepository(UserModel);
