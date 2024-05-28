@@ -11,7 +11,7 @@ import authRoutes from './routes/auth-routes';
 import cookieSession from 'cookie-session';
 import passport from 'passport';
 import userRouter from './routes/userRoutes';
-import  searchRoutes from './routes/searchRoutes'
+import searchRoutes from './routes/searchRoutes';
 // Require Passport midleware
 import './middlewares/passport-setup';
 
