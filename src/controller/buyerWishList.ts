@@ -10,18 +10,9 @@ const userRepository = dbConnection.getRepository(UserModel);
 const productRepository = dbConnection.getRepository(Product);
 const buyerWishListRepository = dbConnection.getRepository(BuyerWishList);
 
-const CreateWishListRule = [
-  check('userId')
-    .isLength({ min: 1 })
-    .isInt({ min: 1 })
-    .withMessage('User ID is not valid'),
-  check('categoryId')
-    .isInt({ min: 1 })
-    .withMessage('Valid category ID is required'),
-];
 
 const AddToWishListRules = [
-  check('userId').isLength({ min: 1 }).withMessage('User ID is required'),
+ 
   check('productId').isLength({ min: 1 }).withMessage('Product ID is required'),
 ];
 
@@ -32,8 +23,8 @@ export const AddItemInWishList = [
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-
-    const { userId, productId, time, categoryId } = req.body;
+    const userId = req.user?.id
+    const { productId, time } = req.body;
     const wishListTime = time ? new Date(time) : new Date();
 
     const user = await userRepository.findOne({ where: { id: userId } });
@@ -78,7 +69,6 @@ export const AddItemInWishList = [
 ];
 
 const removeProductRules = [
-    check('userId').isLength({ min: 1 }).withMessage('User ID is required'),
     check('productId').isLength({ min: 1 }).withMessage('Product ID is required'),
   ];
   
@@ -90,8 +80,8 @@ const removeProductRules = [
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
-  
-      const { userId, productId } = req.body;
+      const userId = req.user?.id
+      const { productId } = req.body;
   
       const wishList = await buyerWishListRepository.findOne({
         where: { user: { id: userId } },
@@ -133,14 +123,31 @@ const removeProductRules = [
           userType:{
             name:true,
           }
-        },
-        category:{
-          name:true
         }
 
       },
       relations: ['user', 'product'],
     });
+    return res
+      .status(200)
+      .json({ message: 'Data retrieved successfully', data: wishList });
+  })
+  
+
+  export const getOneWishList = 
+  errorHandler(async (req:Request ,res:Response)=>{
+
+    const  userId = req.user?.id
+     if(!userId){
+      return res
+       .status(404)
+       .json({ message: 'Data Id Not Found'});
+     }
+     const wishList = await buyerWishListRepository.findOne({
+      where: { user: { id: userId } },
+      relations: ['product'],
+    });
+
     return res
       .status(200)
       .json({ message: 'Data retrieved successfully', data: wishList });

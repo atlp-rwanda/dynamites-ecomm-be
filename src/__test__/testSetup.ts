@@ -1,11 +1,14 @@
 import dbConnection, { DbConnection } from '../database/index';
 import UserModel from '../database/models/userModel';
+import { Role } from '../database/models';
+import Category from '../database/models/categoryEntity';
+import Product from '../database/models/productEntity';
 import request from 'supertest';
 import app from '../app';
 
 export async function beforeAllHook() {
   await DbConnection.instance.initializeDb();
-  await dbConnection.synchronize(true); // This will drop all tables
+  await dbConnection.synchronize(true) // This will drop all tables
 }
 export async function getAdminToken() {
   const userRepository = await DbConnection.connection.getRepository(UserModel);
