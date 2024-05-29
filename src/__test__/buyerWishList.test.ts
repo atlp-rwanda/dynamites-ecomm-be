@@ -1,8 +1,6 @@
 import request from 'supertest';
 import app from '../app';
 import { afterAllHook, beforeAllHook } from './testSetup';
-import UserModel from '../database/models/userModel';
-import dbConnection from '../database';
 import {
     getBuyerToken,
     getVendorToken,
