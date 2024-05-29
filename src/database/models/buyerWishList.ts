@@ -1,7 +1,7 @@
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn, OneToOne, JoinColumn, JoinTable, ManyToOne } from "typeorm";
-import Product from "./productEntity";
-import UserModel from "./userModel";
-import Category from "./categoryEntity";
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn, OneToOne, JoinColumn, JoinTable, ManyToOne } from 'typeorm';
+import Product from './productEntity';
+import UserModel from './userModel';
+import Category from './categoryEntity';
 
 @Entity()
 export default class BuyerWishList {
