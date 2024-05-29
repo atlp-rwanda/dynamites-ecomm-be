@@ -1,8 +1,5 @@
 import dbConnection, { DbConnection } from '../database/index';
 import UserModel from '../database/models/userModel';
-import { Role } from '../database/models';
-import Category from '../database/models/categoryEntity';
-import Product from '../database/models/productEntity';
 import request from 'supertest';
 import app from '../app';
 
