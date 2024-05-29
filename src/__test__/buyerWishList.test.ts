@@ -1,15 +1,12 @@
 import request from 'supertest';
 import app from '../app';
 import { afterAllHook, beforeAllHook } from './testSetup';
-import jwt from 'jsonwebtoken';
 import UserModel from '../database/models/userModel';
 import dbConnection from '../database';
 import {
     getBuyerToken,
     getVendorToken,
   } from './testSetup';
-import buyerRouter from '../routes/buyerRoutes';
-const userRepository = dbConnection.getRepository(UserModel);
 
 beforeAll(beforeAllHook);
 afterAll(afterAllHook);
