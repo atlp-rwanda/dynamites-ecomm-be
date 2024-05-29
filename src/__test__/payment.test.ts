@@ -36,7 +36,6 @@ describe('handlePayment', () => {
       id: 'charge_id',
       amount: 10000,
       currency: 'usd',
-      status: 'succeeded',
     } as Stripe.Charge);
 
     MockedStripe.prototype.charges = {
