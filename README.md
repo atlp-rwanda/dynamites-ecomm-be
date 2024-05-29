@@ -46,6 +46,23 @@ To get started with Dynamites API, follow these simple steps:
   npm run test:ci
   ```
 
+## Docker
+
+Before you run that commands you must have docker installed in your PC
+
+1. **Build the Docker Image:**
+   ```sh
+   docker build -t <image_name> .
+   ```
+2. **Use Docker Compose to run Containers :**
+   ```sh
+   docker-compose up
+   ```
+3. **Stop the Running Containers:**
+   - If running with Docker Compose:
+     ```sh
+     docker-compose down
+     ```
 ## Usage
 
 Once the development server is running, you can interact with the API using HTTP requests.
