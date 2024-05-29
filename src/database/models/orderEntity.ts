@@ -41,4 +41,8 @@ export class Order {
 
   @OneToMany(() => OrderDetails, orderDetails => orderDetails.order, { cascade: true })
   orderDetails: OrderDetails[];
+  
+  @Column({ type: 'boolean', default: false, nullable: true })
+  paid: boolean | null;
+
 }

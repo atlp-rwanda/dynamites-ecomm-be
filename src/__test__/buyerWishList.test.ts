@@ -6,7 +6,6 @@ import {
     getVendorToken,
   } from './testSetup';
 
-
 beforeAll(beforeAllHook);
 afterAll(afterAllHook);
 let buyerToken: string;
