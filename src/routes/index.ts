@@ -8,6 +8,7 @@ import cartRoutes from '../routes/cartRoutes';
 import couponRouter from './couponRoute';
 import chekoutRoutes from './checkoutRoutes';
 import reviewRoute from './reviewRoutes';
+import orderRoutes from './orderRoutes';
 
 const router = Router();
 
@@ -19,6 +20,7 @@ router.use('/buyer', buyerRoutes);
 router.use('/cart', cartRoutes);
 router.use('/coupons', couponRouter);
 router.use('/checkout', chekoutRoutes);
-router.use('/review',reviewRoute)
+router.use('/review', reviewRoute);
+router.use('/order', orderRoutes);
 
 export default router;
