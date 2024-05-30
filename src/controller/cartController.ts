@@ -9,6 +9,9 @@ import { Order } from '../database/models/orderEntity';
 import { OrderDetails } from '../database/models/orderDetailsEntity';
 import { check, validationResult } from 'express-validator';
 
+
+import {eventEmitter} from '../Notification.vendor/event.services'
+
 const cartRepository = dbConnection.getRepository(Cart);
 const productRepository = dbConnection.getRepository(Product);
 const userRepository = dbConnection.getRepository(UserModel);
@@ -62,7 +65,9 @@ export const addToCart = errorHandler(async (req: Request, res: Response) => {
   newItem.quantity = quantity;
 
   const savedItem = await cartRepository.save(newItem);
-
+  console.log('caller the event')
+  eventEmitter.emit('addToCart',productId, userId)
+  
   return res
     .status(201)
     .json({ msg: 'Item added to cart successfully', cartItem: savedItem });
@@ -145,12 +150,16 @@ export const removeItem = errorHandler(async (req: Request, res: Response) => {
 
   const cartItem = await cartRepository.findOne({
     where: { id: itemId },
+    select:{user:{id:true}, product:{id:true}},
+    relations: ['user', 'product'],
   });
 
   if (!cartItem) {
     return res.status(404).json({ msg: 'Item not found' });
   }
   const deletedItem = await cartRepository.delete(itemId);
+
+  eventEmitter.emit('removeItem', cartItem)
 
   return res.status(200).json({
     msg: 'Cart Item deleted successfully',
@@ -224,6 +233,7 @@ export const checkout = [
       orderDetail.price = price;
 
       orderDetails.push(orderDetail);
+     
     }
 
     // Ensure totalAmount is an integer
@@ -240,6 +250,8 @@ export const checkout = [
     order.orderDetails = orderDetails;
 
     const savedOrder = await orderRepository.save(order);
+    
+    eventEmitter.emit('pressorder', order)
 
     await cartRepository.delete({ user: { id: userId } });
 
@@ -280,8 +292,11 @@ export const cancelOrder = errorHandler(async (req: Request, res: Response) => {
   if (!order) {
     return res.status(404).json({ msg: 'Order not found' });
   }
-
+  eventEmitter.emit('order_canceled', orderId)
+  
   await orderRepository.remove(order);
+
+  
 
   return res.status(200).json({ msg: 'Order canceled successfully' });
 });
