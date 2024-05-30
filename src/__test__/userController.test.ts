@@ -10,6 +10,19 @@ beforeAll(beforeAllHook);
 afterAll(afterAllHook);
 
 describe('User Registration Tests', () => {
+  it('should return all roles', async () => {
+    const response = await request(app)
+      .get('/api/v1/roles')
+      .expect(200);
+    expect(response.body.roles).toBeDefined();
+  
+  })
+  it('should return 404 if roles are not found', async () => {
+    const response = await request(app)
+      .get('/api/v1/roles')
+      .expect(404);
+    expect(response.body.msg).toBe('Roles not found');
+  })
   it('should register a new user with valid data', async () => {
     const userData = {
       firstName: 'Test',

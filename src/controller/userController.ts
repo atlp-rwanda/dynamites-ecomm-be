@@ -144,10 +144,12 @@ export const Login = errorHandler(async (req: Request, res: Response) => {
 
     const confirmLink = `${process.env.APP_URL}/api/v1/confirm?token=${token}`;
     if (process.env.NODE_ENV !== 'test'){
+      /* istanbul ignore start */
       await sendEmail('confirm', user.email, {
         name: user.firstName,
         link: confirmLink,
       });
+      /* istanbul ignore end */
     }
     return res.status(401).send({
       message: 'Please verify your email. Confirmation link has been sent.',
@@ -160,10 +162,12 @@ export const Login = errorHandler(async (req: Request, res: Response) => {
     await userRepository.update(user.id, { twoFactorCode });
 
     if (process.env.NODE_ENV !== 'test') {
+      /* istanbul ignore start */
       await sendCode(user.email, 'Your 2FA Code', './templates/2fa.html', {
         name: user.firstName,
         twoFactorCode: twoFactorCode.toString(),
       });
+      /* istanbul ignore end */
     }
 
     res

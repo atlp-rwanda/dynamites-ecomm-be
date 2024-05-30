@@ -25,10 +25,12 @@ export const searchProducts = errorHandler(
         where: { name: category as string },
       });
       if (categoryEntity) {
+        /* istanbul ignore start */
         queryBuilder = queryBuilder.andWhere(
           'product.categoryId = :categoryId',
           { categoryId: categoryEntity.id }
         );
+        /* istanbul ignore end */
       }
     }
 

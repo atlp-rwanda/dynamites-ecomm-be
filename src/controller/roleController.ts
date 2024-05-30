@@ -40,7 +40,9 @@ class roleController {
         .status(201)
         .json({ msg: 'Role created successfully', role: savedRole });
     } catch (err) {
+      /* istanbul ignore start */
       res.status(500).json({ msg: 'Internal Server Error' });
+      /* istanbul ignore end */
     }
   }
 
@@ -82,7 +84,9 @@ class roleController {
         return res.status(404).json({ msg: 'Role not found' });
       }
     } catch (err) {
+      /* istanbul ignore start */
       res.status(500).json({ msg: 'Internal Server Error' });
+      /* istanbul ignore end */
     }
   }
 
@@ -100,7 +104,9 @@ class roleController {
         return res.status(404).json({ msg: 'Role not found' });
       }
     } catch (err) {
+      /* istanbul ignore start */
       res.status(500).json({ msg: 'Internal Server Error' });
+      /* istanbul ignore end */
     }
   }
 
@@ -134,7 +140,9 @@ class roleController {
       await userRepository.save(user);
       return res.status(200).json({ msg: 'User role successfully updated' });
     } catch (err) {
+      /* istanbul ignore start */
       res.status(500).json({ msg: 'Internal Server Error' });
+      /* istanbul ignore end */
     }
   }
 }

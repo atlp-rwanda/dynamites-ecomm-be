@@ -322,6 +322,22 @@ describe('Product Controller Tests', () => {
     expect(response.body.msg).toBe('Product not found');
   });
 
+  it('sshould return 404 if product is not found while updating availability', async () => {
+    const nonExistentProductId = 9999;
+    const availabilityData = {
+      availability: false,
+    };
+
+    const response = await request(app)
+      .put(`/api/v1/product/${nonExistentProductId}/availability`)
+      .set('Authorization', `Bearer ${token}`)
+      .send(availabilityData);
+
+    expect(response.status).toBe(404);
+    expect(response.body.msg).toBe('Product not found');
+  });
+
+
   it('should return 403 if product is not owned by vendor', async () => {
     // Create a user with a different ID
     const otherToken = await getVendorToken(
