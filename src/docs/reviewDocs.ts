@@ -4,6 +4,8 @@
  *   post:
  *     summary: Create a new review
  *     tags: [Reviews]
+ *     security:
+ *       - bearerAuth: []
  *     consumes:
  *       - application/json
  *     produces:
