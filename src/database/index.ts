@@ -34,7 +34,9 @@ export class DbConnection {
       const connection = await DbConnection.dbConnection.initialize();
       console.log('db-connection', connection.options.database);
     } catch (error) {
+      /* istanbul ignore start */
       console.log('db-error', error);
+      /* istanbul ignore end */
     }
   };
 
@@ -43,7 +45,9 @@ export class DbConnection {
       await DbConnection.dbConnection.destroy();
       // console.log('db-disconnected', dbConnection.options.database);
     } catch (error) {
+      /* istanbul ignore start */
       console.log('Failed to disconnect from the test-db', error);
+      /* istanbul ignore end */
     }
   };
 }

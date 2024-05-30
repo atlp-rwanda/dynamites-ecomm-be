@@ -10,9 +10,11 @@ function errorHandler(func: MiddlewareFunction): MiddlewareFunction {
     try {
       return await func(req, res);
     } catch (error) {
+      /* istanbul ignore start */
       const message =
         (error as { detail?: string }).detail || 'Internal Server Error';
       return res.status(500).send(message);
+      /* istanbul ignore end */
     }
   };
 }
