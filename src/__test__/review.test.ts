@@ -92,8 +92,8 @@ describe('Review  controller test', () => {
 
     })
 
-    it("should return 400 for failed validation on create review", async () => {
-        const reviewBody = {content:'good', rating:15, productId:"some id"}
+    it('should return 400 for failed validation on create review', async () => {
+        const reviewBody = {content:'good', rating:15, productId:'some id'}
         const responseReview = await request(app)
         .post('/api/v1/review')
         .set('Authorization', `Bearer ${buyerToken}`)
