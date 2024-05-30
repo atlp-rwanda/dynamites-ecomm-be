@@ -68,6 +68,13 @@ describe('Cart controller tests', () => {
     expect(response.statusCode).toEqual(200);
     expect(response.body.cartItems).toBeDefined();
     expect(response.body.totalAmount).toBeDefined();
+
+    let totalAmount = 0;
+    const cartItems = response.body.cartItems;
+    for (const item of cartItems) {
+      totalAmount += item.product.salesPrice * item.quantity;
+    }
+    expect(response.body.totalAmount).toEqual(totalAmount);
   });
 
   it('should add an item to the cart successfully', async () => {
