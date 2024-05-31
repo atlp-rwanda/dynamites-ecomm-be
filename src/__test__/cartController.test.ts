@@ -218,7 +218,6 @@ describe('Checkout Tests', () => {
       .set('Authorization', `Bearer ${buyerToken}`)
       .send({
         deliveryInfo: '',
-        paymentInfo: '',
         couponCode: 'DISCOUNT10',
       });
 
@@ -244,7 +243,6 @@ describe('Checkout Tests', () => {
       .set('Authorization', `Bearer ${buyerToken}`)
       .send({
         deliveryInfo: '123 Delivery St.',
-        paymentInfo: 'VISA 1234',
         couponCode: 'DISCOUNT10',
       });
 
@@ -283,7 +281,6 @@ describe('Checkout Tests', () => {
       .set('Authorization', invalidUserToken)
       .send({
         deliveryInfo: '123 Delivery St.',
-        paymentInfo: 'VISA 1234',
         couponCode: 'DISCOUNT10',
       });
 
@@ -309,7 +306,6 @@ describe('Checkout Tests', () => {
       .set('Authorization', `Bearer ${buyerToken}`)
       .send({
         deliveryInfo: '123 Delivery St.',
-        paymentInfo: 'VISA 1234',
         couponCode: 'DISCOUNT10',
       });
 

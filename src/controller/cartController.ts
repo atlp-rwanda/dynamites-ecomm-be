@@ -16,7 +16,6 @@ const orderRepository = dbConnection.getRepository(Order);
 
 interface CheckoutRequestBody {
   deliveryInfo: string;
-  paymentInfo: string;
   couponCode?: string;
 }
 
@@ -24,9 +23,6 @@ const checkoutRules = [
   check('deliveryInfo')
     .isLength({ min: 1 })
     .withMessage('Delivery info is required'),
-  check('paymentInfo')
-    .isLength({ min: 1 })
-    .withMessage('Payment info is required'),
 ];
 
 export const addToCart = errorHandler(async (req: Request, res: Response) => {
@@ -187,7 +183,7 @@ export const checkout = [
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const { deliveryInfo, paymentInfo, couponCode } = req.body as CheckoutRequestBody;
+    const { deliveryInfo, couponCode } = req.body as CheckoutRequestBody;
     const userId = req.user?.id;
 
     // Fetch the user who is checking out
@@ -240,7 +236,6 @@ export const checkout = [
     order.totalAmount = totalAmount;
     order.status = 'Pending';
     order.deliveryInfo = deliveryInfo;
-    order.paymentInfo = paymentInfo;
     order.trackingNumber = trackingNumber;
     order.orderDetails = orderDetails;
 
@@ -255,8 +250,6 @@ export const checkout = [
     });
   }),
 ];
-
-
 
 export const deleteAllOrders = errorHandler(
   async (req: Request, res: Response) => {
