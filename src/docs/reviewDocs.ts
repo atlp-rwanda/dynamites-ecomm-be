@@ -6,31 +6,19 @@
  *     tags: [Reviews]
  *     security:
  *       - bearerAuth: []
- *     consumes:
- *       - application/json
- *     produces:
- *       - application/json
- *     parameters:
- *       - in: body
- *         name: review
- *         description: The review object
- *         required: true
- *         schema:
- *           type: object
- *           properties:
- *             content:
- *               type: string
- *               description: The content of the review
- *             rating:
- *               type: integer
- *               description: The rating of the review (1 to 5)
- *             productId:
- *               type: integer
- *               description: The ID of the product being reviewed
- *           example:
- *             content: "This product is amazing!"
- *             rating: 5
- *             productId: 50
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               content:
+ *                 type: string
+ *               rating:
+ *                 type: number
+ *               productId:
+ *                 type: number
  *     responses:
  *       '201':
  *         description: Review created successfully
@@ -42,7 +30,7 @@
  *               description: A success message
  *             review:
  *       '400':
- *         description: Bad request, check the request body
+ *         description: Bad request, failed validation
  *       '404':
  *         description: Product not found
  *       '409':

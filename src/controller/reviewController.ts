@@ -4,13 +4,24 @@ import Product from '../database/models/productEntity';
 import dbConnection from '../database';
 import errorHandler from '../middlewares/errorHandler';
 import UserModel from '../database/models/userModel';
+import {createReviewSchema} from '../middlewares/createReviewSchema';
 
 const productRepository = dbConnection.getRepository(Product);
 const reviewRepository = dbConnection.getRepository(Review);
  const userRepository = dbConnection.getRepository(UserModel);
 
 export const createReview = errorHandler(async (req: Request, res: Response) => {
-  const { content, rating, productId } = req.body;
+  const formData = req.body;
+
+  const validationResult = createReviewSchema.validate(formData);
+  if (validationResult.error) {
+    return res
+      .status(400)
+      .json({ msg: validationResult.error.details[0].message });
+  }
+
+  const {content, rating, productId} = formData
+
   const userId = req.user!.id;
 
   const product = await productRepository.findOne({

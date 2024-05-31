@@ -91,4 +91,13 @@ describe('Review  controller test', () => {
         expect(responseReview.body.message).toEqual('you are already reviewed the product');
 
     })
+
+    it('should return 400 for failed validation on create review', async () => {
+        const reviewBody = {content:'good', rating:15, productId:'some id'}
+        const responseReview = await request(app)
+        .post('/api/v1/review')
+        .set('Authorization', `Bearer ${buyerToken}`)
+        .send(reviewBody)
+        expect(responseReview.statusCode).toEqual(400);
+    })
 })
