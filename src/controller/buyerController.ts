@@ -64,12 +64,17 @@ export const getOneProduct = errorHandler(
       description: 'Test Charge',
       source: token,
     });
- 
- 
-    order.paid = true;
-    await orderRepository.save(order);
- 
-    return res.status(200).json({ success: true, paid: true, charge});
+
+    if (charge.status === 'succeeded') {
+      order.paid = true;
+      await orderRepository.save(order)
+
+      return res.status(200).json({ success: true, paid: true, charge});
+    }else{
+      return res
+      .status(400)
+      .json({ success: false, paid: false, message: `Charge status: ${charge.status}` });
+    }  
   }
  );
  
