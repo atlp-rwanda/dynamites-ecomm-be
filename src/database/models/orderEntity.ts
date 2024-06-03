@@ -39,10 +39,12 @@ export class Order {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => OrderDetails, orderDetails => orderDetails.order, { cascade: true })
+  @OneToMany(() => OrderDetails, (orderDetails) => orderDetails.order, {
+    cascade: true,
+    nullable: true,
+  })
   orderDetails: OrderDetails[];
-  
+
   @Column({ type: 'boolean', default: false, nullable: true })
   paid: boolean | null;
-
 }

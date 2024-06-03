@@ -224,3 +224,62 @@
  *       500:
  *         description: Internal Server Error
  */
+
+/**
+ * @swagger
+ * /api/v1/order/{orderId}:
+ *   put:
+ *     summary: Update the status of an order
+ *     tags: [Order]
+ *     parameters:
+ *       - name: orderId
+ *         in: path
+ *         required: true
+ *         description: ID of the order to update
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [Pending, Failed, Canceled, Paid, Shipping, Delivered, Returned, Completed]
+ *                 example: Failed
+ *     responses:
+ *       200:
+ *         description: Order status updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: Order status updated to Failed
+ *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: Invalid status
+ *       404:
+ *         description: Order not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: Order Not Found
+ *       500:
+ *         description: Internal Server Error
+ */
