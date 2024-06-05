@@ -7,9 +7,6 @@ import { check, validationResult } from 'express-validator';
 import errorHandler from '../middlewares/errorHandler';
 import productQuantityWatch from '../middlewares/productAvailabilityWatch';
 
-
-
-
 const userRepository = dbConnection.getRepository(UserModel);
 const productRepository = dbConnection.getRepository(Product);
 
@@ -70,7 +67,7 @@ export const createProduct = [
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    
+
     const vendorId = req.user!.id;
 
     const {
@@ -373,17 +370,21 @@ export const AvailableProducts = errorHandler(
       message: 'Items retrieved successfully.',
       availableProducts,
       totalPages: Math.ceil(totalCount / limit),
-      currentPage: page
-  });
-}) 
+      currentPage: page,
+    });
+  }
+);
 
 // From Bernard #38
 
-export const updateProductAvailability = async (req: Request, res: Response) => {
+export const updateProductAvailability = async (
+  req: Request,
+  res: Response
+) => {
   const { productId } = req.params;
   const { availability } = req.body;
   const user = await userRepository.findOne({
-    where: { id: (req.user as User).id},
+    where: { id: (req.user as User).id },
   });
 
   if (!user) {
@@ -392,7 +393,7 @@ export const updateProductAvailability = async (req: Request, res: Response) => 
 
   const product = await productRepository.findOne({
     where: { id: Number(productId) },
-    relations: ['vendor']
+    relations: ['vendor'],
   });
 
   if (!product) {
@@ -409,18 +410,16 @@ export const updateProductAvailability = async (req: Request, res: Response) => 
   res.json({ msg: 'Product availability updated' });
 };
 
-
 export const checkProductAvailability = async (req: Request, res: Response) => {
   const { productId } = req.params;
 
   const product = await productRepository.findOne({
     where: { id: Number(productId) },
-    relations: ['vendor']
+    relations: ['vendor'],
   });
 
-
   const user = await userRepository.findOne({
-    where: { id: (req.user as User).id},
+    where: { id: (req.user as User).id },
   });
 
   if (!user) {
@@ -430,7 +429,7 @@ export const checkProductAvailability = async (req: Request, res: Response) => {
   if (!product) {
     return res.status(404).json({ msg: 'Product not found' });
   }
-  if (product.vendor.id!== user.id) {
+  if (product.vendor.id !== user.id) {
     return res.status(403).json({ msg: 'Product not owned by vendor' });
   }
 

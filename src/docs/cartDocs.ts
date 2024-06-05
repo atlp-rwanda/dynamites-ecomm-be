@@ -140,10 +140,6 @@
  *                 type: object
  *                 description: Delivery information for the order
  *                 example: { "address": "123 Main St", "city": "Anytown", "zip": "12345" }
- *               paymentInfo:
- *                 type: object
- *                 description: Payment information for the order
- *                 example: { "method": "credit card", "details": "**** **** **** 1234" }
  *               couponCode:
  *                 type: string
  *                 description: Optional coupon code for discount
