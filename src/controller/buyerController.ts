@@ -63,11 +63,13 @@ export const handlePayment = errorHandler(
 
       return res.status(200).json({ success: true, paid: true, charge });
     } else {
-      return res.status(400).json({
-        success: false,
-        paid: false,
-        message: `Charge status: ${charge.status}`,
-      });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          paid: false,
+          message: `Charge status: ${charge.status}`,
+        });
     }
   }
 );
