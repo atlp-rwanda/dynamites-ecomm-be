@@ -36,7 +36,7 @@ describe('handlePayment', () => {
       id: 'charge_id',
       amount: 10000,
       currency: 'usd',
-      status: 'succeeded',
+      status: 'succeeded', // Ensure the status is 'succeeded'
     } as Stripe.Charge);
 
     MockedStripe.prototype.charges = {
@@ -47,6 +47,9 @@ describe('handlePayment', () => {
       .post('/api/v1/buyer/payment')
       .set('Authorization', `Bearer ${token}`)
       .send({ token: 'fake-token', orderId: order.id });
+
+    console.log('Response status:', response.status); // Debugging line
+    console.log('Response body:', response.body); // Debugging line
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
