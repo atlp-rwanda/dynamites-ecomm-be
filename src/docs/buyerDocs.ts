@@ -156,17 +156,152 @@
 
 /**
  * @swagger
- * /api/v1/buyer/getOneWishList:
- *   get:
- *     summary: Get One Wish List
+ * /api/v1/buyer/payment:
+ *   post:
+ *     summary: Create a charge
  *     tags: [Buyer]
  *     security:
  *       - bearerAuth: []
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: Stripe token
+ *               orderId:
+ *                 type: number
+ *                 description: Order ID
+ *             required:
+ *               - token
+ *               - orderId
+ *     responses:
+ *       '202':
+ *         description: Successful operation
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: Whether the charge was successful
+ *                 charge:
+ *                   type: object
+ *                   description: The charge object returned by Stripe
+ *               required:
+ *                 - success
+ *                 - charge
+ *       '400':
+ *         description: Invalid input or order has already been paid
+ *       '404':
+ *         description: Order not found
+ *       '500':
+ *         description: Internal Server Error
+ */
+/**
+ * @swagger
+ * /api/v1/buyer/momoPay:
+ *   post:
+ *     summary: Pay order using momo
+ *     tags: [Buyer]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               momoNumber:
+ *                 type: string
+ *                 description: Mobile Money Number
+ *               orderId:
+ *                 type: number
+ *                 description: Order ID
+ *             required:
+ *               - momoNumber
+ *               - orderId
  *     responses:
  *       '200':
- *         description: Successful
+ *         description: Successful operation
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description:  the charge was successful
+ *                 message:
+ *                   description: 'Transaction Accepted'
+ *                 requestId:
+ *                    type: string
+ *               required:
+ *                 - success
+ *                 - message
+ *                 - requestId
+ *       '400':
+ *         description: Invalid input or order has already been paid
  *       '404':
- *         description: Product not found
+ *         description: Order not found
+ *       '500':
+ *         description: Internal Server Error
+ */
+/**
+ * @swagger
+ * /api/v1/buyer/getPaymentStatus/{id}:
+ *   post:
+ *     summary: Get Payment Status
+ *     tags: [Buyer]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: number
+ *         required: true
+ *         description: Order Id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               requestId:
+ *                 type: string
+ *                 description: Request Id For Payment
+ *             required:
+ *               - requestId
+ *     responses:
+ *       '200':
+ *         description: Successful operation
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   description: Indicates whether the operation was successful
+ *                 message:
+ *                   type: string
+ *                   description: Message describing the result of the operation
+ *                 requestId:
+ *                   type: string
+ *                   description: Request Id For Payment
+ *               required:
+ *                 - success
+ *                 - message
+ *                 - requestId
+ *       '400':
+ *         description: Invalid input or order has already been paid
+ *       '404':
+ *         description: Order not found
  *       '500':
  *         description: Internal Server Error
  */

@@ -48,9 +48,6 @@ describe('handlePayment', () => {
       .set('Authorization', `Bearer ${token}`)
       .send({ token: 'fake-token', orderId: order.id });
 
-    console.log('Response status:', response.status); // Debugging line
-    console.log('Response body:', response.body); // Debugging line
-
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
     expect(response.body.paid).toBe(true);

@@ -11,7 +11,7 @@
     "format": "prettier --write .",
     "test": "cross-env NODE_ENV=test jest --runInBand --no-cache --detectOpenHandles",
     "test:ci": "cross-env NODE_ENV=test jest --runInBand --coverage --detectOpenHandles"
-  }, 
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/atlp-rwanda/dynamites-ecomm-be.git"
@@ -42,6 +42,7 @@
     "jsonwebtoken": "^9.0.2",
     "mailgun-js": "^0.22.0",
     "morgan": "^1.10.0",
+    "node-fetch": "^2.6.7",
     "nodemailer": "^6.9.13",
     "nodemon": "^3.1.0",
     "otplib": "^12.0.1",
@@ -69,14 +70,12 @@
       "/node_modules/",
       "/src/emails/",
       "/src/utilis/"
-
     ],
     "testPathIgnorePatterns": [
       "/node_modules/",
       "/src/emails/",
       "/src/middlewares/",
       "/src/utilis/"
-
     ]
   },
   "devDependencies": {

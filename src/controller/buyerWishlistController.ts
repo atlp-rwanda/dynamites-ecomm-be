@@ -26,13 +26,14 @@ export const AddItemInWishList = [
     const wishListTime = time ? new Date(time) : new Date();
 
     const user = await userRepository.findOne({ where: { id: userId } });
+    const product = await productRepository.findOne({
+      where: { id: productId },
+    });
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const product = await productRepository.findOne({
-      where: { id: productId },
-    });
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
@@ -75,18 +76,17 @@ export const AddItemInWishList = [
   }),
 ];
 
-const RemoveProductRules = [
+const removeProductRules = [
   check('productId').isLength({ min: 1 }).withMessage('Product ID is required'),
 ];
 
 export const RemoveProductFromWishList = [
-  ...RemoveProductRules,
+  ...removeProductRules,
   errorHandler(async (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-
     const userId = req.user?.id;
     const { productId } = req.body;
 
@@ -131,7 +131,6 @@ export const getAllWishList = errorHandler(
       },
       relations: ['user', 'product'],
     });
-
     return res
       .status(200)
       .json({ message: 'Data retrieved successfully', data: wishList });
@@ -142,9 +141,8 @@ export const getOneWishList = errorHandler(
   async (req: Request, res: Response) => {
     const userId = req.user?.id;
     if (!userId) {
-      return res.status(404).json({ message: 'User ID not found' });
+      return res.status(404).json({ message: 'Data Id Not Found' });
     }
-
     const wishList = await buyerWishListRepository.findOne({
       where: { user: { id: userId } },
       relations: ['product'],

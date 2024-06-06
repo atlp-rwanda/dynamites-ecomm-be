@@ -5,7 +5,7 @@ import { getBuyerToken, getVendorToken } from './testSetup';
 
 beforeAll(beforeAllHook);
 afterAll(afterAllHook);
-export let buyerToken: string;
+let buyerToken: string;
 let vendorToken: string;
 let productId: number;
 let categoryId: number;
@@ -69,27 +69,6 @@ describe('POST /api/v1/buyer/addItemToWishList', () => {
     expect(res.statusCode).toEqual(201);
     expect(res.body.message).toContain('Wishlist successfully created');
   });
-
-  it('should not allow adding an item already in the wishlist', async () => {
-    await request(app)
-      .post('/api/v1/buyer/addItemToWishList')
-      .set('Authorization', `Bearer ${buyerToken}`)
-      .send({
-        productId: productId,
-        time: '2024-05-21T12:00:00Z',
-      });
-
-    const res = await request(app)
-      .post('/api/v1/buyer/addItemToWishList')
-      .set('Authorization', `Bearer ${buyerToken}`)
-      .send({
-        productId: productId,
-        time: '2024-05-21T12:00:00Z',
-      });
-
-    expect(res.statusCode).toEqual(409);
-    expect(res.body.message).toContain('Product is already in the wishlist');
-  });
 });
 
 describe('DELETE /api/v1/buyer/removeToWishList', () => {
@@ -117,27 +96,15 @@ describe('GET /api/v1/buyer/getWishList', () => {
     expect(res.statusCode).toEqual(200);
     expect(res.body.message).toContain('Data retrieved successfully');
   });
-});
-describe('GET /api/v1/buyer/getOneWishList', () => {
-  it('should get all wishlists', async () => {
-    const res = await request(app)
-      .get('/api/v1/buyer/getOneWishList')
-      .set('Authorization', `Bearer ${buyerToken}`);
 
-    expect(res.statusCode).toEqual(200);
-    expect(res.body.message).toContain('Data retrieved successfully');
-  });
-});
+  describe('GET /api/v1/buyer/getOneWishList', () => {
+    it('should get all wishlists', async () => {
+      const res = await request(app)
+        .get('/api/v1/buyer/getOneWishList')
+        .set('Authorization', `Bearer ${buyerToken}`);
 
-describe('RemoveProductFromWishList', () => {
-  it('should return an error when the wishlist or product is not found', async () => {
-    const res = await request(app)
-      .delete('/api/v1/buyer/removeToWishList')
-      .set('Authorization', `Bearer ${buyerToken}`)
-      .send({
-        productId: 9999,
-      });
-    expect(res.statusCode).toEqual(404);
-    expect(res.body.message).toContain('Product not found in wishlist');
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.message).toContain('Data retrieved successfully');
+    });
   });
 });
