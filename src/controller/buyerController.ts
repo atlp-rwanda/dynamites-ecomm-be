@@ -164,7 +164,7 @@ export async function requestToPay(
   payerMsg: string,
   payeeNote: string
 ) {
-  let response = await fetch(requesttoPayUrl, {
+  const response = await fetch(requesttoPayUrl, {
     method: 'POST',
     headers: {
       'Ocp-Apim-Subscription-Key': subscriptionKey,
@@ -189,7 +189,7 @@ export async function requestToPay(
 }
 
 export async function requestToPayStatus(id: string, token: string) {
-  let response = await fetch(`${requesttoPayUrl}/${id}`, {
+  const response = await fetch(`${requesttoPayUrl}/${id}`, {
     method: 'GET',
     headers: {
       'Ocp-Apim-Subscription-Key': subscriptionKey,
@@ -197,7 +197,7 @@ export async function requestToPayStatus(id: string, token: string) {
       'X-Target-Environment': targetEnv,
     },
   });
-  let data = (await response.json()) as IStatus;
+  const data = (await response.json()) as IStatus;
   console.log(data);
   return data;
 }
@@ -214,7 +214,7 @@ export const validateMomo = async (token: string, momoaccount: string) => {
       },
     });
 
-    let response = (await resp.json()) as Ivalidate;
+    const response = (await resp.json()) as Ivalidate;
     console.log('Validation response:', response);
     return response.result;
   } catch (error) {
@@ -225,7 +225,7 @@ export const validateMomo = async (token: string, momoaccount: string) => {
 
 export const MomohandlePayment = errorHandler(
   async (req: Request, res: Response) => {
-    let token = (await purchaseAccessToken()) as string;
+    const token = (await purchaseAccessToken()) as string;
     const { orderId, momoNumber } = req.body;
     const isValid = await validateMomo(token, momoNumber);
 
@@ -249,10 +249,10 @@ export const MomohandlePayment = errorHandler(
         .json({ success: false, message: 'Order has already been paid' });
     }
 
-    let requestId = crypto.randomUUID();
-    let externalId = crypto.randomUUID();
+    const requestId = crypto.randomUUID();
+    const externalId = crypto.randomUUID();
 
-    let response = await requestToPay(
+    const response = await requestToPay(
       token,
       requestId,
       externalId,
@@ -283,7 +283,7 @@ export const checkPaymentStatus = errorHandler(
         .json({ success: false, message: 'Order not found' });
     }
 
-    let token = (await purchaseAccessToken()) as string;
+    const token = (await purchaseAccessToken()) as string;
 
     const data = await requestToPayStatus(requestId, token);
 
