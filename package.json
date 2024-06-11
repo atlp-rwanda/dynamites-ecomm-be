@@ -69,14 +69,12 @@
       "/node_modules/",
       "/src/emails/",
       "/src/utilis/"
-
     ],
     "testPathIgnorePatterns": [
       "/node_modules/",
       "/src/emails/",
       "/src/middlewares/",
       "/src/utilis/"
-
     ]
   },
   "devDependencies": {
