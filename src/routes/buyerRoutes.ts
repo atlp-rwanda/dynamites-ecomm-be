@@ -1,6 +1,10 @@
 import { Router } from 'express';
 import { checkRole } from '../middlewares/authorize';
-import { getOneProduct } from '../controller/buyerController';
+import {
+  MomohandlePayment,
+  checkPaymentStatus,
+  getOneProduct,
+} from '../controller/buyerController';
 import { IsLoggedIn } from '../middlewares/isLoggedIn';
 import {
   AddItemInWishList,
@@ -22,5 +26,7 @@ buyerRouter.get('/getWishList', IsLoggedIn, getAllWishList);
 buyerRouter.get('/getOneWishList', IsLoggedIn, getOneWishList);
 
 buyerRouter.post('/payment', handlePayment);
+buyerRouter.post('/momoPay', MomohandlePayment);
+buyerRouter.post('/getPaymentStatus/:id', checkPaymentStatus);
 
 export default buyerRouter;

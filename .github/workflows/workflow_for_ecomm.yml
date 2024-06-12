@@ -29,7 +29,7 @@ jobs:
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}   
+          token: ${{ secrets.CODECOV_TOKEN }}
           slug: atlp-rwanda/dynamites-ecomm-be
           directory: coverage/
     env:
@@ -57,3 +57,11 @@ jobs:
       FACEBOOK_APP_SECRET: ${{ secrets.FACEBOOK_APP_SECRET }}
       FACEBOOK_CALLBACK_URL: ${{ secrets.FACEBOOK_CALLBACK_URL }}
       COOKIES_KEY: ${{ secrets.COOKIES_KEY }}
+      XREF_ID: ${{ secrets.XREF_ID }}
+      APIKEY: ${{ secrets.APIKEY }}
+      TOKEN_URL: ${{ secrets.TOKEN_URL }}
+      REQUEST_TO_PAY_URL: ${{ secrets.REQUEST_TO_PAY_URL }}
+      TARGET_ENV: ${{ secrets.TARGET_ENV }}
+      VALIDATE_MOMO: ${{ secrets.VALIDATE_MOMO }}
+      API_KEY_URL: ${{ secrets.API_KEY_URL }}
+      SUBSCRIPTION_KEY: ${{ secrets.SUBSCRIPTION_KEY }}
