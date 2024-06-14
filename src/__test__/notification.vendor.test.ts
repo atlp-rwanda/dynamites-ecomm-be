@@ -4,18 +4,18 @@ import { getVendorToken, afterAllHook, beforeAllHook } from './testSetup';
 import Notification_box from '../database/models/inbox_notification';
 import dbConnection from '../database';
 
+const notificationRepository = dbConnection.getRepository(Notification_box);
+
 beforeAll(beforeAllHook);
 afterAll(afterAllHook);
 
 describe('Notification Controller Tests', () => {
   let token: string;
   let vendor_id: number;
-  let notificationRepository;
-  let notificationId: number;
+  let notification_id: number
 
   beforeAll(async () => {
     token = await getVendorToken();
-    notificationRepository = dbConnection.getRepository(Notification_box);
    
     // make notification for test
     // ------------------------------------------
@@ -27,10 +27,8 @@ describe('Notification Controller Tests', () => {
     notification.vendor_id = 1; 
     const savedNotification = await notificationRepository.save(notification);
     // --------------------------------------------------
-    notificationId = savedNotification.notification_id;
     vendor_id = savedNotification.vendor_id
-
-    console.log(`Created notification with ID: ${notificationId}`);
+    notification_id = savedNotification.notification_id
   });
 
   it('should retrieve all notifications', async () => {
@@ -53,18 +51,20 @@ describe('Notification Controller Tests', () => {
     expect(Array.isArray(response.body.notification)).toBeTruthy();
   });
 
+  it('should delete notification by notification ID', async () => {
+    const response = await request(app)
+      .delete(`/api/v1/notification/vendor/${notification_id}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(response.statusCode).toEqual(200);
+  });
+
   it('should delete all notifications', async () => {
     const response = await request(app)
       .delete('/api/v1/notification/vendor')
 
     expect(response.statusCode).toEqual(200);
     expect(response.body.msg).toEqual('All notifications deleted successfully');
-  });
-
-  it('should delete a notification by ID', async () => {
-    const response = await request(app).delete(`/api/v1/notification/vendor/53`)
-      
-    expect(response.statusCode).toEqual(200);
   });
 
 

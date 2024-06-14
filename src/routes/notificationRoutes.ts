@@ -12,7 +12,7 @@ notificationRouter.route('/vendor')
                 .get(getallNotification)
                 .delete(deleteallNotification)
 notificationRouter.route('/vendor/:id')
-                .delete(deletenotification)
+                .delete(IsLoggedIn,checkRole(['Vendor']),deletenotification)
                 .get(IsLoggedIn,checkRole(['Vendor']),getvendorNotifications)
 
 export default notificationRouter

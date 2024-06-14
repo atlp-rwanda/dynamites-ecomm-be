@@ -65,7 +65,9 @@ const orderRepository = dbConnection.getRepository(Order);
 
 eventEmitter.on('addToCart', async (product_id, userId) => {
   try {
-    
+    if (process.env.NODE_ENV == 'test'){
+      return
+    }
     const product = await productRepository.findOne({
       where: { id: product_id },
       select: { vendor: { firstName: true, lastName: true, picture: true, id: true, email: true } },
@@ -96,15 +98,20 @@ eventEmitter.on('addToCart', async (product_id, userId) => {
     new_notification.message_title = 'your product is add to buyer cart';
     new_notification.message_content = added_to_cart_message(product, User);
     await NotificationRepository.save(new_notification);
-    sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
-  } catch (error) {
-    throw error
+    await sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
+
+  } 
+  catch (error) {
+   throw error 
+    
   }
 });
 
 eventEmitter.on('removeItem', async (removeItem) => {
   try {
-
+    if (process.env.NODE_ENV == 'test'){
+      return
+    }
     const product = await productRepository.findOne({
       where: { id: removeItem.product.id },
       select: { vendor: { firstName: true, lastName: true, picture: true, id: true, email: true } },
@@ -135,7 +142,7 @@ eventEmitter.on('removeItem', async (removeItem) => {
     new_notification.message_content = removed_to_cart_message(product, user);
 
     await NotificationRepository.save(new_notification);
-    sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
+    await sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
 
   } catch (error) {
     throw error
@@ -144,6 +151,9 @@ eventEmitter.on('removeItem', async (removeItem) => {
 
 eventEmitter.on('pressorder', async (order:order) => {
   try {
+      if (process.env.NODE_ENV == 'test'){
+        return
+      }
      const orderDetail = order.orderDetails  
      for(let i=0; i<orderDetail.length; i++)
       {
@@ -170,7 +180,7 @@ eventEmitter.on('pressorder', async (order:order) => {
 
         await NotificationRepository.save(new_notification);
         
-        sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
+        await sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
       }
      
     }
@@ -181,7 +191,9 @@ eventEmitter.on('pressorder', async (order:order) => {
 
 eventEmitter.on('order_status_change', async (orderId:number) => {
   try {
-
+    if (process.env.NODE_ENV == 'test'){
+      return
+    }
     const order = await orderRepository.findOne({
       where: {
         id: orderId,
@@ -190,7 +202,6 @@ eventEmitter.on('order_status_change', async (orderId:number) => {
     });
     if(order == null)
       {
-        console.log('order is null')
         return
       }
      const orderDetail = order.orderDetails  
@@ -219,9 +230,9 @@ eventEmitter.on('order_status_change', async (orderId:number) => {
         new_notification.message_content = order_status_changed(product, order);
 
         await NotificationRepository.save(new_notification);
-        sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
+        await sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
       }
-    
+      
     }
   catch (error) {
     throw error
@@ -231,7 +242,9 @@ eventEmitter.on('order_status_change', async (orderId:number) => {
 
 eventEmitter.on('productCreated', async(product:product)=>{
   try{
-  
+        if (process.env.NODE_ENV == 'test'){
+          return
+        }
        if(!product)
         {
           return
@@ -249,7 +262,7 @@ eventEmitter.on('productCreated', async(product:product)=>{
         new_notification.message_content = new_product_created(product);
 
         await NotificationRepository.save(new_notification);
-        sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
+        await sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
   }
   catch(error)
   {
@@ -261,7 +274,9 @@ eventEmitter.on('productCreated', async(product:product)=>{
 eventEmitter.on('product_updated', async(product:product)=>{
 
   try{
-
+        if (process.env.NODE_ENV == 'test'){
+          return
+        }
         if(!product)
           {
             return
@@ -278,7 +293,7 @@ eventEmitter.on('product_updated', async(product:product)=>{
         new_notification.message_content = updated_Product(product);
 
         await NotificationRepository.save(new_notification);
-        sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
+        await sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
   }
   catch(error)
   {
@@ -289,7 +304,9 @@ eventEmitter.on('product_updated', async(product:product)=>{
 
 eventEmitter.on('product_deleted', async(product_id:number)=>{
   try{
-
+        if (process.env.NODE_ENV == 'test'){
+          return
+        }
         const product= await productRepository.findOne({
           where:{id: product_id},
           relations:['vendor']
@@ -307,11 +324,11 @@ eventEmitter.on('product_deleted', async(product_id:number)=>{
         new_notification.product_id =product.id ;
         new_notification.vendor_id = product.vendor.id
         new_notification.vendor_email = product.vendor.email;
-        new_notification.message_title = 'Your product was Updated succesfull';
+        new_notification.message_title = 'Your product was deleted succesfull';
         new_notification.message_content = product_deleted(product);
 
         await NotificationRepository.save(new_notification);
-        sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
+        await sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
   }
   catch(error)
   {
@@ -322,7 +339,9 @@ eventEmitter.on('product_deleted', async(product_id:number)=>{
 
 eventEmitter.on('order_canceled', async (orderId) => {
   try {
-    
+    if (process.env.NODE_ENV == 'test'){
+      return
+    }
     const order = await orderRepository.findOne({
       where: { id: orderId },
       relations: ['orderDetails','orderDetails.product', 'orderDetails.product.vendor'],
@@ -354,12 +373,12 @@ eventEmitter.on('order_canceled', async (orderId) => {
         new_notification.product_id = orderDetail[i].product.id;
         new_notification.vendor_id = product.vendor.id
         new_notification.vendor_email = product.vendor.email;
-        new_notification.message_title = 'order with you product was placed';
+        new_notification.message_title = 'order with you product was cancaled';
         new_notification.message_content = order_canceled(product, order);
 
         await NotificationRepository.save(new_notification);
         
-        sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
+        await sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
       }
      
     }

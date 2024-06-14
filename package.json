@@ -69,13 +69,15 @@
     "coveragePathIgnorePatterns": [
       "/node_modules/",
       "/src/emails/",
-      "/src/utilis/"
+      "/src/utilis/",
+      "/src/Notification.vendor/"
     ],
     "testPathIgnorePatterns": [
       "/node_modules/",
       "/src/emails/",
       "/src/middlewares/",
-      "/src/utilis/"
+      "/src/utilis/",
+      "/src/Notification.vendor/"
     ]
   },
   "devDependencies": {

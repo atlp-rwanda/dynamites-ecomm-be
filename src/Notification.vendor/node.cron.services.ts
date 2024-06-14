@@ -59,11 +59,9 @@ const dailyTasks = cron.schedule('0 0 * * *', async () => {
 
                 await NotificationRepository.save(new_notification);
                 
-                console.log('press order notification created')
                 sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
                 }      
 
-                console.log(`Order ${order.id} cancelled due to expiry.`);
         }
     }
     
@@ -88,7 +86,6 @@ const dailyTasks = cron.schedule('0 0 * * *', async () => {
     
         await NotificationRepository.save(new_notification);
         
-        console.log('press order notification created')
         sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
     }
 });

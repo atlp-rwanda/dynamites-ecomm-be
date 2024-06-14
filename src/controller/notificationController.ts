@@ -24,7 +24,6 @@ export const getallNotification= errorHandler(
 
 export const deleteallNotification = errorHandler(
     async (req: Request , res: Response)=>{
-        const vendorId = req.params.id
         const Notication = await NotificationRepository.find()
         if(!Notication)
             {
@@ -46,7 +45,6 @@ export const deletenotification = errorHandler(
             where: { notification_id: id }
         });
        
-        console.log(`this is the notification:${notification}`)
 
         if (!notification) {
             return res.status(400).json({ msg: 'No Notifications was found' });

@@ -65,7 +65,7 @@ export const addToCart = errorHandler(async (req: Request, res: Response) => {
   newItem.quantity = quantity;
 
   const savedItem = await cartRepository.save(newItem);
-  console.log('caller the event')
+  
   eventEmitter.emit('addToCart',productId, userId)
   
   return res

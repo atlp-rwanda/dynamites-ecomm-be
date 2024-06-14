@@ -18,14 +18,14 @@ async function sendEmail(vendorEmail: string, message_title: string, messageCont
 
     const mailOptions = {
       from: `"The E-commerce Team" <${process.env.EMAIL_USER}>`,
-      to: 'ericniyibizi1998@gmail.com',
+      to: vendorEmail,
       subject: 'Notification from Your Company',
       text: messageContent,
       html: `<p>${messageContent.replace(/\n/g, '<br>')}</p>`,
     };
 
     await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully');
+    
   } catch (error) {
     throw error
   }
