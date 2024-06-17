@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import dbConnection from '../database';
 import errorHandler from '../middlewares/errorHandler';
 import { Order } from '../database/models/orderEntity';
-
+import {eventEmitter} from '../Notification.vendor/event.services'
 const orderRepository = dbConnection.getRepository(Order);
 
 export const updateOrderStatus = errorHandler(
@@ -40,8 +40,11 @@ export const updateOrderStatus = errorHandler(
     }
 
     order.status = status;
+
     await orderRepository.save(order);
 
+    eventEmitter.emit('order_status_change',order.id)
+    
     return res
       .status(200)
       .json({ msg: `Order status updated to ${order.status}` });
