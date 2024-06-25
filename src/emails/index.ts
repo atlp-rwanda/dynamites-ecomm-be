@@ -1,10 +1,10 @@
 import axios from 'axios';
 import handlebars from 'handlebars';
 import fs from 'fs';
-type EmailType = 'confirm' | 'reset';
+type EmailType = 'confirm' | 'reset' | 'subscription';
 type Data = {
-  name: string;
-  link: string;
+  name?: string;
+  link?: string;
 };
 /**
  * Sends an email of the specified type to the recipient using the provided data.
@@ -15,7 +15,7 @@ type Data = {
  * @returns A Promise that resolves to the response from the email service.
  * @throws An error if there is an issue sending the email.
  */
-async function sendEmail(emailType: EmailType, recipient: string, data: Data) {
+async function sendEmail(emailType: EmailType, recipient: string, data?: Data) {
   const templatePath = `./src/emails/templates/${emailType}.html`;
   try {
     // Read the Handlebars template file

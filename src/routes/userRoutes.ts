@@ -17,6 +17,7 @@ import {
 } from '../controller/changestatusController';
 import { checkRole } from '../middlewares/authorize';
 import { IsLoggedIn } from '../middlewares/isLoggedIn';
+import { subscribe, removeSubscriber } from '../controller/subscribeController';
 
 const userRouter = Router();
 userRouter.post('/register', registerUser);
@@ -39,7 +40,9 @@ userRouter.put(
   deactivateAccount
 );
 userRouter.post('/recover', recoverPassword);
-userRouter.put('/recover/confirm', updateNewPassword)
+userRouter.put('/recover/confirm', updateNewPassword);
 
-userRouter.put('/updateProfile/:id',updateProfile);
+userRouter.put('/updateProfile/:id', updateProfile);
+userRouter.post('/subscribe', subscribe);
+userRouter.delete('/subscribe/delete/:id', removeSubscriber);
 export default userRouter;

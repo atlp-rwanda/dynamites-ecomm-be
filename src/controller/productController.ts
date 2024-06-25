@@ -7,6 +7,8 @@ import { check, validationResult } from 'express-validator';
 import errorHandler from '../middlewares/errorHandler';
 import productQuantityWatch from '../middlewares/productAvailabilityWatch';
 
+import {eventEmitter} from '../Notification.vendor/event.services'
+
 const userRepository = dbConnection.getRepository(UserModel);
 const productRepository = dbConnection.getRepository(Product);
 
@@ -126,6 +128,9 @@ export const createProduct = [
       type,
     });
     const updatedProduct = await productRepository.save(newProduct);
+
+    eventEmitter.emit('productCreated', updatedProduct)
+
     return res.status(201).json({
       message: 'Product successfully created',
       data: updatedProduct,
@@ -217,6 +222,9 @@ export const updateProduct = [
     product.isAvailable = isAvailable;
 
     const updatedProduct = await productRepository.save(product);
+    
+    eventEmitter.emit('product_updated', updatedProduct)
+
     await productQuantityWatch(updatedProduct);
     return res.status(200).json({
       message: 'Product successfully updated',
@@ -288,8 +296,10 @@ export const deleteProduct = errorHandler(
       return res.status(404).json({ message: 'Product Not Found' });
     }
 
+    eventEmitter.emit('product_deleted', productId)
+    
     await productRepository.delete(productId);
-
+    
     return res.status(200).json({ message: 'Product deleted successfully' });
   }
 );
@@ -361,7 +371,7 @@ export const AvailableProducts = errorHandler(
         where: { isAvailable: true },
         take: limit,
         skip: (page - 1) * limit,
-        select: { vendor: { firstName: true, lastName: true, picture: true } },
+        select: { vendor: { firstName: true, lastName: true, picture: true, id:true, email:true} },
         relations: ['category', 'vendor'],
       });
 
