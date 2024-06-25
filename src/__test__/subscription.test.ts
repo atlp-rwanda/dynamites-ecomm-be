@@ -5,7 +5,6 @@ import dbConnection from '../database';
 import Subscription from '../database/models/Subscribe';
 
 const subscribeRepository = dbConnection.getRepository(Subscription);
-
 beforeAll(async () => {
   await beforeAllHook();
 });
