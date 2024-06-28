@@ -9,6 +9,7 @@ import {
   getAllUsers,
   deleteAllUsers,
   updateProfile,
+  deleteUser,
 } from '../controller/userController';
 
 import {
@@ -25,6 +26,7 @@ userRouter.post('/login', Login);
 userRouter.post('/verify2FA/:userId', verify2FA);
 userRouter.get('/getAllUsers', getAllUsers);
 userRouter.delete('/deleteUsers', deleteAllUsers);
+userRouter.delete('/delete/:userId', deleteUser);
 userRouter.put(
   '/activate/:userId',
   IsLoggedIn,
@@ -39,7 +41,7 @@ userRouter.put(
   deactivateAccount
 );
 userRouter.post('/recover', recoverPassword);
-userRouter.put('/recover/confirm', updateNewPassword)
+userRouter.put('/recover/confirm', updateNewPassword);
 
-userRouter.put('/updateProfile/:id',updateProfile);
+userRouter.put('/updateProfile/:id', updateProfile);
 export default userRouter;
