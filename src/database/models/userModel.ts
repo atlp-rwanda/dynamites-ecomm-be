@@ -7,6 +7,9 @@ import {
 } from 'typeorm';
 import { Role } from './roleEntity';
 import { Order } from './orderEntity';
+import dotenv from 'dotenv'
+dotenv.config()
+
 @Entity()
 export default class UserModel {
   @PrimaryGeneratedColumn()
@@ -36,7 +39,7 @@ export default class UserModel {
   @Column({ nullable: true })
   facebookId: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false, default: process.env.DEFAULT_PROFILE_URL })
   picture: string;
 
   @Column({ nullable: true })

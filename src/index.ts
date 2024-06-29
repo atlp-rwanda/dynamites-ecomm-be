@@ -2,10 +2,15 @@
 import app from './app';
 import { DbConnection } from './database';
 import cron_tasks from '../src/Notification.vendor/node.cron.services' 
-declare module 'express' {
-  export interface Request {
+
+
+declare module 'express-serve-static-core' {
+  interface Request {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     user?: Record<string, any>;
+    files?: {
+      image?: Express.Multer.File[];
+    };
   }
 }
 

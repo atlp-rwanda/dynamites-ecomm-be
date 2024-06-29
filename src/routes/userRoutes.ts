@@ -10,6 +10,8 @@ import {
   deleteAllUsers,
   updateProfile,
   deleteUser,
+  changeProfileImg,
+  removeProfileImg
 } from '../controller/userController';
 
 import {
@@ -18,6 +20,7 @@ import {
 } from '../controller/changestatusController';
 import { checkRole } from '../middlewares/authorize';
 import { IsLoggedIn } from '../middlewares/isLoggedIn';
+import upload from '../middlewares/multer'
 
 const userRouter = Router();
 userRouter.post('/register', registerUser);
@@ -44,4 +47,5 @@ userRouter.post('/recover', recoverPassword);
 userRouter.put('/recover/confirm', updateNewPassword);
 
 userRouter.put('/updateProfile/:id', updateProfile);
+userRouter.route('/profileImg').patch(IsLoggedIn, upload.fields([{name:'image'}]), changeProfileImg).delete(IsLoggedIn, removeProfileImg)
 export default userRouter;
