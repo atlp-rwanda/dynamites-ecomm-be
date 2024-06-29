@@ -10,6 +10,8 @@ import {
   deleteAllUsers,
   updateProfile,
   deleteUser,
+  changeProfileImg,
+  removeProfileImg
 } from '../controller/userController';
 
 import {
@@ -23,6 +25,7 @@ import {
   removeSubscriber,
   getAllSubscriber,
 } from '../controller/subscribeController';
+import upload from '../middlewares/multer'
 
 const userRouter = Router();
 userRouter.post('/register', registerUser);
@@ -52,4 +55,5 @@ userRouter.put('/updateProfile/:id', updateProfile);
 userRouter.post('/subscribe', subscribe);
 userRouter.get('/subscribe/delete/:id', removeSubscriber);
 userRouter.get('/subscribe/getAll', getAllSubscriber);
+userRouter.route('/profileImg').patch(IsLoggedIn, upload.fields([{name:'image'}]), changeProfileImg).delete(IsLoggedIn, removeProfileImg)
 export default userRouter;
