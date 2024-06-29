@@ -70,7 +70,7 @@ describe('DELETE /api/v1/subscribe/delete/:id', () => {
     await subscribeRepository.save(subscription);
 
     const response = await request(app)
-      .delete(`/api/v1/subscribe/delete/${subscription.id}`)
+      .get(`/api/v1/subscribe/delete/${subscription.id}`)
       .send();
 
     expect(response.status).toBe(200);
@@ -79,7 +79,7 @@ describe('DELETE /api/v1/subscribe/delete/:id', () => {
 
   it('should return 404 if the subscription does not exist', async () => {
     const response = await request(app)
-      .delete('/api/v1/subscribe/delete/450')
+      .get('/api/v1/subscribe/delete/450')
       .send();
 
     expect(response.status).toBe(404);
@@ -88,10 +88,37 @@ describe('DELETE /api/v1/subscribe/delete/:id', () => {
 
   it('should return 400 for invalid ID', async () => {
     const response = await request(app)
-      .delete('/api/v1/subscribe/delete/noid')
+      .get('/api/v1/subscribe/delete/noid')
       .send();
 
     expect(response.status).toBe(400);
     expect(response.body.message).toBeUndefined();
+  });
+});
+
+describe('GET /api/v1/subscribe/getAll', () => {
+  beforeEach(async () => {
+    await subscribeRepository.clear();
+  });
+
+  it('should return all subscriptions', async () => {
+    const subscription1 = new Subscription();
+    subscription1.email = 'test1@example.com';
+    await subscribeRepository.save(subscription1);
+
+    const subscription2 = new Subscription();
+    subscription2.email = 'test2@example.com';
+    await subscribeRepository.save(subscription2);
+
+    const response = await request(app).get('/api/v1/subscribe/getAll').send();
+
+    expect(response.status).toBe(200);
+    expect(response.body.subscription).toHaveLength(2);
+    expect(response.body.subscription).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ email: 'test1@example.com' }),
+        expect.objectContaining({ email: 'test2@example.com' }),
+      ])
+    );
   });
 });

@@ -43,7 +43,7 @@
 /**
  * @openapi
  * /api/v1/subscribe/delete/{id}:
- *   delete:
+ *   get:
  *     tags: [Subscribe]
  *     summary: Removes a user from subscription
  *     parameters:
@@ -84,4 +84,37 @@
  *                 message:
  *                   type: string
  *                   example: Invalid ID
+ */
+
+/**
+ * @openapi
+ * /api/v1/subscribe/getAll:
+ *   get:
+ *     tags: [Subscribe]
+ *     summary: Retrieve all subscribers
+ *     description: Get a list of all subscribers in the system.
+ *     responses:
+ *       200:
+ *         description: A list of subscribers
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                     example: 1
+ *                   email:
+ *                     type: string
+ *                     example: user@example.com
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                     example: 2024-06-29T12:34:56Z
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *                     example: 2024-06-29T12:34:56Z
  */
