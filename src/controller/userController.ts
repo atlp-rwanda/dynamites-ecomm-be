@@ -9,7 +9,6 @@ import { sendCode } from '../emails/mailer';
 import jwt from 'jsonwebtoken';
 import errorHandler from '../middlewares/errorHandler';
 
-
 // Assuming dbConnection.getRepository(UserModel) returns a repository instance
 const userRepository = dbConnection.getRepository(UserModel);
 const roleRepository = dbConnection.getRepository(Role);
@@ -26,9 +25,8 @@ interface UpdateRrofileRequestBody {
   firstName: string;
   lastName: string;
   email: string;
-  password:string;
+  password: string;
 }
-
 
 // Define validation and sanitization rules
 const registerUserRules = [
@@ -80,7 +78,11 @@ export const registerUser = [
     );
 
     const confirmLink = `${process.env.APP_URL}/api/v1/confirm?token=${token}`;
-    process.env.NODE_ENV !== 'test' && await sendEmail('confirm', email, { name: firstName, link: confirmLink });
+    process.env.NODE_ENV !== 'test' &&
+      (await sendEmail('confirm', email, {
+        name: firstName,
+        link: confirmLink,
+      }));
 
     res.status(201).json({
       message: 'User successfully registered',
@@ -143,7 +145,7 @@ export const Login = errorHandler(async (req: Request, res: Response) => {
     );
 
     const confirmLink = `${process.env.APP_URL}/api/v1/confirm?token=${token}`;
-    if (process.env.NODE_ENV !== 'test'){
+    if (process.env.NODE_ENV !== 'test') {
       await sendEmail('confirm', user.email, {
         name: user.firstName,
         link: confirmLink,
@@ -166,12 +168,13 @@ export const Login = errorHandler(async (req: Request, res: Response) => {
       });
     }
 
-    res
-      .status(200)
-      .json({ message: 'Please provide the 2FA code sent to your email.' });
+    return res.status(200).json({
+      message: 'Please provide the 2FA code sent to your email.',
+      user: { id: user.id, email: user.email },
+    });
   } else if (user.userType.name === 'Admin') {
     const token = jwt.sign({ user }, process.env.JWT_SECRET as jwt.Secret, {
-      expiresIn: '1h',
+      expiresIn: '7d',
     });
 
     return res
@@ -179,7 +182,7 @@ export const Login = errorHandler(async (req: Request, res: Response) => {
       .json({ token, message: 'Admin Logged in successfully' });
   } else {
     const token = jwt.sign({ user }, process.env.JWT_SECRET as jwt.Secret, {
-      expiresIn: '1h',
+      expiresIn: '7d',
     });
 
     return res
@@ -205,11 +208,10 @@ export const verify2FA = errorHandler(async (req: Request, res: Response) => {
   }
 
   const token = jwt.sign({ user }, process.env.JWT_SECRET as jwt.Secret, {
-    expiresIn: '1d',
+    expiresIn: '7d',
   });
   return res.status(200).json({ token });
 });
-
 
 // Delete All Users
 export const deleteAllUsers = async (req: Request, res: Response) => {
@@ -227,80 +229,107 @@ export const deleteAllUsers = async (req: Request, res: Response) => {
 // Get All Users
 export const getAllUsers = errorHandler(async (req: Request, res: Response) => {
   const users = await userRepository.find();
-  return res.status(200).json({message: 'Users fetched successfully', users});
+  return res.status(200).json({ message: 'Users fetched successfully', users });
 });
 
-export const recoverPassword = errorHandler(async (req: Request, res: Response) => {
-  const { email } = req.body as { email: string };
+export const recoverPassword = errorHandler(
+  async (req: Request, res: Response) => {
+    const { email } = req.body as { email: string };
 
-  const user = await userRepository.findOne({ where: { email } });
+    const user = await userRepository.findOne({ where: { email } });
 
-  if (!user) {
-    return res.status(404).json({ message: 'User not found' });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Generate a JWT token with the user's email as the payload
+    const recoverToken = jwt.sign(
+      { email: user.email },
+      process.env.JWT_SECRET as jwt.Secret,
+      { expiresIn: '1h' }
+    );
+
+    const confirmLink = `${process.env.APP_URL}/api/v1/user/recover/confirm?recoverToken=${recoverToken}`;
+
+    return res.status(200).json({
+      message: 'Password reset token generated successfully',
+      confirmLink,
+    });
   }
-
-  // Generate a JWT token with the user's email as the payload
-  const recoverToken = jwt.sign({ email : user.email }, process.env.JWT_SECRET as jwt.Secret, { expiresIn: '1h' });
-  
-  const confirmLink = `${process.env.APP_URL}/api/v1/user/recover/confirm?recoverToken=${recoverToken}`;
-  
-  return res.status(200).json({ message: 'Password reset token generated successfully', confirmLink });
-
-});
+);
 
 //password Recover Confirmation
-export const updateNewPassword = errorHandler(async (req: Request, res: Response) => {
-  const recoverToken = req.query.recoverToken as string;
-const { password } = req.body as { password: string };
+export const updateNewPassword = errorHandler(
+  async (req: Request, res: Response) => {
+    const recoverToken = req.query.recoverToken as string;
+    const { password } = req.body as { password: string };
 
-if (!recoverToken) {
-  return res.status(404).json({ message: 'Invalid or expired token' });
-}
+    if (!recoverToken) {
+      return res.status(404).json({ message: 'Invalid or expired token' });
+    }
 
-const decoded = jwt.verify(recoverToken, process.env.JWT_SECRET as jwt.Secret) as {
-  email : string;
-};
-const user = await userRepository.findOne({
-  where: { email: decoded.email },
-});
+    const decoded = jwt.verify(
+      recoverToken,
+      process.env.JWT_SECRET as jwt.Secret
+    ) as {
+      email: string;
+    };
+    const user = await userRepository.findOne({
+      where: { email: decoded.email },
+    });
 
-if (!user) {
-  return res.status(404).json({ message: 'User not found' });
-}
- 
-const hashedPassword : string = await bcrypt.hash(password, 10);
-user.password = hashedPassword;
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
-await userRepository.save(user);
+    const hashedPassword: string = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
 
-return res.status(200).json({ message: 'Password updated successfully' });
+    await userRepository.save(user);
 
-});
-export const updateProfile = errorHandler(async (req: Request, res: Response) => {
-  const userId: number = parseInt(req.params.id);
-  const { firstName, lastName, email } = req.body as UpdateRrofileRequestBody;
-
-  const user = await userRepository.findOne({ where: { id: userId } });
-
-  if (!user) {
-    return res.status(404).json({ error: 'User not found' });
+    return res.status(200).json({ message: 'Password updated successfully' });
   }
+);
+export const updateProfile = errorHandler(
+  async (req: Request, res: Response) => {
+    const userId: number = parseInt(req.params.id);
+    const { firstName, lastName, email } = req.body as UpdateRrofileRequestBody;
 
-  user.firstName = firstName || user.firstName;
-  user.lastName = lastName || user.lastName;
-  
- 
+    const user = await userRepository.findOne({ where: { id: userId } });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    user.firstName = firstName || user.firstName;
+    user.lastName = lastName || user.lastName;
+
     const emailExists = await userRepository.findOne({ where: { email } });
-  
+
     if (emailExists) {
       return res.status(400).json({ error: 'Email is already taken' });
     }
-  
+
     user.email = email;
-  
 
- 
-  await userRepository.save(user);
+    await userRepository.save(user);
 
-  return res.status(201).json({ message: 'User updated successfully' });
+    return res.status(201).json({ message: 'User updated successfully' });
+  }
+);
+
+export const deleteUser = errorHandler(async (req: Request, res: Response) => {
+  const userId: number = parseInt(req.params.userId);
+
+  const user = await userRepository.findOne({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    return res.status(404).json({ message: 'user Not Found' });
+  }
+
+  await userRepository.delete(userId);
+
+  return res.status(200).json({ message: 'User deleted successfully' });
 });
