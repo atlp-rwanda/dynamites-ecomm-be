@@ -353,3 +353,49 @@
  *                   type: string
  *                   description: An error message indicating a server error
  */
+
+/**
+ * @swagger
+ * /api/v1/user/profileImg:
+ *   patch:
+ *     summary: Change profile image
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       '200':
+ *         description: Profile Image successfully changed
+ *       '400':
+ *         description: Failed validation or unexpected error
+ *       '401':
+ *         description: Unauthorized
+ *       '500':
+ *         description: Internal Server Error
+ */
+
+/**
+ * @swagger
+ * /api/v1/user/profileImg:
+ *   delete:
+ *     summary: Remove profile image
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Profile Image removed
+ *       '401':
+ *         description: Unauthorized
+ *       '500':
+ *         description: Internal Server Error
+ */
