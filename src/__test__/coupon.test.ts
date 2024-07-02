@@ -20,6 +20,7 @@ describe('Coupon Controller Tests', () => {
         const categoryData = {
             name: 'Category',
             description: 'category description',
+            icon: 'category icon'
           };
       
         const categoryResponse = await request(app)

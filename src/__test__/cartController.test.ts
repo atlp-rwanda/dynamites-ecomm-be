@@ -30,6 +30,7 @@ describe('Cart controller tests', () => {
     const categoryData = {
       name: 'Category4',
       description: 'category description',
+      icon: 'Category icon',
     };
 
     const categoryResponse = await request(app)

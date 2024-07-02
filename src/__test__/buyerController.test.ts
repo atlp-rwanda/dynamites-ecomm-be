@@ -25,6 +25,7 @@ describe('Buyer Controller test', () => {
     const categoryData = {
       name: 'Category4',
       description: 'category description',
+      icon: 'category icon',
     };
 
     const categoryResponse = await request(app)

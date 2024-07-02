@@ -17,6 +17,7 @@ beforeAll(async () => {
   const categoryData = {
     name: 'Category4',
     description: 'category description',
+    icon: 'category icon',
   };
 
   const categoryResponse = await request(app)
