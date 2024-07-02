@@ -30,19 +30,16 @@ authRoutes.get(
           twoFactorCode: twoFactorCode.toString(),
         });
       }
-      return res.status(200).json({
-        message: 'Please provide the 2FA code sent to your email.',
-        user: { id: user.id, email: user.email },
-      });
+      return res.redirect(
+        `${process.env.FRONTEND_URL}/verify-2fa/${user.id}/${user.email}`
+      );
     }
 
     const token = jwt.sign({ user }, process.env.JWT_SECRET as jwt.Secret, {
       expiresIn: '7d',
     });
 
-    return res.json({
-      token: token,
-    });
+    return res.redirect(`${process.env.FRONTEND_URL}/signIn?token=${token}`);
   }
 );
 
@@ -68,19 +65,16 @@ authRoutes.get(
           twoFactorCode: twoFactorCode.toString(),
         });
       }
-      return res.status(200).json({
-        message: 'Please provide the 2FA code sent to your email.',
-        user: { id: user.id, email: user.email },
-      });
+      return res.redirect(
+        `${process.env.FRONTEND_URL}/verify-2fa/${user.id}/${user.email}`
+      );
     }
 
     const token = jwt.sign({ user }, process.env.JWT_SECRET as jwt.Secret, {
       expiresIn: '7d',
     });
 
-    return res.json({
-      token: token,
-    });
+    return res.redirect(`${process.env.FRONTEND_URL}/signIn?token=${token}`);
   }
 );
 
