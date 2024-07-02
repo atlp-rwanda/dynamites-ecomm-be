@@ -1,7 +1,9 @@
 import axios from 'axios';
 import handlebars from 'handlebars';
 import fs from 'fs';
-type EmailType = 'confirm' | 'reset' | 'subscribe';
+import dotenv from 'dotenv';
+dotenv.config();
+type EmailType = 'subscribe' | 'unsubscribe';
 type Data = {
   name: string;
   link: string;

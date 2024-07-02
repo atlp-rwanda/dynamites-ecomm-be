@@ -18,6 +18,11 @@ import {
 } from '../controller/changestatusController';
 import { checkRole } from '../middlewares/authorize';
 import { IsLoggedIn } from '../middlewares/isLoggedIn';
+import {
+  subscribe,
+  removeSubscriber,
+  getAllSubscriber,
+} from '../controller/subscribeController';
 
 const userRouter = Router();
 userRouter.post('/register', registerUser);
@@ -44,4 +49,7 @@ userRouter.post('/recover', recoverPassword);
 userRouter.put('/recover/confirm', updateNewPassword);
 
 userRouter.put('/updateProfile/:id', updateProfile);
+userRouter.post('/subscribe', subscribe);
+userRouter.get('/subscribe/delete/:id', removeSubscriber);
+userRouter.get('/subscribe/getAll', getAllSubscriber);
 export default userRouter;
