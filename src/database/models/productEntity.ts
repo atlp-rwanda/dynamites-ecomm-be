@@ -51,11 +51,14 @@ export default class Product {
 
   @Column({ default: true })
   isAvailable: boolean;
-   
-  @Column('float',{ default:0})
+
+  @Column({ default: false })
+  isFeatured: boolean;
+
+  @Column('float', { default: 0 })
   averageRating: number;
 
-  @OneToMany(() => Review, review => review.product)
+  @OneToMany(() => Review, (review) => review.product)
   reviews: Review[];
 
   @ManyToOne(() => UserModel, { onDelete: 'CASCADE' })
