@@ -10,7 +10,7 @@ import {
 } from '../controller/cartController';
 
 const checkoutRoutes = Router();
-checkoutRoutes.use(IsLoggedIn, checkRole(['Buyer']));
+checkoutRoutes.use(IsLoggedIn, checkRole(['Buyer', 'Admin']));
 checkoutRoutes.route('/').post(checkout);
 checkoutRoutes.route('/removeall-order').delete(deleteAllOrders);
 checkoutRoutes.route('/getall-order').get(getAllOrders);
