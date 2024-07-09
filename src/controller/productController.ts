@@ -1,13 +1,15 @@
 import { Request, Response } from 'express';
+import { In } from 'typeorm';
 import Product from '../database/models/productEntity';
 import Category from '../database/models/categoryEntity';
+import { OrderDetails } from '../database/models/orderDetailsEntity';
 import UserModel from '../database/models/userModel';
 import dbConnection from '../database';
 import { check, validationResult } from 'express-validator';
 import errorHandler from '../middlewares/errorHandler';
 import productQuantityWatch from '../middlewares/productAvailabilityWatch';
 
-import {eventEmitter} from '../Notification.vendor/event.services'
+import { eventEmitter } from '../Notification.vendor/event.services';
 
 const userRepository = dbConnection.getRepository(UserModel);
 const productRepository = dbConnection.getRepository(Product);
@@ -129,7 +131,7 @@ export const createProduct = [
     });
     const updatedProduct = await productRepository.save(newProduct);
 
-    eventEmitter.emit('productCreated', updatedProduct)
+    eventEmitter.emit('productCreated', updatedProduct);
 
     return res.status(201).json({
       message: 'Product successfully created',
@@ -222,8 +224,8 @@ export const updateProduct = [
     product.isAvailable = isAvailable;
 
     const updatedProduct = await productRepository.save(product);
-    
-    eventEmitter.emit('product_updated', updatedProduct)
+
+    eventEmitter.emit('product_updated', updatedProduct);
 
     await productQuantityWatch(updatedProduct);
     return res.status(200).json({
@@ -264,15 +266,15 @@ export const getProduct = errorHandler(async (req: Request, res: Response) => {
       vendor: {
         firstName: true,
       },
-      reviews:{
-        content:true,
-        rating:true,
-        user:{
-          firstName:true
-        }
+      reviews: {
+        content: true,
+        rating: true,
+        user: {
+          firstName: true,
+        },
       },
     },
-    relations: ['category', 'vendor','reviews'],
+    relations: ['category', 'vendor', 'reviews'],
   });
 
   if (!product) {
@@ -296,10 +298,10 @@ export const deleteProduct = errorHandler(
       return res.status(404).json({ message: 'Product Not Found' });
     }
 
-    eventEmitter.emit('product_deleted', productId)
-    
+    eventEmitter.emit('product_deleted', productId);
+
     await productRepository.delete(productId);
-    
+
     return res.status(200).json({ message: 'Product deleted successfully' });
   }
 );
@@ -371,7 +373,15 @@ export const AvailableProducts = errorHandler(
         where: { isAvailable: true },
         take: limit,
         skip: (page - 1) * limit,
-        select: { vendor: { firstName: true, lastName: true, picture: true, id:true, email:true} },
+        select: {
+          vendor: {
+            firstName: true,
+            lastName: true,
+            picture: true,
+            id: true,
+            email: true,
+          },
+        },
         relations: ['category', 'vendor'],
       });
 
@@ -446,4 +456,48 @@ export const checkProductAvailability = async (req: Request, res: Response) => {
   const availability = product.isAvailable;
 
   res.json({ availability, productId });
+};
+
+// Best seller API endpoints
+
+export const getBestSellingProducts = async (req: Request, res: Response) => {
+  const orderDetailsRepository = dbConnection.getRepository(OrderDetails);
+
+  // Query order details to find the best-selling products
+  const bestSellingProducts = await orderDetailsRepository
+    .createQueryBuilder('orderDetails')
+    .select('orderDetails.productId', 'productId')
+    .addSelect('SUM(orderDetails.quantity)', 'totalQuantity')
+    .groupBy('orderDetails.productId')
+    .orderBy('SUM(orderDetails.quantity)', 'DESC')
+    .limit(10)
+    .getRawMany();
+
+  if (!bestSellingProducts || bestSellingProducts.length === 0) {
+    return res.status(404).json({ msg: 'No best-selling products found' });
+  }
+
+  const productIds = bestSellingProducts.map((item) => item.productId);
+
+  const products = await productRepository.findBy({
+    id: In(productIds),
+  });
+
+  if (!products || products.length === 0) {
+    return res
+      .status(404)
+      .json({ msg: 'No products found for the best-selling products' });
+  }
+
+  const result = products.map((product) => {
+    const productData = bestSellingProducts.find(
+      (item) => item.productId === product.id
+    );
+    return {
+      ...product,
+      sales: parseInt(productData.totalQuantity, 10),
+    };
+  });
+
+  res.json(result);
 };

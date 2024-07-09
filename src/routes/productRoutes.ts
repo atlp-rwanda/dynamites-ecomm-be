@@ -9,7 +9,8 @@ import {
   getRecommendedProducts,
   AvailableProducts,
   updateProductAvailability,
-  checkProductAvailability
+  checkProductAvailability,
+  getBestSellingProducts,
 } from '../controller/productController';
 import { IsLoggedIn } from '../middlewares/isLoggedIn';
 import { checkRole } from '../middlewares/authorize';
@@ -26,6 +27,7 @@ productRouter
   .delete(IsLoggedIn, deleteAllProduct);
 
 productRouter.route('/recommended').get(getRecommendedProducts);
+productRouter.route('/bestselling').get(getBestSellingProducts);
 
 productRouter
   .route('/:productId')
@@ -36,6 +38,11 @@ productRouter
 productRouter
   .route('/:productId/availability')
   .get(IsLoggedIn, checkProductAvailability)
-  .put(IsLoggedIn, checkRole(['Vendor']), validateAvailability, updateProductAvailability)
+  .put(
+    IsLoggedIn,
+    checkRole(['Vendor']),
+    validateAvailability,
+    updateProductAvailability
+  );
 
 export default productRouter;
