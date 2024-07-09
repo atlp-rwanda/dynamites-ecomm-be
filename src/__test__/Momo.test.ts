@@ -33,6 +33,7 @@ const mockRequestToPayStatusResponse = (status: number, body: Ibody) => {
 describe('Buyer Controller Tests', () => {
   let token: string;
   let order: Order;
+  let orderAmount: Order;
   let requestId: string;
 
   beforeAll(async () => {
@@ -48,6 +49,14 @@ describe('Buyer Controller Tests', () => {
       trackingNumber: '123456',
       paid: false,
     });
+
+    orderAmount = orderRepository.create({
+      totalAmount: 0,
+      status: 'Pending',
+      trackingNumber: '123456',
+      paid: false,
+    });
+    await orderRepository.save(orderAmount);
     await orderRepository.save(order);
   });
 
@@ -96,6 +105,18 @@ describe('Buyer Controller Tests', () => {
       expect(response.status).toBe(404);
       expect(response.body.success).toBe(false);
       expect(response.body.message).toBe('Order not found');
+    });
+
+    it('should verify total amound if greater than 0', async () => {
+      const response = await request(app)
+        .post('/api/v1/buyer/momoPay')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ orderId: orderAmount.id, momoNumber: '123456789' });
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toBe(
+        'total  amount should be  greater than 0'
+      );
     });
 
     it('should return 400 if order already paid', async () => {

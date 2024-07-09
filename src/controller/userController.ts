@@ -8,11 +8,11 @@ import sendEmail from '../emails/index';
 import { sendCode } from '../emails/mailer';
 import jwt from 'jsonwebtoken';
 import errorHandler from '../middlewares/errorHandler';
-import cloudinary from '../middlewares/cloudinary'
+import cloudinary from '../middlewares/cloudinary';
 
 interface cloudinaryUploadResult {
-  public_id: string,
-  url: string,
+  public_id: string;
+  url: string;
   [key: string]: unknown;
 }
 
@@ -235,7 +235,9 @@ export const deleteAllUsers = async (req: Request, res: Response) => {
 
 // Get All Users
 export const getAllUsers = errorHandler(async (req: Request, res: Response) => {
-  const users = await userRepository.find();
+  const users = await userRepository.find({
+    relations: ['userType'],
+  });
   return res.status(200).json({ message: 'Users fetched successfully', users });
 });
 
@@ -346,45 +348,68 @@ export const deleteUser = errorHandler(async (req: Request, res: Response) => {
   return res.status(200).json({ message: 'User deleted successfully' });
 });
 
-export const changeProfileImg = errorHandler(async (req: Request, res: Response) => {
-  const userId = req.user!.id
-  const user = await userRepository.findOne({
-    where:{
-      id:userId
+export const changeProfileImg = errorHandler(
+  async (req: Request, res: Response) => {
+    const userId = req.user!.id;
+    const user = await userRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!(req.files && req.files.image)) {
+      return res
+        .status(409)
+        .json({ status: 'error', message: 'No file uploaded' });
     }
-  })
 
-  if(!(req.files && req.files.image)){
-    return res.status(409).json({status:'error', message:'No file uploaded'});
-  }
+    const file = req.files.image[0];
 
-  const file = req.files.image[0]
-
-  const uploadResult:cloudinaryUploadResult = await new Promise((resolve, reject) => {
-    cloudinary.uploader.upload_stream((error:Error, uploadResult:cloudinaryUploadResult) => {
-      if (error) {
-        return reject(error);
+    const uploadResult: cloudinaryUploadResult = await new Promise(
+      (resolve, reject) => {
+        cloudinary.uploader
+          .upload_stream(
+            (error: Error, uploadResult: cloudinaryUploadResult) => {
+              if (error) {
+                return reject(error);
+              }
+              return resolve(uploadResult);
+            }
+          )
+          .end(file.buffer);
       }
-      return resolve(uploadResult);
-    }).end(file.buffer);
-  });
+    );
 
-  user!.picture = uploadResult.url
-  await userRepository.save(user!)
+    user!.picture = uploadResult.url;
+    await userRepository.save(user!);
 
-  return res.status(200).json({status:'success', message:'Profile Image successfully updated', data:{picture:uploadResult.url}})
-});
+    return res
+      .status(200)
+      .json({
+        status: 'success',
+        message: 'Profile Image successfully updated',
+        data: { picture: uploadResult.url },
+      });
+  }
+);
 
-export const removeProfileImg = errorHandler(async (req: Request, res: Response) => {
-  const userId = req.user!.id
-  const user = await userRepository.findOne({
-    where:{
-      id:userId
-    }
-  })
+export const removeProfileImg = errorHandler(
+  async (req: Request, res: Response) => {
+    const userId = req.user!.id;
+    const user = await userRepository.findOne({
+      where: {
+        id: userId,
+      },
+    });
 
-  user!.picture = process.env.DEFAULT_PROFILE_URL as string
-  await userRepository.save(user!)
+    user!.picture = process.env.DEFAULT_PROFILE_URL as string;
+    await userRepository.save(user!);
 
-  return res.status(200).json({message:'Profile image successfully deleted', data:{picture:process.env.DEFAULT_PROFILE_URL}})
-});
+    return res
+      .status(200)
+      .json({
+        message: 'Profile image successfully deleted',
+        data: { picture: process.env.DEFAULT_PROFILE_URL },
+      });
+  }
+);
