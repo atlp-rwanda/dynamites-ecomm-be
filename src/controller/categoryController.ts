@@ -9,10 +9,12 @@ const categoryRepository = dbConnection.getRepository(Category);
 interface categoryRequestBody {
   name: string;
   description: string;
+  icon: string;
 }
 
 const createCategoryRules = [
   check('name').isLength({ min: 1 }).withMessage('Category name is required'),
+  check('icon').isLength({ min: 1 }).withMessage('Category icon is required'),
   check('description')
     .isLength({ min: 1 })
     .withMessage('Category description is required'),
@@ -25,7 +27,7 @@ export const createCategory = [
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const { name, description } = req.body as categoryRequestBody;
+    const { name, description, icon } = req.body as categoryRequestBody;
 
     const existingCategory = await categoryRepository.findOne({
       where: { name },
@@ -36,6 +38,7 @@ export const createCategory = [
     const newCategory = new Category({
       name: name,
       description: description,
+      icon: icon,
     });
     const updatedCategory = await categoryRepository.save(newCategory);
     return res.status(201).json({
@@ -79,7 +82,7 @@ export const updateCategory = [
     }
 
     const categoryId: number = parseInt(req.params.categoryId);
-    const { name, description } = req.body as categoryRequestBody;
+    const { name, description, icon } = req.body as categoryRequestBody;
 
     const category = await categoryRepository.findOne({
       where: { id: categoryId },
@@ -99,6 +102,7 @@ export const updateCategory = [
 
     category.name = name;
     category.description = description;
+    category.icon = icon;
 
     const updatedCategory = await categoryRepository.save(category);
 

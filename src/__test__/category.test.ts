@@ -16,6 +16,7 @@ describe('Category Creation Tests', () => {
     const categoryData = {
       name: 'Test Category',
       description: 'Test category description',
+      icon: 'Test category icon'
     };
 
     const response = await request(app)
@@ -36,6 +37,7 @@ describe('Category Creation Tests', () => {
   it('should return a 400 status code if name is missing', async () => {
     const invalidData = {
       description: 'Test category description',
+      icon: 'Test category icon'
     };
 
     const response = await request(app)
@@ -45,6 +47,21 @@ describe('Category Creation Tests', () => {
 
     expect(response.status).toBe(400);
     expect(response.body.errors[0].msg).toBe('Category name is required');
+  });
+
+  it('should return a 400 status code if icon is missing', async () => {
+    const invalidData = {
+      description: 'Test category description',
+      name: 'Test category name'
+    };
+
+    const response = await request(app)
+      .post('/api/v1/category')
+      .set('Authorization', `Bearer ${token}`)
+      .send(invalidData);
+
+    expect(response.status).toBe(400);
+    expect(response.body.errors[0].msg).toBe('Category icon is required');
   });
 
   it('should return 400 if request data is invalid', async () => {
@@ -63,6 +80,7 @@ describe('Category Creation Tests', () => {
     const existingCategoryData = {
       name: 'Existing Category',
       description: 'Existing category description',
+      icon: 'Existing category icon'
     };
     await request(app)
       .post('/api/v1/category')
@@ -72,6 +90,7 @@ describe('Category Creation Tests', () => {
     const newCategoryData = {
       name: 'Existing Category',
       description: 'Existing category description',
+      icon: 'Existing category icon'
     };
     const response = await request(app)
       .post('/api/v1/category')
@@ -112,6 +131,7 @@ describe('Category Creation Tests', () => {
     const updatedCategoryData = {
       name: 'Updated Category Name',
       description: 'Updated category description',
+      icon: 'Updated category icon'
     };
 
     const response = await request(app)
@@ -131,6 +151,7 @@ describe('Category Creation Tests', () => {
     const existingCategoryData = {
       name: 'Existing Category',
       description: 'Existing category description',
+      icon: 'Existing category icon'
     };
     await request(app)
       .post('/api/v1/category')
@@ -140,6 +161,7 @@ describe('Category Creation Tests', () => {
     const updateCategoryData = {
       name: 'Existing Category',
       description: 'Existing category description',
+      icon: 'Existing category icon'
     };
     const response = await request(app)
       .put(`/api/v1/category/${categoryId}`)
@@ -157,6 +179,7 @@ describe('Category Creation Tests', () => {
       .send({
         name: 'Updated Category Name',
         description: 'Updated category description',
+        icon: 'Updated category icon'
       });
 
     expect(response.status).toBe(404);

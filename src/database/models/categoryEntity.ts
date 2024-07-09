@@ -19,6 +19,9 @@ export default class Category {
   @Column({ length: 250 })
   description: string;
 
+  @Column({ length: 250, default: 'icon unavailable' })
+  icon: string;
+
   @OneToMany(() => Product, (product) => product.category, {
     cascade: ['update'],
   })
