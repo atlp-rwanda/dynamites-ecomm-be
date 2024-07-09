@@ -10,7 +10,8 @@
     "lint": "eslint --config .eslintrc.json .",
     "format": "prettier --write .",
     "test": "cross-env NODE_ENV=test jest --runInBand --no-cache --detectOpenHandles",
-    "test:ci": "cross-env NODE_ENV=test jest --runInBand --coverage --detectOpenHandles"
+    "test:ci": "cross-env NODE_ENV=test jest --runInBand --coverage --detectOpenHandles",
+    "typeorm": "ts-node ./node_modules/typeorm/cli.js"
   },
   "repository": {
     "type": "git",
@@ -24,6 +25,7 @@
   },
   "homepage": "https://github.com/atlp-rwanda/dynamites-ecomm-be#readme",
   "dependencies": {
+    "@nestjs/typeorm": "^10.0.2",
     "@types/passport-google-oauth20": "^2.0.14",
     "axios": "^1.6.8",
     "bcrypt": "^5.1.1",
@@ -52,6 +54,7 @@
     "passport-facebook": "^3.0.0",
     "passport-google-oauth": "^2.0.0",
     "pg": "^8.11.5",
+    "reflect-metadata": "^0.2.2",
     "stripe": "^15.8.0",
     "supertest": "^7.0.0",
     "swagger-jsdoc": "^6.2.8",
@@ -93,8 +96,8 @@
     "@types/mailgun-js": "^0.22.18",
     "@types/mocha": "^10.0.7",
     "@types/morgan": "^1.9.9",
-    "@types/node": "^20.14.9",
     "@types/multer": "^1.4.11",
+    "@types/node": "^20.14.9",
     "@types/node-cron": "^3.0.11",
     "@types/node-fetch": "^2.6.11",
     "@types/nodemailer": "^6.4.15",

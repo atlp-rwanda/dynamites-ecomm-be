@@ -113,6 +113,9 @@
  *                 enum: ['Simple', 'Grouped', 'Variable']
  *               isAvailable:
  *                 type: boolean
+ *               isFeatured:
+ *                 type: boolean
+ *                 default: false
  *     responses:
  *       '201':
  *         description: Product successfully created
@@ -277,7 +280,7 @@
  *               type: object
  *               properties:
  *                 availability:
- *                   type: boolean    
+ *                   type: boolean
  *                   description: A boolean indicating the availability of the product
  *       '403':
  *         description: Forbidden - Product not owned by vendor
