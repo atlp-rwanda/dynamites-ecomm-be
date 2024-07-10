@@ -255,12 +255,17 @@ export const recoverPassword = errorHandler(
       process.env.JWT_SECRET as jwt.Secret,
       { expiresIn: '1h' }
     );
-
-    const confirmLink = `${process.env.APP_URL}/api/v1/user/recover/confirm?recoverToken=${recoverToken}`;
+    
+    const frontend_url = process.env.FRONTEND_URL || 'https://dynamite-frontend.netlify.app'
+    const confirmLink = `${frontend_url}/reset-password/${recoverToken}`;
+    process.env.NODE_ENV !== 'test' &&
+    (await sendEmail('reset', user.email, {
+      name: user.firstName,
+      link: confirmLink,
+    }));
 
     return res.status(200).json({
       message: 'Password reset token generated successfully',
-      confirmLink,
     });
   }
 );
