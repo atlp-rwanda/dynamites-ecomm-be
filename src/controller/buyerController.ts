@@ -90,16 +90,12 @@ type IStatus = {
   reason: object;
 };
 
-type Ivalidate = {
-  result: boolean;
-};
-
-const XRefId = process.env.XREF_ID as string;
 const tokenUrl = process.env.TOKEN_URL as string;
 const subscriptionKey = process.env.SUBSCRIPTION_KEY as string;
 const requesttoPayUrl = process.env.REQUEST_TO_PAY_URL as string;
 const targetEnv = process.env.TARGET_ENV as string;
 const apiKeyUrl = process.env.API_KEY_URL as string;
+const XRefId = process.env.XREF_ID as string;
 
 export const GenerateApiKey = async (): Promise<string | null> => {
   try {
@@ -210,8 +206,17 @@ export const validateMomo = async (token: string, momoaccount: string) => {
       },
     });
 
-    const response = (await resp.json()) as Ivalidate;
-    return response.result;
+    if (resp.ok) {
+      const responseText = await resp.text();
+      if (responseText) {
+        const response = JSON.parse(responseText);
+        return response.result;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
   } catch (error) {
     return null;
   }
@@ -242,6 +247,12 @@ export const MomohandlePayment = errorHandler(
         .json({ success: false, message: 'Order has already been paid' });
     }
 
+    if (order.totalAmount <= 0) {
+      return res
+        .status(400)
+        .json({ message: 'total  amount should be  greater than 0' });
+    }
+
     const requestId = crypto.randomUUID();
     const externalId = crypto.randomUUID();
 
@@ -255,7 +266,6 @@ export const MomohandlePayment = errorHandler(
       `paid by ${momoNumber}`,
       `paid to ${momoNumber}`
     );
-
     if (response.ok) {
       return res
         .status(202)
