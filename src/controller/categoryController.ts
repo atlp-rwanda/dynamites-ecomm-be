@@ -3,8 +3,10 @@ import dbConnection from '../database';
 import Category from '../database/models/categoryEntity';
 import { check, validationResult } from 'express-validator';
 import errorHandler from '../middlewares/errorHandler';
+import { Order } from '../database/models/orderEntity';
 
 const categoryRepository = dbConnection.getRepository(Category);
+const orderRepository = dbConnection.getRepository(Order)
 
 interface categoryRequestBody {
   name: string;
@@ -128,5 +130,70 @@ export const deleteCategory = errorHandler(
     await categoryRepository.delete(categoryId);
 
     res.status(200).json({ message: 'Category deleted successfully' });
+  }
+);
+
+export const getCategoryMetrics = errorHandler(
+  async (req: Request, res: Response) => {
+    const orders = await orderRepository.find({
+      where:{
+        paid: true
+      },
+      select:{
+        id:true,
+        totalAmount:true,
+        paid:true,
+        orderDetails:{
+          id:true,
+          price:true,
+          quantity:true,
+          product:{
+            id:true,
+            name:true,
+            category:{
+              id:true,
+              name:true
+            }
+          },
+        }
+      },
+      relations:['orderDetails','orderDetails.product','orderDetails.product.category']
+    })
+
+    const categories = await categoryRepository.find({
+      select:{
+        products:{
+          id:true
+        }
+      },
+      relations: ['products']
+    })
+
+    const counter:{[key:string]:number} = {};
+    for(const order of orders){
+      for(const orderDetail of order.orderDetails){
+        if(orderDetail.product.category.name in order){
+          counter[orderDetail.product.category.name] += orderDetail.price
+        }else{
+          counter[orderDetail.product.category.name] = orderDetail.price
+        }
+      }
+    }
+
+    const data = []
+
+    for(const category of categories){
+      if(category.name in counter){
+        data.push({
+          categoryName: category.name,
+          totalProducts: category.products.length,
+          totalSales: counter[category.name]
+        })
+      }
+    }
+
+    data.sort((a, b) => b.totalSales - a.totalSales)
+
+    return res.status(200).json({data:data.slice(0,4)})
   }
 );

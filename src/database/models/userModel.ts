@@ -4,6 +4,8 @@ import {
   Column,
   ManyToOne,
   OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Role } from './roleEntity';
 import { Order } from './orderEntity';
@@ -53,6 +55,12 @@ export default class UserModel {
 
   @Column({ nullable: true })
   twoFactorCode: number;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   constructor(user: Partial<UserModel>) {
     Object.assign(this, user);

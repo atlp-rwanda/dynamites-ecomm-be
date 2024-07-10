@@ -11,7 +11,8 @@ import {
   updateProfile,
   deleteUser,
   changeProfileImg,
-  removeProfileImg
+  removeProfileImg,
+  getUserMetrics
 } from '../controller/userController';
 
 import {
@@ -56,4 +57,5 @@ userRouter.post('/subscribe', subscribe);
 userRouter.get('/subscribe/delete/:id', removeSubscriber);
 userRouter.get('/subscribe/getAll', getAllSubscriber);
 userRouter.route('/profileImg').patch(IsLoggedIn, upload.fields([{name:'image'}]), changeProfileImg).delete(IsLoggedIn, removeProfileImg)
+userRouter.get('/get_metrics', IsLoggedIn, checkRole(['Admin']), getUserMetrics)
 export default userRouter;

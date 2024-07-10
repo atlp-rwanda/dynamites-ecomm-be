@@ -413,3 +413,21 @@ export const removeProfileImg = errorHandler(
       });
   }
 );
+
+export const getUserMetrics = errorHandler(async (req: Request, res: Response) => {
+  const users = await userRepository.find({relations:['userType']});
+
+  const buyerData: number[] = Array(12).fill(0);
+  const vendorData: number[] = Array(12).fill(0);
+
+  for(const user of users){
+    const monthIndex = user.createdAt.getMonth()
+    if(user.userType.name === 'Buyer'){
+      buyerData[monthIndex] += 1
+    }else if(user.userType.name === 'Vendor'){
+      vendorData[monthIndex] += 1
+    }
+  }
+
+  return res.status(200).json({buyerData, vendorData})
+})
