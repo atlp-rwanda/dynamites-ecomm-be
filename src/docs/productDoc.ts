@@ -343,3 +343,141 @@
  *       500:
  *         description: Internal server error.
  */
+
+/**
+ * @swagger
+ * /api/v1/product/bestselling:
+ *   get:
+ *     summary: Get Best Selling Products
+ *     description: Fetches the top 4 best-selling products based on the quantity sold in descending order.
+ *     tags: [Product]
+ *     responses:
+ *       '200':
+ *         description: Successfully retrieved the list of best-selling products.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                     example: 1
+ *                   name:
+ *                     type: string
+ *                     example: 'Product 1'
+ *                   image:
+ *                     type: string
+ *                     example: 'product1.jpg'
+ *                   gallery:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example: []
+ *                   shortDesc:
+ *                     type: string
+ *                     example: 'Short description for Product 1'
+ *                   longDesc:
+ *                     type: string
+ *                     example: 'Long description for Product 1'
+ *                   category:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         example: 5
+ *                       name:
+ *                         type: string
+ *                         example: 'Electronics'
+ *                       description:
+ *                         type: string
+ *                         example: 'Electronics'
+ *                       icon:
+ *                         type: string
+ *                         example: 'icon unavailable'
+ *                   quantity:
+ *                     type: integer
+ *                     example: 100
+ *                   regularPrice:
+ *                     type: number
+ *                     format: float
+ *                     example: 10.0
+ *                   salesPrice:
+ *                     type: number
+ *                     format: float
+ *                     example: 8.0
+ *                   tags:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example:
+ *                       - 'tag1'
+ *                   type:
+ *                     type: string
+ *                     example: 'Simple'
+ *                   isAvailable:
+ *                     type: boolean
+ *                     example: true
+ *                   isFeatured:
+ *                     type: boolean
+ *                     example: false
+ *                   averageRating:
+ *                     type: number
+ *                     format: float
+ *                     example: 4.5
+ *                   reviews:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                     example: []
+ *                   vendor:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: integer
+ *                         example: 18
+ *                       firstName:
+ *                         type: string
+ *                         example: 'Xavier'
+ *                       lastName:
+ *                         type: string
+ *                         example: 'string'
+ *                       email:
+ *                         type: string
+ *                         example: 'irakozetresor797@gmail.com'
+ *                       picture:
+ *                         type: string
+ *                         example: 'https://res.cloudinary.com/ditrc0kph/image/upload/v1711450197/rgrjpswkhjey1xgunqhr.png'
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                     example: '2024-07-09T12:34:56Z'
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *                     example: '2024-07-09T12:34:56Z'
+ *                   sales:
+ *                     type: integer
+ *                     example: 10
+ *       '404':
+ *         description: No best-selling products found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: 'No best-selling products found'
+ *       '500':
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: 'Failed to fetch best-selling products'
+ */

@@ -1,6 +1,10 @@
 import request from 'supertest';
 import app from '../app';
 import { getVendorToken, afterAllHook, beforeAllHook } from './testSetup';
+import dbConnection from '../database';
+import { OrderDetails } from '../database/models/orderDetailsEntity';
+
+const orderDetailsRepository = dbConnection.getRepository(OrderDetails);
 
 beforeAll(beforeAllHook);
 afterAll(afterAllHook);
@@ -42,6 +46,7 @@ describe('Product Controller Tests', () => {
       tags: ['tag1', 'tag2'],
       type: 'Simple',
       isAvailable: true,
+      isFeatured: false,
     };
 
     const response = await request(app)
@@ -68,6 +73,7 @@ describe('Product Controller Tests', () => {
       tags: ['tag1', 'tag2'],
       type: 'Simple',
       isAvailable: true,
+      isFeatured: false,
     };
 
     const response = await request(app)
@@ -95,6 +101,7 @@ describe('Product Controller Tests', () => {
       tags: ['tag1', 'tag2'],
       type: 'Simple',
       isAvailable: true,
+      isFeatured: false,
     };
 
     const response = await request(app)
@@ -151,6 +158,7 @@ describe('Product Controller Tests', () => {
       tags: ['tag1', 'tag2'],
       type: 'Variable',
       isAvailable: true,
+      isFeatured: false,
     };
 
     const response = await request(app)
@@ -177,6 +185,7 @@ describe('Product Controller Tests', () => {
       tags: ['tag1', 'tag2'],
       type: 'Variable',
       isAvailable: true,
+      isFeatured: false,
     };
     const nonExistentProductId = -999;
     const response = await request(app)
@@ -204,6 +213,7 @@ describe('Product Controller Tests', () => {
       tags: ['tag1', 'tag2'],
       type: 'Simple',
       isAvailable: true,
+      isFeatured: false,
     };
 
     const response = await request(app)
@@ -259,8 +269,8 @@ describe('Product Controller Tests', () => {
   });
 
   it('should update availability based on quantity', async () => {
-    const zero = 0
-    const nonZero = 3
+    const zero = 0;
+    const nonZero = 3;
     const zeroQuantity = {
       name: 'Updated Product Name',
       image: 'Updated.jpg',
@@ -274,8 +284,9 @@ describe('Product Controller Tests', () => {
       tags: ['tag1', 'tag2'],
       type: 'Variable',
       isAvailable: true,
+      isFeatured: false,
     };
-    const nonZeroQuantity = {...zeroQuantity, quantity: nonZero}
+    const nonZeroQuantity = { ...zeroQuantity, quantity: nonZero };
     const response = await request(app)
       .put(`/api/v1/product/${productId}`)
       .set('Authorization', `Bearer ${token}`)
@@ -380,6 +391,7 @@ describe('Product Controller Tests', () => {
       tags: ['Summer'],
       type: 'Simple',
       isAvailable: true,
+      isFeatured: false,
     };
 
     await request(app)
@@ -424,5 +436,17 @@ describe('Product Controller Tests', () => {
     expect(response.body.currentPage).toBe(page);
     expect(response.body).toHaveProperty('availableProducts');
     expect(response.body.availableProducts.length).toBeLessThanOrEqual(limit);
+  });
+
+  it('should return 404 if no best-selling products found', async () => {
+    // Mock the query to return an empty list
+    jest
+      .spyOn(orderDetailsRepository.createQueryBuilder(), 'getRawMany')
+      .mockResolvedValue([]);
+
+    const response = await request(app).get('/api/v1/product/bestselling');
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ msg: 'No best-selling products found' });
   });
 });
