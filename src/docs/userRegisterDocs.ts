@@ -399,3 +399,20 @@
  *       '500':
  *         description: Internal Server Error
  */
+
+/**
+ * @swagger
+ * /api/v1/user/get_metrics:
+ *   get:
+ *     summary: Get buyer and vendor metrics
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Successful
+ *       '401':
+ *         description: Unauthorized
+ *       '500':
+ *         description: Internal Server Error
+ */

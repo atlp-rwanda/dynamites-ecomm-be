@@ -1,6 +1,6 @@
 import request from 'supertest';
 import app from '../app';
-import { afterAllHook, beforeAllHook, getVendorToken } from './testSetup';
+import { afterAllHook, beforeAllHook, getAdminToken, getVendorToken } from './testSetup';
 
 beforeAll(beforeAllHook);
 afterAll(afterAllHook);
@@ -8,9 +8,11 @@ afterAll(afterAllHook);
 describe('Category Creation Tests', () => {
   beforeAll(async () => {
     token = await getVendorToken();
+    adminToken = await getAdminToken()
   });
   let token: string;
   let categoryId: number;
+  let adminToken: string;
 
   it('should create a new category with valid data', async () => {
     const categoryData = {
@@ -203,4 +205,13 @@ describe('Category Creation Tests', () => {
     expect(response.status).toBe(404);
     expect(response.body.message).toBe('Category Not Found');
   });
+
+  it('should return an array of category metrics', async () => {
+    const response = await request(app)
+      .get('/api/v1/category/get_metrics')
+      .set('Authorization', `Bearer ${adminToken}`)
+
+    expect(response.status).toBe(200)
+    expect(response.body.data).toBeDefined()
+  })
 });

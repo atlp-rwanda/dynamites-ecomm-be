@@ -4,6 +4,7 @@ import { afterAllHook, beforeAllHook } from './testSetup';
 import jwt from 'jsonwebtoken';
 import dbConnection from '../database';
 import UserModel from '../database/models/userModel';
+import { getAdminToken } from './testSetup';
 const userRepository = dbConnection.getRepository(UserModel);
 
 beforeAll(beforeAllHook);
@@ -495,3 +496,18 @@ if (user) {
 }
 });
 });
+
+describe('User metrics tests', () => {
+  let adminToken:string;
+  beforeAll(async() => {
+    adminToken = await getAdminToken()
+  })
+  it('should get user metrics successfully', async () => {
+    const response = await request(app).get('/api/v1/user/get_metrics')
+    .set('Authorization', `Bearer ${adminToken}`)
+
+    expect(response.status).toBe(200)
+    expect(response.body.buyerData).toBeDefined()
+    expect(response.body.vendorData).toBeDefined()
+  })
+})

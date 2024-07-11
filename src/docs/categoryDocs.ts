@@ -205,3 +205,22 @@
  *       '500':
  *         description: Internal Server Error
  */
+
+
+/**
+ * @swagger
+ * /api/v1/category/get_metrics:
+ *   get:
+ *     summary: Get category metrics
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Successful
+ *       '401':
+ *         description: Unauthorized
+ *       '500':
+ *         description: Internal Server Error
+ */
+

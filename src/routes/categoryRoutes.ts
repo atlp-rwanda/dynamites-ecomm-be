@@ -4,11 +4,15 @@ import {
   deleteCategory,
   getAllCategories,
   getCategory,
+  getCategoryMetrics,
   updateCategory,
 } from '../controller/categoryController';
 import { IsLoggedIn } from '../middlewares/isLoggedIn';
+import { checkRole } from '../middlewares/authorize';
 
 const categoryRouter = Router();
+
+categoryRouter.route('/get_metrics').get(IsLoggedIn, checkRole(['Admin']), getCategoryMetrics) 
 
 categoryRouter
   .route('/')
@@ -19,5 +23,6 @@ categoryRouter
   .get(getCategory)
   .put(IsLoggedIn, updateCategory)
   .delete(IsLoggedIn, deleteCategory);
+
 
 export default categoryRouter;
