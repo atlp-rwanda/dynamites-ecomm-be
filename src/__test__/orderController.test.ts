@@ -14,6 +14,7 @@ describe('Order Routes', () => {
     it('should update order status to Failed', async () => {
       const order = orderRepository.create({
         status: 'Pending',
+        country: 'RW',
         totalAmount: 40,
         trackingNumber: '34343653',
       });
@@ -40,6 +41,7 @@ describe('Order Routes', () => {
       const order = orderRepository.create({
         status: 'Pending',
         totalAmount: 40,
+        country: 'RW',
         trackingNumber: '34343653',
       });
       await orderRepository.save(order);

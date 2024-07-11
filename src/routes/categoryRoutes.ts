@@ -5,6 +5,7 @@ import {
   getAllCategories,
   getCategory,
   getCategoryMetrics,
+  getSalesByCountry,
   updateCategory,
 } from '../controller/categoryController';
 import { IsLoggedIn } from '../middlewares/isLoggedIn';
@@ -12,7 +13,12 @@ import { checkRole } from '../middlewares/authorize';
 
 const categoryRouter = Router();
 
-categoryRouter.route('/get_metrics').get(IsLoggedIn, checkRole(['Admin']), getCategoryMetrics) 
+categoryRouter
+  .route('/get_metrics')
+  .get(IsLoggedIn, checkRole(['Admin']), getCategoryMetrics);
+categoryRouter
+  .route('/getSalesByCountry')
+  .get(IsLoggedIn, checkRole(['Admin']), getSalesByCountry);
 
 categoryRouter
   .route('/')
@@ -23,6 +29,5 @@ categoryRouter
   .get(getCategory)
   .put(IsLoggedIn, updateCategory)
   .delete(IsLoggedIn, deleteCategory);
-
 
 export default categoryRouter;

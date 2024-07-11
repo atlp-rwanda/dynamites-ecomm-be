@@ -459,7 +459,6 @@ export const checkProductAvailability = async (req: Request, res: Response) => {
 };
 
 // Best seller API endpoints
-
 export const getBestSellingProducts = async (req: Request, res: Response) => {
   const orderDetailsRepository = dbConnection.getRepository(OrderDetails);
 
@@ -501,3 +500,7 @@ export const getBestSellingProducts = async (req: Request, res: Response) => {
 
   res.json(result);
 };
+
+
+
+

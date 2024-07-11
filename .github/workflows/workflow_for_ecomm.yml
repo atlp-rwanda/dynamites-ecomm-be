@@ -66,3 +66,4 @@ jobs:
       API_KEY_URL: ${{ secrets.API_KEY_URL }}
       SUBSCRIPTION_KEY: ${{ secrets.SUBSCRIPTION_KEY }}
       DEFAULT_PROFILE_URL: ${{ secrets.DEFAULT_PROFILE_URL }}
+      IP_KEYS: ${{ secrets.IP_KEYS }}
