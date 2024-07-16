@@ -8,9 +8,8 @@ import applyCoupon from '../utilis/couponCalculator';
 import { Order } from '../database/models/orderEntity';
 import { OrderDetails } from '../database/models/orderDetailsEntity';
 import { check, validationResult } from 'express-validator';
-
-
-import {eventEmitter} from '../Notification.vendor/event.services'
+import { eventEmitter } from '../Notification.vendor/event.services';
+import axios from 'axios';
 
 const cartRepository = dbConnection.getRepository(Cart);
 const productRepository = dbConnection.getRepository(Product);
@@ -65,9 +64,9 @@ export const addToCart = errorHandler(async (req: Request, res: Response) => {
   newItem.quantity = quantity;
 
   const savedItem = await cartRepository.save(newItem);
-  
-  eventEmitter.emit('addToCart',productId, userId)
-  
+
+  eventEmitter.emit('addToCart', productId, userId);
+
   return res
     .status(201)
     .json({ msg: 'Item added to cart successfully', cartItem: savedItem });
@@ -150,7 +149,7 @@ export const removeItem = errorHandler(async (req: Request, res: Response) => {
 
   const cartItem = await cartRepository.findOne({
     where: { id: itemId },
-    select:{user:{id:true}, product:{id:true}},
+    select: { user: { id: true }, product: { id: true } },
     relations: ['user', 'product'],
   });
 
@@ -159,7 +158,7 @@ export const removeItem = errorHandler(async (req: Request, res: Response) => {
   }
   const deletedItem = await cartRepository.delete(itemId);
 
-  eventEmitter.emit('removeItem', cartItem)
+  eventEmitter.emit('removeItem', cartItem);
 
   return res.status(200).json({
     msg: 'Cart Item deleted successfully',
@@ -198,6 +197,17 @@ export const checkout = [
     // Fetch the user who is checking out
     const user = await userRepository.findOne({ where: { id: userId } });
 
+    // Get user country location
+    let country: string = '';
+    try {
+      const response = await axios.get(
+        `https://ipgeolocation.abstractapi.com/v1/?api_key=${process.env.IP_KEYS}&ip_address=`
+      );
+      country = response.data.country_code;
+    } catch (error) {
+      res.send(error);
+    }
+
     // Fetch the cart items for this user
     const cartItems = await cartRepository.find({
       where: { user: { id: userId } },
@@ -233,7 +243,6 @@ export const checkout = [
       orderDetail.price = price;
 
       orderDetails.push(orderDetail);
-     
     }
 
     // Ensure totalAmount is an integer
@@ -246,12 +255,13 @@ export const checkout = [
     order.totalAmount = totalAmount;
     order.status = 'Pending';
     order.deliveryInfo = deliveryInfo;
+    order.country = country;
     order.trackingNumber = trackingNumber;
     order.orderDetails = orderDetails;
 
     const savedOrder = await orderRepository.save(order);
-    
-    eventEmitter.emit('pressorder', order)
+
+    eventEmitter.emit('pressorder', order);
 
     await cartRepository.delete({ user: { id: userId } });
 
@@ -292,11 +302,9 @@ export const cancelOrder = errorHandler(async (req: Request, res: Response) => {
   if (!order) {
     return res.status(404).json({ msg: 'Order not found' });
   }
-  eventEmitter.emit('order_canceled', orderId)
-  
-  await orderRepository.remove(order);
+  eventEmitter.emit('order_canceled', orderId);
 
-  
+  await orderRepository.remove(order);
 
   return res.status(200).json({ msg: 'Order canceled successfully' });
 });

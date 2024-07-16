@@ -27,6 +27,9 @@ export class Order {
   @Column({ nullable: true })
   deliveryInfo: string;
 
+  @Column({ nullable: false })
+  country: string;
+
   @Column({ nullable: true })
   paymentInfo: string;
 

@@ -1,6 +1,13 @@
 import request from 'supertest';
 import app from '../app';
-import { afterAllHook, beforeAllHook, getAdminToken, getVendorToken } from './testSetup';
+import {
+  afterAllHook,
+  beforeAllHook,
+  getAdminToken,
+  getVendorToken,
+} from './testSetup';
+import { Order } from '../database/models/orderEntity';
+import dbConnection from '../database';
 
 beforeAll(beforeAllHook);
 afterAll(afterAllHook);
@@ -8,7 +15,7 @@ afterAll(afterAllHook);
 describe('Category Creation Tests', () => {
   beforeAll(async () => {
     token = await getVendorToken();
-    adminToken = await getAdminToken()
+    adminToken = await getAdminToken();
   });
   let token: string;
   let categoryId: number;
@@ -18,7 +25,7 @@ describe('Category Creation Tests', () => {
     const categoryData = {
       name: 'Test Category',
       description: 'Test category description',
-      icon: 'Test category icon'
+      icon: 'Test category icon',
     };
 
     const response = await request(app)
@@ -39,7 +46,7 @@ describe('Category Creation Tests', () => {
   it('should return a 400 status code if name is missing', async () => {
     const invalidData = {
       description: 'Test category description',
-      icon: 'Test category icon'
+      icon: 'Test category icon',
     };
 
     const response = await request(app)
@@ -54,7 +61,7 @@ describe('Category Creation Tests', () => {
   it('should return a 400 status code if icon is missing', async () => {
     const invalidData = {
       description: 'Test category description',
-      name: 'Test category name'
+      name: 'Test category name',
     };
 
     const response = await request(app)
@@ -82,7 +89,7 @@ describe('Category Creation Tests', () => {
     const existingCategoryData = {
       name: 'Existing Category',
       description: 'Existing category description',
-      icon: 'Existing category icon'
+      icon: 'Existing category icon',
     };
     await request(app)
       .post('/api/v1/category')
@@ -92,7 +99,7 @@ describe('Category Creation Tests', () => {
     const newCategoryData = {
       name: 'Existing Category',
       description: 'Existing category description',
-      icon: 'Existing category icon'
+      icon: 'Existing category icon',
     };
     const response = await request(app)
       .post('/api/v1/category')
@@ -133,7 +140,7 @@ describe('Category Creation Tests', () => {
     const updatedCategoryData = {
       name: 'Updated Category Name',
       description: 'Updated category description',
-      icon: 'Updated category icon'
+      icon: 'Updated category icon',
     };
 
     const response = await request(app)
@@ -153,7 +160,7 @@ describe('Category Creation Tests', () => {
     const existingCategoryData = {
       name: 'Existing Category',
       description: 'Existing category description',
-      icon: 'Existing category icon'
+      icon: 'Existing category icon',
     };
     await request(app)
       .post('/api/v1/category')
@@ -163,7 +170,7 @@ describe('Category Creation Tests', () => {
     const updateCategoryData = {
       name: 'Existing Category',
       description: 'Existing category description',
-      icon: 'Existing category icon'
+      icon: 'Existing category icon',
     };
     const response = await request(app)
       .put(`/api/v1/category/${categoryId}`)
@@ -181,7 +188,7 @@ describe('Category Creation Tests', () => {
       .send({
         name: 'Updated Category Name',
         description: 'Updated category description',
-        icon: 'Updated category icon'
+        icon: 'Updated category icon',
       });
 
     expect(response.status).toBe(404);
@@ -209,9 +216,28 @@ describe('Category Creation Tests', () => {
   it('should return an array of category metrics', async () => {
     const response = await request(app)
       .get('/api/v1/category/get_metrics')
-      .set('Authorization', `Bearer ${adminToken}`)
+      .set('Authorization', `Bearer ${adminToken}`);
 
-    expect(response.status).toBe(200)
-    expect(response.body.data).toBeDefined()
-  })
+    expect(response.status).toBe(200);
+    expect(response.body.data).toBeDefined();
+  });
+  it('should return an array of sales by counrty', async () => {
+    // Create a mock order in the database
+    const orderRepository = dbConnection.getRepository(Order);
+    const order = orderRepository.create({
+      totalAmount: 100,
+      country: 'RW',
+      status: 'Pending',
+      trackingNumber: '123456',
+      paid: false,
+    });
+    await orderRepository.save(order);
+
+    const response = await request(app)
+      .get('/api/v1/category/getSalesByCountry')
+      .set('Authorization', `Bearer ${adminToken}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.counter).toBeDefined();
+  });
 });

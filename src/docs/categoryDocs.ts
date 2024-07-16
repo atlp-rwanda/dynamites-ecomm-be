@@ -206,13 +206,12 @@
  *         description: Internal Server Error
  */
 
-
 /**
  * @swagger
  * /api/v1/category/get_metrics:
  *   get:
  *     summary: Get category metrics
- *     tags: [User]
+ *     tags: [Category]
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -224,3 +223,19 @@
  *         description: Internal Server Error
  */
 
+/**
+ * @swagger
+ * /api/v1/category/getSalesByCountry:
+ *   get:
+ *     summary: Get sales by country metrics
+ *     tags: [Category]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Successful
+ *       '401':
+ *         description: Unauthorized
+ *       '500':
+ *         description: Internal Server Error
+ */

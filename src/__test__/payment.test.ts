@@ -21,6 +21,7 @@ describe('handlePayment', () => {
     order = orderRepository.create({
       totalAmount: 100,
       status: 'Pending',
+      country: 'RW',
       trackingNumber: '123456',
       paid: false,
     });

@@ -6,7 +6,7 @@ import errorHandler from '../middlewares/errorHandler';
 import { Order } from '../database/models/orderEntity';
 
 const categoryRepository = dbConnection.getRepository(Category);
-const orderRepository = dbConnection.getRepository(Order)
+const orderRepository = dbConnection.getRepository(Order);
 
 interface categoryRequestBody {
   name: string;
@@ -136,64 +136,108 @@ export const deleteCategory = errorHandler(
 export const getCategoryMetrics = errorHandler(
   async (req: Request, res: Response) => {
     const orders = await orderRepository.find({
-      where:{
-        paid: true
+      where: {
+        paid: true,
       },
-      select:{
-        id:true,
-        totalAmount:true,
-        paid:true,
-        orderDetails:{
-          id:true,
-          price:true,
-          quantity:true,
-          product:{
-            id:true,
-            name:true,
-            category:{
-              id:true,
-              name:true
-            }
+      select: {
+        id: true,
+        totalAmount: true,
+        paid: true,
+        orderDetails: {
+          id: true,
+          price: true,
+          quantity: true,
+          product: {
+            id: true,
+            name: true,
+            category: {
+              id: true,
+              name: true,
+            },
           },
-        }
+        },
       },
-      relations:['orderDetails','orderDetails.product','orderDetails.product.category']
-    })
+      relations: [
+        'orderDetails',
+        'orderDetails.product',
+        'orderDetails.product.category',
+      ],
+    });
 
     const categories = await categoryRepository.find({
-      select:{
-        products:{
-          id:true
-        }
+      select: {
+        products: {
+          id: true,
+        },
       },
-      relations: ['products']
-    })
+      relations: ['products'],
+    });
 
-    const counter:{[key:string]:number} = {};
-    for(const order of orders){
-      for(const orderDetail of order.orderDetails){
-        if(orderDetail.product.category.name in order){
-          counter[orderDetail.product.category.name] += orderDetail.price
-        }else{
-          counter[orderDetail.product.category.name] = orderDetail.price
+    const counter: { [key: string]: number } = {};
+    for (const order of orders) {
+      for (const orderDetail of order.orderDetails) {
+        if (orderDetail.product.category.name in counter) {
+          counter[orderDetail.product.category.name] += orderDetail.price;
+        } else {
+          counter[orderDetail.product.category.name] = orderDetail.price;
         }
       }
     }
 
-    const data = []
+    const data = [];
 
-    for(const category of categories){
-      if(category.name in counter){
+    for (const category of categories) {
+      if (category.name in counter) {
         data.push({
           categoryName: category.name,
           totalProducts: category.products.length,
-          totalSales: counter[category.name]
-        })
+          totalSales: counter[category.name],
+        });
       }
     }
 
-    data.sort((a, b) => b.totalSales - a.totalSales)
+    data.sort((a, b) => b.totalSales - a.totalSales);
 
-    return res.status(200).json({data:data.slice(0,4)})
+    return res.status(200).json({ data: data.slice(0, 4) });
+  }
+);
+
+// Function Get Sales by Country
+export const getSalesByCountry = errorHandler(
+  async (req: Request, res: Response) => {
+    const orders = await orderRepository.find({
+      where: {
+        paid: false,
+      },
+      select: {
+        id: true,
+        totalAmount: true,
+        country: true,
+        paid: true,
+        orderDetails: {
+          id: true,
+          price: true,
+          quantity: true,
+          product: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+      relations: ['orderDetails', 'orderDetails.product'],
+    });
+
+    const counter: { [key: string]: number } = {};
+    for (const order of orders) {
+      for (const orderDetail of order.orderDetails) {
+        if (order.country in counter) {
+          counter[order.country] += orderDetail.price;
+        } else {
+          counter[order.country] = orderDetail.price;
+        }
+      }
+    }
+
+    return res.status(200).json({ counter });
   }
 );

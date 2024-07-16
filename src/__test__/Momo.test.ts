@@ -45,6 +45,7 @@ describe('Buyer Controller Tests', () => {
     const orderRepository = dbConnection.getRepository(Order);
     order = orderRepository.create({
       totalAmount: 100,
+      country: 'RW',
       status: 'Pending',
       trackingNumber: '123456',
       paid: false,
@@ -52,6 +53,7 @@ describe('Buyer Controller Tests', () => {
 
     orderAmount = orderRepository.create({
       totalAmount: 0,
+      country: 'RW',
       status: 'Pending',
       trackingNumber: '123456',
       paid: false,
