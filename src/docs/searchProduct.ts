@@ -4,8 +4,6 @@
  *   get:
  *     summary: Search products
  *     tags: [Buyer]
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: keyword
@@ -13,12 +11,33 @@
  *         description: Keyword to search for in product name, short description, or long description.
  *       - in: query
  *         name: category
- *         type: string
- *         description: Name of the category to filter the products.
+ *         type: array
+ *         description: An array of category IDs
+ *       - in: query
+ *         name: rating
+ *         type: array
+ *         description: An array of ratings
  *       - in: query
  *         name: productName
  *         type: string
  *         description: Name of the product to filter the products.
+ *       - in: query
+ *         name: page
+ *         type: number
+ *         description: page to return
+ *       - in: query
+ *         name: limit
+ *         type: number
+ *         description: number of items to return per page
+ *       - in: query
+ *         name: minPrice
+ *         type: number
+ *         description: minPrice of products to return
+ *       - in: query
+ *         name: maxPrice
+ *         type: number
+ *         enum: [asc, desc]
+ *         description: maxPrice of products to return
  *       - in: query
  *         name: sort
  *         type: string
