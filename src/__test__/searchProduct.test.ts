@@ -23,7 +23,7 @@ describe('Search Products Controller Test', () => {
 
   it('should search products by category', async () => {
     const response = await request(app)
-      .get('/api/v1/search?category=categoryName')
+      .get('/api/v1/search?category=1&category=2')
       .set('Authorization', `Bearer ${buyerToken}`);
     expect(response.status).toBe(200);
     expect(response.body.data).toBeDefined();
