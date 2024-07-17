@@ -13,7 +13,6 @@ describe('Search Products Controller Test', () => {
   });
 
   it('should search products with keyword', async () => {
-    
     const response = await request(app)
       .get('/api/v1/search?keyword=keyword')
       .set('Authorization', `Bearer ${buyerToken}`);
@@ -34,7 +33,7 @@ describe('Search Products Controller Test', () => {
       .get('/api/v1/search?productName=productName')
       .set('Authorization', `Bearer ${buyerToken}`);
     expect(response.status).toBe(200);
-    expect(response.body.data).toBeDefined(); 
+    expect(response.body.data).toBeDefined();
   });
 
   it('should search products and apply sorting', async () => {

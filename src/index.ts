@@ -1,8 +1,7 @@
 /* eslint-disable no-console */
 import app from './app';
 import { DbConnection } from './database';
-import cron_tasks from '../src/Notification.vendor/node.cron.services' 
-
+import cron_tasks from '../src/Notification.vendor/node.cron.services';
 
 declare module 'express-serve-static-core' {
   interface Request {
@@ -22,5 +21,5 @@ const PORT = process.env.PORT;
 
   app.listen(PORT, () => console.log(`App is up and listening to ${PORT}`));
 
-  cron_tasks.start()
+  cron_tasks.start();
 })();

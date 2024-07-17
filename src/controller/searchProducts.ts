@@ -11,20 +11,34 @@ interface searchParams {
   category?: number[];
   productName?: string;
   rating?: number[];
-  minPrice?:number;
-  maxPrice?:number;
+  minPrice?: number;
+  maxPrice?: number;
   sort?: string;
-  page?:number;
-  limit?:number;
+  page?: number;
+  limit?: number;
 }
 
-export const paginate = (query: SelectQueryBuilder<Product>, page: number, limit: number) => {
+export const paginate = (
+  query: SelectQueryBuilder<Product>,
+  page: number,
+  limit: number
+) => {
   return query.skip((page - 1) * limit).take(limit);
 };
 
 export const searchProducts = errorHandler(
   async (req: Request, res: Response) => {
-    const { keyword, category, productName, rating, minPrice, maxPrice, sort='DESC', page=1, limit=9 }: searchParams = req.query;
+    const {
+      keyword,
+      category,
+      productName,
+      rating,
+      minPrice,
+      maxPrice,
+      sort = 'DESC',
+      page = 1,
+      limit = 9,
+    }: searchParams = req.query;
 
     let queryBuilder = productRepository.createQueryBuilder('product');
 
@@ -36,24 +50,33 @@ export const searchProducts = errorHandler(
     }
 
     if (category && category.length > 0) {
-      queryBuilder = queryBuilder.andWhere('product.categoryId IN (:...category)', { category });
+      queryBuilder = queryBuilder.andWhere(
+        'product.categoryId IN (:...category)',
+        { category }
+      );
     }
 
     if (productName) {
       queryBuilder = queryBuilder.andWhere('product.name ILIKE :productName', {
-        productName: `%${productName}%`
+        productName: `%${productName}%`,
       });
     }
 
     if (rating && rating.length > 0) {
-      queryBuilder = queryBuilder.andWhere('product.averageRating IN (:...rating)', { rating });
+      queryBuilder = queryBuilder.andWhere(
+        'product.averageRating IN (:...rating)',
+        { rating }
+      );
     }
 
     if (minPrice && maxPrice) {
-      queryBuilder = queryBuilder.andWhere('product.salesPrice BETWEEN :minPrice AND :maxPrice', {
-        minPrice,
-        maxPrice,
-      });
+      queryBuilder = queryBuilder.andWhere(
+        'product.salesPrice BETWEEN :minPrice AND :maxPrice',
+        {
+          minPrice,
+          maxPrice,
+        }
+      );
     }
 
     if (sort) {
@@ -66,7 +89,7 @@ export const searchProducts = errorHandler(
 
     return res.status(200).json({
       data: products,
-      total
+      total,
     });
   }
 );

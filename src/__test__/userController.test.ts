@@ -333,34 +333,37 @@ describe('User Login Tests', () => {
   });
 });
 
-
 describe('Password Recover Tests', () => {
   const userData = {
     firstName: 'Test',
     lastName: 'User',
     email: 'test@gmail.com',
     password: 'TestPassword123',
-    userType: 'vendor'
+    userType: 'vendor',
   };
   it('should generate a password reset token and send an email', async () => {
     // Register a user
     await request(app).post('/api/v1/user/register').send(userData);
-    const recoverUser = await userRepository.findOne({ where: { email: userData.email } });
-  
+    const recoverUser = await userRepository.findOne({
+      where: { email: userData.email },
+    });
+
     if (recoverUser) {
       const response = await request(app)
         .post('/api/v1/user/recover')
         .send({ email: recoverUser.email });
       expect(response.status).toBe(200);
-      expect(response.body.message).toEqual('Password reset token generated successfully');
+      expect(response.body.message).toEqual(
+        'Password reset token generated successfully'
+      );
     } else {
       throw new Error('User not found');
     }
   });
-  
+
   it('should return a 404 error if the user email is not found', async () => {
     const nonExistingEmail = 'nonexisting@example.com';
-  
+
     // Send a request to the recover endpoint with a non-existing email
     const response = await request(app)
       .post('/api/v1/user/recover')
@@ -369,18 +372,19 @@ describe('Password Recover Tests', () => {
     expect(response.body.message).toEqual('User not found');
   });
 
-
   it('should return 200 and update the password if the recovery token is valid and the user exists', async () => {
-    const recoverToken = jwt.sign({ email: userData.email }, process.env.JWT_SECRET as jwt.Secret, { expiresIn: '1h' });
+    const recoverToken = jwt.sign(
+      { email: userData.email },
+      process.env.JWT_SECRET as jwt.Secret,
+      { expiresIn: '1h' }
+    );
     const response = await request(app)
       .put(`/api/v1/user/recover/confirm?recoverToken=${recoverToken}`)
       .send({ password: 'newPassword123' });
     expect(response.status).toBe(200);
     expect(response.body.message).toEqual('Password updated successfully');
-
-
   });
-  
+
   it('should return 404 if the recovery token is invalid or missing', async () => {
     const response = await request(app)
       .put('/api/v1/user/recover/confirm')
@@ -390,14 +394,17 @@ describe('Password Recover Tests', () => {
   });
 
   it('should return 404 if the user associated with the token does not exist', async () => {
-    const invalidToken = jwt.sign({ email: 'nonexistent@gmail.com' }, process.env.JWT_SECRET as jwt.Secret, { expiresIn: '1h' });
+    const invalidToken = jwt.sign(
+      { email: 'nonexistent@gmail.com' },
+      process.env.JWT_SECRET as jwt.Secret,
+      { expiresIn: '1h' }
+    );
     const response = await request(app)
       .put(`/api/v1/user/recover/confirm?recoverToken=${invalidToken}`)
       .send({ password: 'newPassword123' });
     expect(response.status).toBe(404);
     expect(response.body.message).toEqual('User not found');
   });
-  
 });
 
 describe('Get All Users Tests', () => {
@@ -407,7 +414,6 @@ describe('Get All Users Tests', () => {
     expect(response.status).toBe(200);
     expect(response.body.message).toEqual('Users fetched successfully');
   });
-  
 
   it('should delete all users and return a success message with count', async () => {
     const response = await request(app).delete('/api/v1/user/deleteUsers');
@@ -423,13 +429,13 @@ describe('update user Profile', () => {
     lastName: string;
     email: string;
     password?: string;
-    userType?: Role; 
+    userType?: Role;
     googleId?: string;
     facebookId?: string;
     picture?: string;
     provider?: string;
     isVerified: boolean;
-    twoFactorCode?: number; 
+    twoFactorCode?: number;
   }
 
   interface Role {
@@ -438,76 +444,75 @@ describe('update user Profile', () => {
     permissions: string[];
   }
 
-
-let user: IUser | undefined | null;
-const userData = {
-firstName: 'jan',
-lastName: 'bosco',
-email: 'bosco@gmail.com',
-password: 'boscoPassword123',
-};
-
-beforeEach(async () => {
-
-await request(app).post('/api/v1/register').send(userData);
-user = await userRepository.findOne({ where: { email: userData.email } });
-});
-
-it('should update the user profile successfully', async () => {
-if (user) {
-  const newUserData = {
-    firstName: 'NewFirstName',
-    lastName: 'NewLastName',
-    email: 'newemail@example.com',
-    password: 'bosco@gmail.com',
+  let user: IUser | undefined | null;
+  const userData = {
+    firstName: 'jan',
+    lastName: 'bosco',
+    email: 'bosco@gmail.com',
+    password: 'boscoPassword123',
   };
 
-  const response = await request(app)
-    .put(`/api/v1/updateProfile/${user?.id}`)
-    .send(newUserData);
-  expect(response.statusCode).toBe(201);
-  expect(response.body.message).toBe('User updated successfully');
-}
-});
+  beforeEach(async () => {
+    await request(app).post('/api/v1/register').send(userData);
+    user = await userRepository.findOne({ where: { email: userData.email } });
+  });
 
-it('should return 404 when user not found', async () => {
-const Id = 999;  
-const response = await request(app)
-  .put(`/api/v1/updateProfile/${Id}`)
-  .send(userData);
-expect(response.statusCode).toBe(404);
-expect(response.body.error).toBe('User not found');
-});
+  it('should update the user profile successfully', async () => {
+    if (user) {
+      const newUserData = {
+        firstName: 'NewFirstName',
+        lastName: 'NewLastName',
+        email: 'newemail@example.com',
+        password: 'bosco@gmail.com',
+      };
 
-it('should return 400 when email already exists', async () => {
-if (user) {
-  const newUserData = {
-    firstName: 'NewFirstName',
-    lastName: 'NewLastName',
-    email: 'newemail@example.com', 
-    password: 'bosco@gmail.com',
-  };
+      const response = await request(app)
+        .put(`/api/v1/updateProfile/${user?.id}`)
+        .send(newUserData);
+      expect(response.statusCode).toBe(201);
+      expect(response.body.message).toBe('User updated successfully');
+    }
+  });
 
-  const response = await request(app)
-    .put(`/api/v1/updateProfile/${user.id}`)
-    .send(newUserData);
-  expect(response.statusCode).toBe(400); 
-  expect(response.body.error).toBe('Email is already taken'); 
-}
-});
+  it('should return 404 when user not found', async () => {
+    const Id = 999;
+    const response = await request(app)
+      .put(`/api/v1/updateProfile/${Id}`)
+      .send(userData);
+    expect(response.statusCode).toBe(404);
+    expect(response.body.error).toBe('User not found');
+  });
+
+  it('should return 400 when email already exists', async () => {
+    if (user) {
+      const newUserData = {
+        firstName: 'NewFirstName',
+        lastName: 'NewLastName',
+        email: 'newemail@example.com',
+        password: 'bosco@gmail.com',
+      };
+
+      const response = await request(app)
+        .put(`/api/v1/updateProfile/${user.id}`)
+        .send(newUserData);
+      expect(response.statusCode).toBe(400);
+      expect(response.body.error).toBe('Email is already taken');
+    }
+  });
 });
 
 describe('User metrics tests', () => {
-  let adminToken:string;
-  beforeAll(async() => {
-    adminToken = await getAdminToken()
-  })
+  let adminToken: string;
+  beforeAll(async () => {
+    adminToken = await getAdminToken();
+  });
   it('should get user metrics successfully', async () => {
-    const response = await request(app).get('/api/v1/user/get_metrics')
-    .set('Authorization', `Bearer ${adminToken}`)
+    const response = await request(app)
+      .get('/api/v1/user/get_metrics')
+      .set('Authorization', `Bearer ${adminToken}`);
 
-    expect(response.status).toBe(200)
-    expect(response.body.buyerData).toBeDefined()
-    expect(response.body.vendorData).toBeDefined()
-  })
-})
+    expect(response.status).toBe(200);
+    expect(response.body.buyerData).toBeDefined();
+    expect(response.body.vendorData).toBeDefined();
+  });
+});

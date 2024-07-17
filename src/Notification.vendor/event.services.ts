@@ -5,18 +5,18 @@ import Product from '../database/models/productEntity';
 import { Order } from '../database/models/orderEntity';
 import dbConnection from '../database';
 import sendEmailfunc from './EmailSendor';
-import { 
-   added_to_cart_message,
-   removed_to_cart_message,
-   pressorder_message, 
-   order_status_changed, 
-   new_product_created, 
-   updated_Product,
-   product_deleted,
-  order_canceled} from './message.Templete';
+import {
+  added_to_cart_message,
+  removed_to_cart_message,
+  pressorder_message,
+  order_status_changed,
+  new_product_created,
+  updated_Product,
+  product_deleted,
+  order_canceled,
+} from './message.Templete';
 
 export const eventEmitter = new EventEmitter();
-
 
 interface product {
   id: number;
@@ -65,26 +65,31 @@ const orderRepository = dbConnection.getRepository(Order);
 
 eventEmitter.on('addToCart', async (product_id, userId) => {
   try {
-    if (process.env.NODE_ENV == 'test'){
-      return
+    if (process.env.NODE_ENV == 'test') {
+      return;
     }
     const product = await productRepository.findOne({
       where: { id: product_id },
-      select: { vendor: { firstName: true, lastName: true, picture: true, id: true, email: true } },
+      select: {
+        vendor: {
+          firstName: true,
+          lastName: true,
+          picture: true,
+          id: true,
+          email: true,
+        },
+      },
       relations: ['vendor'],
     });
 
     if (!product) {
       return;
+    } else if (!product.vendor || !product.vendor.email) {
+      return;
     }
-  
-    else if (!product.vendor || !product.vendor.email) 
-      {
-        return
-      }
 
     const User = await userRepository.findOne({
-      where: { id: userId }
+      where: { id: userId },
     });
 
     if (!User) {
@@ -98,36 +103,42 @@ eventEmitter.on('addToCart', async (product_id, userId) => {
     new_notification.message_title = 'your product is add to buyer cart';
     new_notification.message_content = added_to_cart_message(product, User);
     await NotificationRepository.save(new_notification);
-    await sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
-
-  } 
-  catch (error) {
-   throw error 
-    
+    await sendEmailfunc(
+      product.vendor.email,
+      new_notification.message_title,
+      new_notification.message_content
+    );
+  } catch (error) {
+    throw error;
   }
 });
 
 eventEmitter.on('removeItem', async (removeItem) => {
   try {
-    if (process.env.NODE_ENV == 'test'){
-      return
+    if (process.env.NODE_ENV == 'test') {
+      return;
     }
     const product = await productRepository.findOne({
       where: { id: removeItem.product.id },
-      select: { vendor: { firstName: true, lastName: true, picture: true, id: true, email: true } },
+      select: {
+        vendor: {
+          firstName: true,
+          lastName: true,
+          picture: true,
+          id: true,
+          email: true,
+        },
+      },
       relations: ['vendor'],
     });
 
     if (!product) {
       return;
+    } else if (!product.vendor || !product.vendor.email) {
+      return;
     }
-
-    else if (!product.vendor || !product.vendor.email) 
-      {
-        return
-      }
     const user = await userRepository.findOne({
-      where: { id: removeItem.user.id }
+      where: { id: removeItem.user.id },
     });
 
     if (!user) {
@@ -142,247 +153,262 @@ eventEmitter.on('removeItem', async (removeItem) => {
     new_notification.message_content = removed_to_cart_message(product, user);
 
     await NotificationRepository.save(new_notification);
-    await sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
-
+    await sendEmailfunc(
+      product.vendor.email,
+      new_notification.message_title,
+      new_notification.message_content
+    );
   } catch (error) {
-    throw error
+    throw error;
   }
 });
 
-eventEmitter.on('pressorder', async (order:order) => {
+eventEmitter.on('pressorder', async (order: order) => {
   try {
-      if (process.env.NODE_ENV == 'test'){
-        return
-      }
-     const orderDetail = order.orderDetails  
-     for(let i=0; i<orderDetail.length; i++)
-      {
-        const product = await productRepository.findOne({
-          where: { id: orderDetail[i].product.id},
-          select: { vendor: { firstName: true, lastName: true, picture: true, id: true, email: true } },
-          relations: ['vendor'],
-        });
-
-        if(!product)
-          {
-            return
-          }
-        else if (!product.vendor || !product.vendor.email) 
-            {
-              return
-            }
-        const new_notification = new Notification_box();
-        new_notification.product_id = orderDetail[i].product.id;
-        new_notification.vendor_id = product.vendor.id
-        new_notification.vendor_email = product.vendor.email;
-        new_notification.message_title = 'order with you product was placed';
-        new_notification.message_content = pressorder_message(product, order);
-
-        await NotificationRepository.save(new_notification);
-        
-        await sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
-      }
-     
+    if (process.env.NODE_ENV == 'test') {
+      return;
     }
-  catch (error) {
-    throw error
+    const orderDetail = order.orderDetails;
+    for (let i = 0; i < orderDetail.length; i++) {
+      const product = await productRepository.findOne({
+        where: { id: orderDetail[i].product.id },
+        select: {
+          vendor: {
+            firstName: true,
+            lastName: true,
+            picture: true,
+            id: true,
+            email: true,
+          },
+        },
+        relations: ['vendor'],
+      });
+
+      if (!product) {
+        return;
+      } else if (!product.vendor || !product.vendor.email) {
+        return;
+      }
+      const new_notification = new Notification_box();
+      new_notification.product_id = orderDetail[i].product.id;
+      new_notification.vendor_id = product.vendor.id;
+      new_notification.vendor_email = product.vendor.email;
+      new_notification.message_title = 'order with you product was placed';
+      new_notification.message_content = pressorder_message(product, order);
+
+      await NotificationRepository.save(new_notification);
+
+      await sendEmailfunc(
+        product.vendor.email,
+        new_notification.message_title,
+        new_notification.message_content
+      );
+    }
+  } catch (error) {
+    throw error;
   }
 });
 
-eventEmitter.on('order_status_change', async (orderId:number) => {
+eventEmitter.on('order_status_change', async (orderId: number) => {
   try {
-    if (process.env.NODE_ENV == 'test'){
-      return
+    if (process.env.NODE_ENV == 'test') {
+      return;
     }
     const order = await orderRepository.findOne({
       where: {
         id: orderId,
       },
-      relations:['orderDetails','orderDetails.product']
+      relations: ['orderDetails', 'orderDetails.product'],
     });
-    if(order == null)
-      {
-        return
-      }
-     const orderDetail = order.orderDetails  
-     
-     for(let i=0; i<orderDetail.length; i++)
-      {
-        const product = await productRepository.findOne({
-          where: { id: orderDetail[i].product.id},
-          select: { vendor: { firstName: true, lastName: true, picture: true, id: true, email: true } },
-          relations: ['vendor'],
-        });
-
-        if(!product || !product.vendor)
-          {
-            continue
-          }
-        else if (!product.vendor || !product.vendor.email) 
-            {
-              continue
-            }
-        const new_notification = new Notification_box();
-        new_notification.product_id = orderDetail[i].product.id;
-        new_notification.vendor_id = product.vendor.id
-        new_notification.vendor_email = product.vendor.email;
-        new_notification.message_title = 'order status with you product was changed';
-        new_notification.message_content = order_status_changed(product, order);
-
-        await NotificationRepository.save(new_notification);
-        await sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
-      }
-      
+    if (order == null) {
+      return;
     }
-  catch (error) {
-    throw error
+    const orderDetail = order.orderDetails;
+
+    for (let i = 0; i < orderDetail.length; i++) {
+      const product = await productRepository.findOne({
+        where: { id: orderDetail[i].product.id },
+        select: {
+          vendor: {
+            firstName: true,
+            lastName: true,
+            picture: true,
+            id: true,
+            email: true,
+          },
+        },
+        relations: ['vendor'],
+      });
+
+      if (!product || !product.vendor) {
+        continue;
+      } else if (!product.vendor || !product.vendor.email) {
+        continue;
+      }
+      const new_notification = new Notification_box();
+      new_notification.product_id = orderDetail[i].product.id;
+      new_notification.vendor_id = product.vendor.id;
+      new_notification.vendor_email = product.vendor.email;
+      new_notification.message_title =
+        'order status with you product was changed';
+      new_notification.message_content = order_status_changed(product, order);
+
+      await NotificationRepository.save(new_notification);
+      await sendEmailfunc(
+        product.vendor.email,
+        new_notification.message_title,
+        new_notification.message_content
+      );
+    }
+  } catch (error) {
+    throw error;
   }
 });
 
+eventEmitter.on('productCreated', async (product: product) => {
+  try {
+    if (process.env.NODE_ENV == 'test') {
+      return;
+    }
+    if (!product) {
+      return;
+    } else if (!product.vendor || !product.vendor.email) {
+      return;
+    }
 
-eventEmitter.on('productCreated', async(product:product)=>{
-  try{
-        if (process.env.NODE_ENV == 'test'){
-          return
-        }
-       if(!product)
-        {
-          return
-        }
-      
-        else if (!product.vendor || !product.vendor.email) {
-          return
-      }
+    const new_notification = new Notification_box();
+    new_notification.product_id = product.id;
+    new_notification.vendor_id = product.vendor.id;
+    new_notification.vendor_email = product.vendor.email;
+    new_notification.message_title = 'Your Product was created sucessfull';
+    new_notification.message_content = new_product_created(product);
 
-        const new_notification = new Notification_box();
-        new_notification.product_id =product.id ;
-        new_notification.vendor_id = product.vendor.id
-        new_notification.vendor_email = product.vendor.email;
-        new_notification.message_title = 'Your Product was created sucessfull';
-        new_notification.message_content = new_product_created(product);
-
-        await NotificationRepository.save(new_notification);
-        await sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
+    await NotificationRepository.save(new_notification);
+    await sendEmailfunc(
+      product.vendor.email,
+      new_notification.message_title,
+      new_notification.message_content
+    );
+  } catch (error) {
+    throw error;
   }
-  catch(error)
-  {
-    throw error
+});
+
+eventEmitter.on('product_updated', async (product: product) => {
+  try {
+    if (process.env.NODE_ENV == 'test') {
+      return;
+    }
+    if (!product) {
+      return;
+    } else if (!product.vendor || !product.vendor.email) {
+      return;
+    }
+    const new_notification = new Notification_box();
+    new_notification.product_id = product.id;
+    new_notification.vendor_id = product.vendor.id;
+    new_notification.vendor_email = product.vendor.email;
+    new_notification.message_title = 'Your product was Updated succesfull';
+    new_notification.message_content = updated_Product(product);
+
+    await NotificationRepository.save(new_notification);
+    await sendEmailfunc(
+      product.vendor.email,
+      new_notification.message_title,
+      new_notification.message_content
+    );
+  } catch (error) {
+    throw error;
   }
+});
 
-})
+eventEmitter.on('product_deleted', async (product_id: number) => {
+  try {
+    if (process.env.NODE_ENV == 'test') {
+      return;
+    }
+    const product = await productRepository.findOne({
+      where: { id: product_id },
+      relations: ['vendor'],
+    });
+    if (!product || !product.vendor || !product.vendor.email) {
+      return;
+    } else if (!product.vendor || !product.vendor.email) {
+      return;
+    }
+    const new_notification = new Notification_box();
+    new_notification.product_id = product.id;
+    new_notification.vendor_id = product.vendor.id;
+    new_notification.vendor_email = product.vendor.email;
+    new_notification.message_title = 'Your product was deleted succesfull';
+    new_notification.message_content = product_deleted(product);
 
-eventEmitter.on('product_updated', async(product:product)=>{
-
-  try{
-        if (process.env.NODE_ENV == 'test'){
-          return
-        }
-        if(!product)
-          {
-            return
-          }
-        else if (!product.vendor || !product.vendor.email) 
-          {
-            return
-          }
-        const new_notification = new Notification_box();
-        new_notification.product_id =product.id ;
-        new_notification.vendor_id = product.vendor.id
-        new_notification.vendor_email = product.vendor.email;
-        new_notification.message_title = 'Your product was Updated succesfull';
-        new_notification.message_content = updated_Product(product);
-
-        await NotificationRepository.save(new_notification);
-        await sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
+    await NotificationRepository.save(new_notification);
+    await sendEmailfunc(
+      product.vendor.email,
+      new_notification.message_title,
+      new_notification.message_content
+    );
+  } catch (error) {
+    throw error;
   }
-  catch(error)
-  {
-    throw error
-  }
-})
-
-
-eventEmitter.on('product_deleted', async(product_id:number)=>{
-  try{
-        if (process.env.NODE_ENV == 'test'){
-          return
-        }
-        const product= await productRepository.findOne({
-          where:{id: product_id},
-          relations:['vendor']
-        })
-        if(!product || !product.vendor || !product.vendor.email)
-          {
-            return
-          }
-         
-        else if (!product.vendor || !product.vendor.email) 
-            {
-              return
-            }  
-        const new_notification = new Notification_box();
-        new_notification.product_id =product.id ;
-        new_notification.vendor_id = product.vendor.id
-        new_notification.vendor_email = product.vendor.email;
-        new_notification.message_title = 'Your product was deleted succesfull';
-        new_notification.message_content = product_deleted(product);
-
-        await NotificationRepository.save(new_notification);
-        await sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
-  }
-  catch(error)
-  {
-    throw error
-  }
-})
-
+});
 
 eventEmitter.on('order_canceled', async (orderId) => {
   try {
-    if (process.env.NODE_ENV == 'test'){
-      return
+    if (process.env.NODE_ENV == 'test') {
+      return;
     }
     const order = await orderRepository.findOne({
       where: { id: orderId },
-      relations: ['orderDetails','orderDetails.product', 'orderDetails.product.vendor'],
+      relations: [
+        'orderDetails',
+        'orderDetails.product',
+        'orderDetails.product.vendor',
+      ],
     });
-     if(!order)
-      {
-        return
-      }
-     const orderDetail = order.orderDetails
-     
-     for(let i=0; i<orderDetail.length; i++)
-      {
-        const product = await productRepository.findOne({
-          where: { id: orderDetail[i].product.id},
-          select: { vendor: { firstName: true, lastName: true, picture: true, id: true, email: true } },
-          relations: ['vendor'],
-        });
-
-        if(!product)
-          {
-            return
-          }
-        else if (!product.vendor || !product.vendor.email) 
-            {
-              return
-            }
-
-        const new_notification = new Notification_box();
-        new_notification.product_id = orderDetail[i].product.id;
-        new_notification.vendor_id = product.vendor.id
-        new_notification.vendor_email = product.vendor.email;
-        new_notification.message_title = 'order with you product was cancaled';
-        new_notification.message_content = order_canceled(product, order);
-
-        await NotificationRepository.save(new_notification);
-        
-        await sendEmailfunc(product.vendor.email, new_notification.message_title, new_notification.message_content)
-      }
-     
+    if (!order) {
+      return;
     }
-  catch (error) {
-    throw error
+    const orderDetail = order.orderDetails;
+
+    for (let i = 0; i < orderDetail.length; i++) {
+      const product = await productRepository.findOne({
+        where: { id: orderDetail[i].product.id },
+        select: {
+          vendor: {
+            firstName: true,
+            lastName: true,
+            picture: true,
+            id: true,
+            email: true,
+          },
+        },
+        relations: ['vendor'],
+      });
+
+      if (!product) {
+        return;
+      } else if (!product.vendor || !product.vendor.email) {
+        return;
+      }
+
+      const new_notification = new Notification_box();
+      new_notification.product_id = orderDetail[i].product.id;
+      new_notification.vendor_id = product.vendor.id;
+      new_notification.vendor_email = product.vendor.email;
+      new_notification.message_title = 'order with you product was cancaled';
+      new_notification.message_content = order_canceled(product, order);
+
+      await NotificationRepository.save(new_notification);
+
+      await sendEmailfunc(
+        product.vendor.email,
+        new_notification.message_title,
+        new_notification.message_content
+      );
+    }
+  } catch (error) {
+    throw error;
   }
 });

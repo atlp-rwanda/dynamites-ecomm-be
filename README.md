@@ -1,7 +1,8 @@
 [![CI for ecomm-project for Dynamite](https://github.com/atlp-rwanda/dynamites-ecomm-be/actions/workflows/workflow_for_ecomm.yml/badge.svg)](https://github.com/atlp-rwanda/dynamites-ecomm-be/actions/workflows/workflow_for_ecomm.yml)
 
 [![codecov](https://codecov.io/gh/atlp-rwanda/dynamites-ecomm-be/graph/badge.svg?token=I1G8CMQKBH)](https://codecov.io/gh/atlp-rwanda/dynamites-ecomm-be)
-# Dynamites API  
+
+# Dynamites API
 
 ## Overview
 
@@ -63,6 +64,7 @@ Before you run that commands you must have docker installed in your PC
      ```sh
      docker-compose down
      ```
+
 ## Usage
 
 Once the development server is running, you can interact with the API using HTTP requests.

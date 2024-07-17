@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { searchProducts } from '../controller/searchProducts'
+import { searchProducts } from '../controller/searchProducts';
 import { validateSearchParams } from '../middlewares/validateSearchParams';
 const searchRouter = Router();
 

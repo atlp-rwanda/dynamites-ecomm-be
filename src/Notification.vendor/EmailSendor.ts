@@ -3,13 +3,17 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-async function sendEmail(vendorEmail: string, message_title: string, messageContent: string) {
+async function sendEmail(
+  vendorEmail: string,
+  message_title: string,
+  messageContent: string
+) {
   try {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       host: 'smtp.gmail.com',
       port: 587,
-      secure: false, 
+      secure: false,
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
@@ -25,11 +29,9 @@ async function sendEmail(vendorEmail: string, message_title: string, messageCont
     };
 
     await transporter.sendMail(mailOptions);
-    
   } catch (error) {
-    throw error
+    throw error;
   }
 }
 
 export default sendEmail;
-

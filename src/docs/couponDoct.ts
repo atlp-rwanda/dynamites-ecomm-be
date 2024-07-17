@@ -25,7 +25,7 @@
  *               expirationDate:
  *                 type: string
  *                 format: date
- *               percentage: 
+ *               percentage:
  *                type: number
  *               applicableProducts:
  *                type: array
@@ -143,7 +143,7 @@
  *               expirationDate:
  *                 type: string
  *                 format: date
- *               percentage: 
+ *               percentage:
  *                type: number
  *               applicableProducts:
  *                type: array

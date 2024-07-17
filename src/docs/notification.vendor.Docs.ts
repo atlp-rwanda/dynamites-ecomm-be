@@ -1,4 +1,3 @@
-
 /**
  * @swagger
  * tags:
@@ -26,7 +25,6 @@
  *                     $ref: '#/components/schemas/Notification'
  */
 
-
 /**
  * @swagger
  * /api/v1/notification/vendor:
@@ -37,7 +35,6 @@
  *       '200':
  *         description: All notifications deleted successfully
  */
-
 
 /**
  * @swagger
@@ -65,7 +62,6 @@
  *                   items:
  *                     $ref: '#/components/schemas/Notification'
  */
-
 
 /**
  * @swagger

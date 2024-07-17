@@ -9,8 +9,7 @@ import {
   getCartItems,
   getTotalCartAmount,
   getCartItemQuantity,
-  getProductCategories
-  
+  getProductCategories,
 } from '../service/chatbotService';
 
 export const extractKeyword = (message: string, keyword: string): string => {
@@ -47,56 +46,91 @@ export const identifyIntent = (
   )
     return { intent: 'listProducts', keyword: '' };
 
-    if (
-      (message.includes('do you have') && message.includes('from product stock')) ||
-      (message.includes('is there') && message.includes('in your stock')) ||
-      (message.includes('can I find') && message.includes('in the product stock')) ||
-      (message.includes('do you carry') && message.includes('from your stock')) ||
-      (message.includes('is it available') && message.includes('from the stock')) ||
-      (message.includes('do you offer') && message.includes('from your product stock')) ||
-      (message.includes('did you have') && message.includes('from product stock')) ||
-      (message.includes('had') && message.includes('from your stock')) ||
-      (message.includes('has') && message.includes('in stock')) ||
-      (message.includes('will you have') && message.includes('from product stock')) ||
-      (message.includes('would you have') && message.includes('from your stock'))
+  if (
+    (message.includes('do you have') &&
+      message.includes('from product stock')) ||
+    (message.includes('is there') && message.includes('in your stock')) ||
+    (message.includes('can I find') &&
+      message.includes('in the product stock')) ||
+    (message.includes('do you carry') && message.includes('from your stock')) ||
+    (message.includes('is it available') &&
+      message.includes('from the stock')) ||
+    (message.includes('do you offer') &&
+      message.includes('from your product stock')) ||
+    (message.includes('did you have') &&
+      message.includes('from product stock')) ||
+    (message.includes('had') && message.includes('from your stock')) ||
+    (message.includes('has') && message.includes('in stock')) ||
+    (message.includes('will you have') &&
+      message.includes('from product stock')) ||
+    (message.includes('would you have') && message.includes('from your stock'))
   ) {
-      const productName = message
-      .split(/do you have |is there |can I find |do you carry |is it available |do you offer |did you have |had |has |will you have |would you have /i)[1]
-      .split(/ from product stock| in your stock| in the product stock| from your stock| from the stock| from your product stock/i)[0];
-      return { intent: 'checkProductStock', keyword: productName.trim() };
+    const productName = message
+      .split(
+        /do you have |is there |can I find |do you carry |is it available |do you offer |did you have |had |has |will you have |would you have /i
+      )[1]
+      .split(
+        / from product stock| in your stock| in the product stock| from your stock| from the stock| from your product stock/i
+      )[0];
+    return { intent: 'checkProductStock', keyword: productName.trim() };
   }
-  
 
   const detailKeywords = [
-    'tell me more about', 'give me more information on','give me more info on', 'give me info on', 'more details about',
-    'info about', 'details on', 'can you tell me details about', 'what are the details of',
-    'give me the details on', 'i need more details about', 'i am looking for information about',
-    'info on', 'i want details on'
+    'tell me more about',
+    'give me more information on',
+    'give me more info on',
+    'give me info on',
+    'more details about',
+    'info about',
+    'details on',
+    'can you tell me details about',
+    'what are the details of',
+    'give me the details on',
+    'i need more details about',
+    'i am looking for information about',
+    'info on',
+    'i want details on',
   ];
-  
-  const detailRegex = new RegExp(`(?:${detailKeywords.join('|')})\\s*([\\w\\s]+)`, 'i');
-  
-  if (detailKeywords.some(keyword => message.toLowerCase().includes(keyword))) {
+
+  const detailRegex = new RegExp(
+    `(?:${detailKeywords.join('|')})\\s*([\\w\\s]+)`,
+    'i'
+  );
+
+  if (
+    detailKeywords.some((keyword) => message.toLowerCase().includes(keyword))
+  ) {
     const productNameMatch = message.match(detailRegex);
     const productName = productNameMatch ? productNameMatch[1].trim() : '';
     return { intent: 'productDetails', keyword: productName };
   }
-  
 
   const priceKeywords = [
-    'price of', 'cost of', 'how much is', 'how much does', 'how much for', 
-    'what is the price of', 'what\'s the price of', 'what is the cost of', 
-    'can you tell me the price of', 'i want to know the cost of'
+    'price of',
+    'cost of',
+    'how much is',
+    'how much does',
+    'how much for',
+    'what is the price of',
+    'what\'s the price of',
+    'what is the cost of',
+    'can you tell me the price of',
+    'i want to know the cost of',
   ];
-  
-  const priceRegex = new RegExp(`(?:${priceKeywords.join('|')})\\s*([\\w\\s]+)`, 'i');
-  
-  if (priceKeywords.some(keyword => message.toLowerCase().includes(keyword))) {
+
+  const priceRegex = new RegExp(
+    `(?:${priceKeywords.join('|')})\\s*([\\w\\s]+)`,
+    'i'
+  );
+
+  if (
+    priceKeywords.some((keyword) => message.toLowerCase().includes(keyword))
+  ) {
     const productNameMatch = message.match(priceRegex);
     const productName = productNameMatch ? productNameMatch[1].trim() : '';
     return { intent: 'productPrice', keyword: productName };
   }
-  
+
   if (
     lowerMessage.includes('what product categories do you have') ||
     lowerMessage.includes('list of product categories') ||
@@ -127,96 +161,179 @@ export const identifyIntent = (
     lowerMessage.includes('would you list your product categories?') ||
     lowerMessage.includes('could you show me the product categories?') ||
     lowerMessage.includes('is there a list of your product categories?') ||
-    lowerMessage.includes('can you explain what product categories you offer?') ||
-    lowerMessage.includes('what are the types of product categories you have?') ||
+    lowerMessage.includes(
+      'can you explain what product categories you offer?'
+    ) ||
+    lowerMessage.includes(
+      'what are the types of product categories you have?'
+    ) ||
     lowerMessage.includes('I need to know the product categories you offer.') ||
-    lowerMessage.includes('Could you give me specifics on your product categories?') ||
-    lowerMessage.includes('What are the kinds of product categories available?') ||
-    lowerMessage.includes('Tell me more about the product categories you have.') ||
-    lowerMessage.includes('Are there any descriptions of your product categories?') ||
-    lowerMessage.includes('Can you elaborate on the product categories you offer?') ||
-    lowerMessage.includes('What are the names of the product categories you have?') ||
+    lowerMessage.includes(
+      'Could you give me specifics on your product categories?'
+    ) ||
+    lowerMessage.includes(
+      'What are the kinds of product categories available?'
+    ) ||
+    lowerMessage.includes(
+      'Tell me more about the product categories you have.'
+    ) ||
+    lowerMessage.includes(
+      'Are there any descriptions of your product categories?'
+    ) ||
+    lowerMessage.includes(
+      'Can you elaborate on the product categories you offer?'
+    ) ||
+    lowerMessage.includes(
+      'What are the names of the product categories you have?'
+    ) ||
     lowerMessage.includes('Do you have a variety of product categories?') ||
     lowerMessage.includes('Show me the range of product categories you offer.')
-) {
+  ) {
     return { intent: 'listProductCategories', keyword: '' };
-}
-if (lowerMessage.includes('products from')) {
-  const categoryName = lowerMessage
-    .split('products from')[1]
-    .trim();
-  return { intent: 'listProductsByCategoryName', keyword: categoryName };
-}
+  }
+  if (lowerMessage.includes('products from')) {
+    const categoryName = lowerMessage.split('products from')[1].trim();
+    return { intent: 'listProductsByCategoryName', keyword: categoryName };
+  }
 
-if (
-  lowerMessage.includes('what products do you have from') ||
-  lowerMessage.includes('list products from') ||
-  lowerMessage.includes('show me products from') ||
-  lowerMessage.includes('products in the category') ||
-  lowerMessage.includes('products from the category') ||
-  lowerMessage.includes('products with category')
-) {
-  const categoryName = lowerMessage
-    .split(/what products do you have from |list products from |show me products from |products in the category |products from the category |products with category /i)[1]
-    .trim();
-  return { intent: 'listProductsByCategory', keyword: categoryName };
-}
-
+  if (
+    lowerMessage.includes('what products do you have from') ||
+    lowerMessage.includes('list products from') ||
+    lowerMessage.includes('show me products from') ||
+    lowerMessage.includes('products in the category') ||
+    lowerMessage.includes('products from the category') ||
+    lowerMessage.includes('products with category')
+  ) {
+    const categoryName = lowerMessage
+      .split(
+        /what products do you have from |list products from |show me products from |products in the category |products from the category |products with category /i
+      )[1]
+      .trim();
+    return { intent: 'listProductsByCategory', keyword: categoryName };
+  }
 
   const reviewKeywords = [
-    'review of', 'reviews of', 'what are the reviews of', 'can you tell me the reviews of', 
-    'i want to know the reviews of', 'what\'s the review of', 'how are the reviews of'
+    'review of',
+    'reviews of',
+    'what are the reviews of',
+    'can you tell me the reviews of',
+    'i want to know the reviews of',
+    'what\'s the review of',
+    'how are the reviews of',
   ];
-  
-  const reviewRegex = new RegExp(`(?:${reviewKeywords.join('|')})\\s*([\\w\\s]+)`, 'i');
-  
-  if (reviewKeywords.some(keyword => message.toLowerCase().includes(keyword))) {
+
+  const reviewRegex = new RegExp(
+    `(?:${reviewKeywords.join('|')})\\s*([\\w\\s]+)`,
+    'i'
+  );
+
+  if (
+    reviewKeywords.some((keyword) => message.toLowerCase().includes(keyword))
+  ) {
     const productNameMatch = message.match(reviewRegex);
     const productName = productNameMatch ? productNameMatch[1].trim() : '';
     return { intent: 'productReview', keyword: productName };
   }
-  
 
   const cancelOrderKeywords = [
-    'cancel my order', 'cancel order', 'can i cancel my order', 'how to cancel my order',
-    'how do i cancel my order', 'order cancellation', 'stop my order', 'cancel this order',
-    'cancel the order', 'am i able to cancel my order?', 'will i be able to cancel my order?',
-    'could i cancel my order?', 'i want to cancel my order', 'please cancel my order',
-    'what is the process to cancel my order?', 'how can i stop my order?', 'i need to cancel my order',
-    'i wish to cancel my order', 'i\'d like to cancel my order', 'i have decided to cancel my order',
-    'i\'m thinking of canceling my order', 'i intend to cancel my order', 'i plan to cancel my order',
-    'i aim to cancel my order', 'i\'m considering canceling my order', 'i\'m pondering over canceling my order',
-    'i\'m mulling over canceling my order', 'i\'m deliberating whether to cancel my order', 'i\'m hesitating to cancel my order',
-    'i\'m uncertain about canceling my order', 'i\'m skeptical about canceling my order', 'i\'m hesitant to cancel my order',
-    'i\'m indecisive about canceling my order', 'i\'m wavering on canceling my order', 'i\'m contemplating canceling my order',
-    'i\'m second-guessing canceling my order', 'i\'m reconsidering canceling my order', 'i\'m reevaluating canceling my order',
-    'i\'m reassessing canceling my order', 'i\'m reviewing canceling my order', 'i\'m evaluating canceling my order',
-    'i\'m assessing canceling my order', 'i\'m analyzing canceling my order', 'i\'m scrutinizing canceling my order',
-    'i\'m examining canceling my order', 'i\'m inspecting canceling my order', 'i\'m probing canceling my order',
-    'i\'m investigating canceling my order', 'i\'m researching canceling my order', 'i\'m studying canceling my order',
-    'i\'m looking into canceling my order', 'i\'m delving into canceling my order', 'i\'m diving into canceling my order',
-    'i\'m getting into canceling my order', 'i\'m stepping into canceling my order', 'i\'m venturing into canceling my order',
-    'i\'m plunging into canceling my order', 'i\'m sinking into canceling my order', 'i\'m immersing myself into canceling my order',
-    'i\'m submerging myself into canceling my order', 'i\'m engaging in canceling my order', 'i\'m participating in canceling my order',
-    'i\'m involved in canceling my order', 'i\'m implicated in canceling my order', 'i\'m complicit in canceling my order',
-    'i\'m party to canceling my order', 'i\'m privy to canceling my order', 'i\'m aware of canceling my order',
-    'i\'m cognizant of canceling my order', 'i\'m mindful of canceling my order', 'i\'m conscious of canceling my order',
-    'i\'m alert to canceling my order', 'i\'m awake to canceling my order', 'i\'m vigilant about canceling my order',
-    'i\'m watchful of canceling my order', 'i\'m observant of canceling my order', 'i\'m attentive to canceling my order',
-    'i\'m keen on canceling my order', 'i\'m eager to cancel my order'
+    'cancel my order',
+    'cancel order',
+    'can i cancel my order',
+    'how to cancel my order',
+    'how do i cancel my order',
+    'order cancellation',
+    'stop my order',
+    'cancel this order',
+    'cancel the order',
+    'am i able to cancel my order?',
+    'will i be able to cancel my order?',
+    'could i cancel my order?',
+    'i want to cancel my order',
+    'please cancel my order',
+    'what is the process to cancel my order?',
+    'how can i stop my order?',
+    'i need to cancel my order',
+    'i wish to cancel my order',
+    'i\'d like to cancel my order',
+    'i have decided to cancel my order',
+    'i\'m thinking of canceling my order',
+    'i intend to cancel my order',
+    'i plan to cancel my order',
+    'i aim to cancel my order',
+    'i\'m considering canceling my order',
+    'i\'m pondering over canceling my order',
+    'i\'m mulling over canceling my order',
+    'i\'m deliberating whether to cancel my order',
+    'i\'m hesitating to cancel my order',
+    'i\'m uncertain about canceling my order',
+    'i\'m skeptical about canceling my order',
+    'i\'m hesitant to cancel my order',
+    'i\'m indecisive about canceling my order',
+    'i\'m wavering on canceling my order',
+    'i\'m contemplating canceling my order',
+    'i\'m second-guessing canceling my order',
+    'i\'m reconsidering canceling my order',
+    'i\'m reevaluating canceling my order',
+    'i\'m reassessing canceling my order',
+    'i\'m reviewing canceling my order',
+    'i\'m evaluating canceling my order',
+    'i\'m assessing canceling my order',
+    'i\'m analyzing canceling my order',
+    'i\'m scrutinizing canceling my order',
+    'i\'m examining canceling my order',
+    'i\'m inspecting canceling my order',
+    'i\'m probing canceling my order',
+    'i\'m investigating canceling my order',
+    'i\'m researching canceling my order',
+    'i\'m studying canceling my order',
+    'i\'m looking into canceling my order',
+    'i\'m delving into canceling my order',
+    'i\'m diving into canceling my order',
+    'i\'m getting into canceling my order',
+    'i\'m stepping into canceling my order',
+    'i\'m venturing into canceling my order',
+    'i\'m plunging into canceling my order',
+    'i\'m sinking into canceling my order',
+    'i\'m immersing myself into canceling my order',
+    'i\'m submerging myself into canceling my order',
+    'i\'m engaging in canceling my order',
+    'i\'m participating in canceling my order',
+    'i\'m involved in canceling my order',
+    'i\'m implicated in canceling my order',
+    'i\'m complicit in canceling my order',
+    'i\'m party to canceling my order',
+    'i\'m privy to canceling my order',
+    'i\'m aware of canceling my order',
+    'i\'m cognizant of canceling my order',
+    'i\'m mindful of canceling my order',
+    'i\'m conscious of canceling my order',
+    'i\'m alert to canceling my order',
+    'i\'m awake to canceling my order',
+    'i\'m vigilant about canceling my order',
+    'i\'m watchful of canceling my order',
+    'i\'m observant of canceling my order',
+    'i\'m attentive to canceling my order',
+    'i\'m keen on canceling my order',
+    'i\'m eager to cancel my order',
   ];
-  
-  const cancelOrderRegex = new RegExp(`(?:${cancelOrderKeywords.join('|')})\\s*([\\w\\s]+)`, 'i');
-  
-  if (cancelOrderKeywords.some(keyword => lowerMessage.toLowerCase().includes(keyword))) {
+
+  const cancelOrderRegex = new RegExp(
+    `(?:${cancelOrderKeywords.join('|')})\\s*([\\w\\s]+)`,
+    'i'
+  );
+
+  if (
+    cancelOrderKeywords.some((keyword) =>
+      lowerMessage.toLowerCase().includes(keyword)
+    )
+  ) {
     const productNameMatch = lowerMessage.match(cancelOrderRegex);
-    const productName = productNameMatch? productNameMatch[1].trim() : '';
+    const productName = productNameMatch ? productNameMatch[1].trim() : '';
     return {
       intent: 'cancelOrder',
       keyword: productName,
     };
   }
-  
 
   if (
     lowerMessage.includes('return my order') ||
@@ -325,43 +442,82 @@ if (
     lowerMessage.includes('speed up shipping')
   )
     return { intent: 'expediteShipping', keyword: '' };
-const serviceQueryKeywords = [
-  'what services do you offer', 'services', 'available services', 'list of services', 'services provided',
-  'what can you do', 'services you offer', 'what kind of services do you provide', 'what services are available',
-  'could you tell me about your services', 'do you offer any services', 'what are your service offerings',
-  'i\'m interested in learning about your services', 'i would like to know more about your services',
-  'can you give me information on your services', 'could you describe your services', 'what are the services you provide',
-  'what services can i get from you', 'which services do you specialize in', 'could you list your service offerings',
-  'i\'d like to know what services you have', 'i\'m curious about the services you offer', 'what are the different services you offer',
-  'i want to understand the services you provide', 'i\'m looking for information on your service options',
-  'can you tell me about the various services you offer', 'i\'d appreciate if you could explain your service portfolio',
-  'i\'m trying to find out what kind of services you have', 'i\'d like you to elaborate on the services you provide',
-  'could you give me an overview of the services you offer', 'i\'m inquiring about the services available from your company',
-  'i\'m wondering what kind of services you specialize in', 'i\'d love to learn more about the services you have available',
-  'i\'m interested in exploring the different services you provide', 'i\'m hoping you can tell me more about the services you offer',
-  'i\'m eager to understand the range of services you have', 'i\'d be grateful if you could share details about your service offerings',
-  'i\'m keen to know what kind of services you can assist me with', 'i\'m hoping you can enlighten me on the services you provide',
-  'i\'m desirous of getting information on the services you offer', 'i\'m yearning to learn about the services you have available',
-  'i\'m craving to understand the services you can render', 'i\'m longing to discover the services you specialize in',
-  'i\'m hankering to find out about the services you provide', 'i\'m aching to get details on the services you offer',
-  'i\'m pining to learn more about the services you have', 'i\'m itching to know what kind of services you can deliver',
-  'i\'ve been dying to inquire about the services you offer', 'i\'ve been burning to get information on your service offerings',
-  'i\'ve been aching to understand the services you provide', 'i\'ve been yearning to discover the services you have available',
-  'i\'ve been craving to learn about the services you can render', 'i\'ve been hankering to find out about the services you specialize in',
-  'i\'ve been pining to get details on the services you offer', 'i\'ve been longing to explore the services you have available',
-  'i\'ve been itching to know what kind of services you can assist me with'
-];
+  const serviceQueryKeywords = [
+    'what services do you offer',
+    'services',
+    'available services',
+    'list of services',
+    'services provided',
+    'what can you do',
+    'services you offer',
+    'what kind of services do you provide',
+    'what services are available',
+    'could you tell me about your services',
+    'do you offer any services',
+    'what are your service offerings',
+    'i\'m interested in learning about your services',
+    'i would like to know more about your services',
+    'can you give me information on your services',
+    'could you describe your services',
+    'what are the services you provide',
+    'what services can i get from you',
+    'which services do you specialize in',
+    'could you list your service offerings',
+    'i\'d like to know what services you have',
+    'i\'m curious about the services you offer',
+    'what are the different services you offer',
+    'i want to understand the services you provide',
+    'i\'m looking for information on your service options',
+    'can you tell me about the various services you offer',
+    'i\'d appreciate if you could explain your service portfolio',
+    'i\'m trying to find out what kind of services you have',
+    'i\'d like you to elaborate on the services you provide',
+    'could you give me an overview of the services you offer',
+    'i\'m inquiring about the services available from your company',
+    'i\'m wondering what kind of services you specialize in',
+    'i\'d love to learn more about the services you have available',
+    'i\'m interested in exploring the different services you provide',
+    'i\'m hoping you can tell me more about the services you offer',
+    'i\'m eager to understand the range of services you have',
+    'i\'d be grateful if you could share details about your service offerings',
+    'i\'m keen to know what kind of services you can assist me with',
+    'i\'m hoping you can enlighten me on the services you provide',
+    'i\'m desirous of getting information on the services you offer',
+    'i\'m yearning to learn about the services you have available',
+    'i\'m craving to understand the services you can render',
+    'i\'m longing to discover the services you specialize in',
+    'i\'m hankering to find out about the services you provide',
+    'i\'m aching to get details on the services you offer',
+    'i\'m pining to learn more about the services you have',
+    'i\'m itching to know what kind of services you can deliver',
+    'i\'ve been dying to inquire about the services you offer',
+    'i\'ve been burning to get information on your service offerings',
+    'i\'ve been aching to understand the services you provide',
+    'i\'ve been yearning to discover the services you have available',
+    'i\'ve been craving to learn about the services you can render',
+    'i\'ve been hankering to find out about the services you specialize in',
+    'i\'ve been pining to get details on the services you offer',
+    'i\'ve been longing to explore the services you have available',
+    'i\'ve been itching to know what kind of services you can assist me with',
+  ];
 
-const serviceQueryRegex = new RegExp(`(?:${serviceQueryKeywords.join('|')})`, 'i');
+  const serviceQueryRegex = new RegExp(
+    `(?:${serviceQueryKeywords.join('|')})`,
+    'i'
+  );
 
-if (serviceQueryKeywords.some(keyword => lowerMessage.toLowerCase().includes(keyword))) {
-  const serviceNameMatch = lowerMessage.match(serviceQueryRegex);
-  const serviceName = serviceNameMatch ? serviceNameMatch[0].trim() : '';
-  return {
-    intent: 'listServices',
-    keyword: serviceName,
-  };
-}
+  if (
+    serviceQueryKeywords.some((keyword) =>
+      lowerMessage.toLowerCase().includes(keyword)
+    )
+  ) {
+    const serviceNameMatch = lowerMessage.match(serviceQueryRegex);
+    const serviceName = serviceNameMatch ? serviceNameMatch[0].trim() : '';
+    return {
+      intent: 'listServices',
+      keyword: serviceName,
+    };
+  }
 
   if (
     lowerMessage.includes('provide gift wrapping services') ||
@@ -441,26 +597,49 @@ if (serviceQueryKeywords.some(keyword => lowerMessage.toLowerCase().includes(key
   }
 
   const changeQuantityKeywords = [
-    'update quantity of item in cart', 'change item quantity in cart', 'modify item quantity in cart',
-    'increase item quantity in cart', 'decrease item quantity in cart', 'add more of this item to my cart',
-    'remove some of this item from my cart', 'adjust item quantity in my cart', 'alter item quantity in my cart',
-    'change item quantity in my cart', 'update item quantity in my cart', 'modify item quantity in my cart',
-    'increase item quantity in my cart', 'decrease item quantity in my cart', 'I want to change item quantity in my cart',
-    'Can I change item quantity in my cart?', 'How do I change item quantity in my cart?', 'What is the process to change item quantity in my cart?',
-    'Will I be able to change item quantity in my cart?', 'Could I change item quantity in my cart?', 'I need to change item quantity in my cart',
-    'I wish to change item quantity in my cart', 'I\'d like to change item quantity in my cart', 'I have decided to change item quantity in my cart',
-    'I\'m thinking of changing item quantity in my cart', 'I intend to change item quantity in my cart', 'I plan to change item quantity in my cart',
-   
+    'update quantity of item in cart',
+    'change item quantity in cart',
+    'modify item quantity in cart',
+    'increase item quantity in cart',
+    'decrease item quantity in cart',
+    'add more of this item to my cart',
+    'remove some of this item from my cart',
+    'adjust item quantity in my cart',
+    'alter item quantity in my cart',
+    'change item quantity in my cart',
+    'update item quantity in my cart',
+    'modify item quantity in my cart',
+    'increase item quantity in my cart',
+    'decrease item quantity in my cart',
+    'I want to change item quantity in my cart',
+    'Can I change item quantity in my cart?',
+    'How do I change item quantity in my cart?',
+    'What is the process to change item quantity in my cart?',
+    'Will I be able to change item quantity in my cart?',
+    'Could I change item quantity in my cart?',
+    'I need to change item quantity in my cart',
+    'I wish to change item quantity in my cart',
+    'I\'d like to change item quantity in my cart',
+    'I have decided to change item quantity in my cart',
+    'I\'m thinking of changing item quantity in my cart',
+    'I intend to change item quantity in my cart',
+    'I plan to change item quantity in my cart',
   ];
-  
-  const changeQuantityRegex = new RegExp(`(?:${changeQuantityKeywords.join('|')})\\s*([\\w\\s]+)`, 'i');
-  
-  if (changeQuantityKeywords.some(keyword => lowerMessage.toLowerCase().includes(keyword))) {
+
+  const changeQuantityRegex = new RegExp(
+    `(?:${changeQuantityKeywords.join('|')})\\s*([\\w\\s]+)`,
+    'i'
+  );
+
+  if (
+    changeQuantityKeywords.some((keyword) =>
+      lowerMessage.toLowerCase().includes(keyword)
+    )
+  ) {
     const itemNameMatch = lowerMessage.match(changeQuantityRegex);
-    const itemName = itemNameMatch? itemNameMatch[1].trim() : '';
+    const itemName = itemNameMatch ? itemNameMatch[1].trim() : '';
     return { intent: 'updateCartQuantity', keyword: itemName };
   }
-  
 
   if (
     lowerMessage.includes('is there anything i should remove from my cart') ||
@@ -522,90 +701,90 @@ if (serviceQueryKeywords.some(keyword => lowerMessage.toLowerCase().includes(key
     lowerMessage.includes('add to wishlist') ||
     lowerMessage.includes('wishlist creation') ||
     lowerMessage.includes('making a wishlist') ||
-    lowerMessage.includes('set up a wishlist') || 
-    lowerMessage.includes('start a wishlist') || 
-    lowerMessage.includes('build a wishlist') || 
-    lowerMessage.includes('initiate a wishlist') || 
-    lowerMessage.includes('establish a wishlist') || 
-    lowerMessage.includes('what is a wishlist?') || 
-    lowerMessage.includes('how do I create a wishlist?') || 
-    lowerMessage.includes('I want to create a wishlist') || 
+    lowerMessage.includes('set up a wishlist') ||
+    lowerMessage.includes('start a wishlist') ||
+    lowerMessage.includes('build a wishlist') ||
+    lowerMessage.includes('initiate a wishlist') ||
+    lowerMessage.includes('establish a wishlist') ||
+    lowerMessage.includes('what is a wishlist?') ||
+    lowerMessage.includes('how do I create a wishlist?') ||
+    lowerMessage.includes('I want to create a wishlist') ||
     lowerMessage.includes('show me how to make a wishlist') ||
-    lowerMessage.includes('teach me about creating a wishlist') || 
-    lowerMessage.includes('guide me in setting up a wishlist') || 
-    lowerMessage.includes('help me start a wishlist') || 
+    lowerMessage.includes('teach me about creating a wishlist') ||
+    lowerMessage.includes('guide me in setting up a wishlist') ||
+    lowerMessage.includes('help me start a wishlist') ||
     lowerMessage.includes('assist me in building a wishlist') ||
-    lowerMessage.includes('initiate my wishlist') || 
+    lowerMessage.includes('initiate my wishlist') ||
     lowerMessage.includes('establish my wishlist') ||
     lowerMessage.includes('will you show me how to create a wishlist?') ||
-    lowerMessage.includes('did you teach me how to set up a wishlist?') || 
-    lowerMessage.includes('could you guide me in starting a wishlist?') || 
-    lowerMessage.includes('would you assist me in building a wishlist?') || 
+    lowerMessage.includes('did you teach me how to set up a wishlist?') ||
+    lowerMessage.includes('could you guide me in starting a wishlist?') ||
+    lowerMessage.includes('would you assist me in building a wishlist?') ||
     lowerMessage.includes('should I create a wishlist?') ||
     lowerMessage.includes('can I add something to my wishlist?') ||
     lowerMessage.includes('let me know how to add to my wishlist') ||
-    lowerMessage.includes('tell me how to add items to my wishlist') || 
-    lowerMessage.includes('show me how to add items to my wishlist') || 
-    lowerMessage.includes('explain how to add items to my wishlist') || 
-    lowerMessage.includes('walk me through adding items to my wishlist') || 
-    lowerMessage.includes('lead me in adding items to my wishlist') || 
-    lowerMessage.includes('me to adding items to my wishlist') || 
-    lowerMessage.includes('how to add items to my wishlist') || 
-    lowerMessage.includes('me to creating a wishlist') || 
-    lowerMessage.includes('how to create a wishlist') || 
+    lowerMessage.includes('tell me how to add items to my wishlist') ||
+    lowerMessage.includes('show me how to add items to my wishlist') ||
+    lowerMessage.includes('explain how to add items to my wishlist') ||
+    lowerMessage.includes('walk me through adding items to my wishlist') ||
+    lowerMessage.includes('lead me in adding items to my wishlist') ||
+    lowerMessage.includes('me to adding items to my wishlist') ||
+    lowerMessage.includes('how to add items to my wishlist') ||
+    lowerMessage.includes('me to creating a wishlist') ||
+    lowerMessage.includes('how to create a wishlist') ||
     lowerMessage.includes('me to setting up a wishlist') ||
-    lowerMessage.includes('how to set up a wishlist') || 
+    lowerMessage.includes('how to set up a wishlist') ||
     lowerMessage.includes('me to starting a wishlist') ||
-    lowerMessage.includes('how to start a wishlist') || 
+    lowerMessage.includes('how to start a wishlist') ||
     lowerMessage.includes('me to building a wishlist') ||
-    lowerMessage.includes('how to build a wishlist') || 
+    lowerMessage.includes('how to build a wishlist') ||
     lowerMessage.includes('me to initiating a wishlist') ||
-    lowerMessage.includes('how to initiate a wishlist') || 
-    lowerMessage.includes('me to establishing a wishlist') || 
-    lowerMessage.includes('how to establish a wishlist') || 
-    lowerMessage.includes('me to making a wishlist') || 
-    lowerMessage.includes('how to make a wishlist') || 
+    lowerMessage.includes('how to initiate a wishlist') ||
+    lowerMessage.includes('me to establishing a wishlist') ||
+    lowerMessage.includes('how to establish a wishlist') ||
+    lowerMessage.includes('me to making a wishlist') ||
+    lowerMessage.includes('how to make a wishlist') ||
     lowerMessage.includes('me to wishlist creation') ||
-    lowerMessage.includes('how to create a wishlist') || 
-    lowerMessage.includes('me to wishlist management') || 
-    lowerMessage.includes('how to manage a wishlist') || 
-    lowerMessage.includes('me to wishlist addition') || 
-    lowerMessage.includes('how to add to a wishlist') || 
-    lowerMessage.includes('me to wishlist editing') || 
+    lowerMessage.includes('how to create a wishlist') ||
+    lowerMessage.includes('me to wishlist management') ||
+    lowerMessage.includes('how to manage a wishlist') ||
+    lowerMessage.includes('me to wishlist addition') ||
+    lowerMessage.includes('how to add to a wishlist') ||
+    lowerMessage.includes('me to wishlist editing') ||
     lowerMessage.includes('how to edit a wishlist') ||
-    lowerMessage.includes('me to wishlist removal') || 
-    lowerMessage.includes('how to remove from a wishlist') || 
-    lowerMessage.includes('me to wishlist sharing') || 
-    lowerMessage.includes('how to share a wishlist') || 
+    lowerMessage.includes('me to wishlist removal') ||
+    lowerMessage.includes('how to remove from a wishlist') ||
+    lowerMessage.includes('me to wishlist sharing') ||
+    lowerMessage.includes('how to share a wishlist') ||
     lowerMessage.includes('me to wishlist collaboration') ||
-    lowerMessage.includes('how to collaborate on a wishlist') || 
-    lowerMessage.includes('me to wishlist customization') || 
-    lowerMessage.includes('how to customize a wishlist') || 
+    lowerMessage.includes('how to collaborate on a wishlist') ||
+    lowerMessage.includes('me to wishlist customization') ||
+    lowerMessage.includes('how to customize a wishlist') ||
     lowerMessage.includes('me to wishlist organization') ||
-    lowerMessage.includes('how to organize a wishlist') || 
-    lowerMessage.includes('me to wishlist maintenance') || 
-    lowerMessage.includes('how to maintain a wishlist') || 
+    lowerMessage.includes('how to organize a wishlist') ||
+    lowerMessage.includes('me to wishlist maintenance') ||
+    lowerMessage.includes('how to maintain a wishlist') ||
     lowerMessage.includes('me to wishlist enhancement') ||
-    lowerMessage.includes('how to enhance a wishlist') || 
+    lowerMessage.includes('how to enhance a wishlist') ||
     lowerMessage.includes('me to wishlist improvement') ||
-    lowerMessage.includes('how to improve a wishlist') || 
+    lowerMessage.includes('how to improve a wishlist') ||
     lowerMessage.includes('me to wishlist optimization') ||
-    lowerMessage.includes('how to optimize a wishlist') || 
+    lowerMessage.includes('how to optimize a wishlist') ||
     lowerMessage.includes('me to wishlist expansion') ||
-    lowerMessage.includes('how to expand a wishlist') || 
-    lowerMessage.includes('me to wishlist extension') || 
-    lowerMessage.includes('how to extend a wishlist') || 
-    lowerMessage.includes('me to wishlist adjustment') || 
-    lowerMessage.includes('how to adjust a wishlist') || 
-    lowerMessage.includes('me to wishlist modification') || 
-    lowerMessage.includes('how to modify a wishlist') || 
+    lowerMessage.includes('how to expand a wishlist') ||
+    lowerMessage.includes('me to wishlist extension') ||
+    lowerMessage.includes('how to extend a wishlist') ||
+    lowerMessage.includes('me to wishlist adjustment') ||
+    lowerMessage.includes('how to adjust a wishlist') ||
+    lowerMessage.includes('me to wishlist modification') ||
+    lowerMessage.includes('how to modify a wishlist') ||
     lowerMessage.includes('me to wishlist alteration') ||
-    lowerMessage.includes('how to alter a wishlist') || 
-    lowerMessage.includes('me to wishlist amendment') || 
-    lowerMessage.includes('how to amend a wishlist') || 
+    lowerMessage.includes('how to alter a wishlist') ||
+    lowerMessage.includes('me to wishlist amendment') ||
+    lowerMessage.includes('how to amend a wishlist') ||
     lowerMessage.includes('me to wishlist revision') ||
     lowerMessage.includes('how to revise a wishlist') ||
-    lowerMessage.includes('me to wishlist update') 
+    lowerMessage.includes('me to wishlist update')
   )
     return { intent: 'createWishlist', keyword: '' };
 
@@ -911,25 +1090,25 @@ export const generateResponse = async (
       const products = await getProducts();
       return `We sell the following products: ${products.map((p) => p.name).join(', ')}.`;
 
-      case 'checkProductStock':
-        const product = await getProductByName(keyword);
-        return product
-           ? `Yes, we have ${product.name} in stock.`
-            : `Sorry, we do not have ${keyword} in stock.`;
+    case 'checkProductStock':
+      const product = await getProductByName(keyword);
+      return product
+        ? `Yes, we have ${product.name} in stock.`
+        : `Sorry, we do not have ${keyword} in stock.`;
     case 'productDetails':
       const productDetails = await getProductDetails(keyword);
       return productDetails
         ? `Sure, here is more information about ${keyword}: ${productDetails.longDesc}. This product, features an average rating of ${productDetails.averageRating}. It is currently ${productDetails.isAvailable ? 'available' : 'unavailable'} and is priced at $${productDetails.salesPrice} (regular price: $${productDetails.regularPrice}).`
         : `Sorry, we couldn't find detailed information about ${keyword}. It might not exist or there might be a typo in the product name.`;
-       
+
     case 'productPrice':
       const productprice = await getProductByName(keyword);
       return productprice
         ? `The price of ${productprice.name} is $${productprice.salesPrice}.`
         : `Sorry, we do not have pricing information for ${keyword}.`;
-        case 'listProductCategories':
-          const categories = await getProductCategories();
-          return `We offer the following product categories: ${categories.map((c) => c.name).join(', ')}.`;
+    case 'listProductCategories':
+      const categories = await getProductCategories();
+      return `We offer the following product categories: ${categories.map((c) => c.name).join(', ')}.`;
 
     case 'productReview':
       const reviews = await getProductReviews(keyword);

@@ -9,8 +9,8 @@ import {
 } from 'typeorm';
 import { Role } from './roleEntity';
 import { Order } from './orderEntity';
-import dotenv from 'dotenv'
-dotenv.config()
+import dotenv from 'dotenv';
+dotenv.config();
 
 @Entity()
 export default class UserModel {

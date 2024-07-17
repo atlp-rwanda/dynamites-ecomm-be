@@ -1,7 +1,6 @@
 import Product from '../database/models/productEntity';
 import dbConnection from '../database';
 
-
 const productRepository = dbConnection.getRepository(Product);
 /**
  * Function to check the availability of a product based on its quantity.
@@ -11,17 +10,17 @@ const productRepository = dbConnection.getRepository(Product);
  * @param product - The ProductModel.
  */
 const productQuantityWatch = async (product: Product) => {
-    const quantity = product.quantity;
+  const quantity = product.quantity;
 
-    if (quantity > 0) {
-        product.isAvailable = true;
-    } else {
-        product.isAvailable = false;
-    }
+  if (quantity > 0) {
+    product.isAvailable = true;
+  } else {
+    product.isAvailable = false;
+  }
 
-    await productRepository.save(product)
+  await productRepository.save(product);
 
-    return product;
+  return product;
 };
 
 export default productQuantityWatch;

@@ -1,5 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn} from 'typeorm';
-
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export default class Notification_box {
@@ -7,26 +12,26 @@ export default class Notification_box {
   notification_id: number;
 
   @Column()
-  message_title:string;
+  message_title: string;
 
   @Column()
   message_content: string;
-  
+
   @Column()
   product_id: number;
-  
+
   @Column()
   vendor_id: number;
-  
+
   @Column()
-  vendor_email:string;
+  vendor_email: string;
 
   @Column({ default: false })
   isRead: boolean;
 
   @CreateDateColumn()
   createdAt: Date;
-  
+
   @UpdateDateColumn()
-  updatedAt:Date
+  updatedAt: Date;
 }

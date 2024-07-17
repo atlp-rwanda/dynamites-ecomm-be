@@ -1,56 +1,55 @@
 interface UserModel {
-    id: number;
-    firstName: string;
-    lastName: string;
-    email: string;
-    picture: string | null;
-  }
-  
-  interface Product {
-    id: number;
-    name: string;
-    image: string;
-    gallery: string[];
-    shortDesc: string;
-    longDesc: string;
-    quantity: number;
-    regularPrice: number;
-    salesPrice: number;
-    tags: string[];
-    type: string;
-    isAvailable: boolean;
-    averageRating: number;
-    createdAt: Date;
-    updatedAt: Date;
-    vendor: UserModel;
-  }
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  picture: string | null;
+}
 
-  interface order {
-    id: number;
-    user: UserModel | null;
-    totalAmount: number;
-    status: string;
-    deliveryInfo: string | null;
-    trackingNumber: string;
-    createdAt: Date;
-    updatedAt: Date;
-    orderDetails: OrderDetails[];
-    paid: boolean | null;
-  }
-  interface OrderDetails {
-    id: number;
-    order: order;
-    product: Product;
-    quantity: number;
-    price: number;
-  }
+interface Product {
+  id: number;
+  name: string;
+  image: string;
+  gallery: string[];
+  shortDesc: string;
+  longDesc: string;
+  quantity: number;
+  regularPrice: number;
+  salesPrice: number;
+  tags: string[];
+  type: string;
+  isAvailable: boolean;
+  averageRating: number;
+  createdAt: Date;
+  updatedAt: Date;
+  vendor: UserModel;
+}
 
-export const added_to_cart_message=(
-    product:Product,
-    user:UserModel
-): string =>{
+interface order {
+  id: number;
+  user: UserModel | null;
+  totalAmount: number;
+  status: string;
+  deliveryInfo: string | null;
+  trackingNumber: string;
+  createdAt: Date;
+  updatedAt: Date;
+  orderDetails: OrderDetails[];
+  paid: boolean | null;
+}
+interface OrderDetails {
+  id: number;
+  order: order;
+  product: Product;
+  quantity: number;
+  price: number;
+}
 
-    return `
+export const added_to_cart_message = (
+  product: Product,
+  user: UserModel
+): string => {
+  return `
             Dear ${product.vendor.firstName}  ${product.vendor.lastName},
 
             We are pleased to inform you that a new product has been added to a cart.
@@ -66,17 +65,14 @@ export const added_to_cart_message=(
             Best regards,
             The E-commerce Team
 
-            `
-}
+            `;
+};
 
-
-
-export const removed_to_cart_message=(
-    product:Product,
-    user:UserModel
-):string=>{
-
-    return `
+export const removed_to_cart_message = (
+  product: Product,
+  user: UserModel
+): string => {
+  return `
             Dear ${product.vendor.firstName}  ${product.vendor.lastName}
 
             We would like to inform you that a product has been removed from a cart.
@@ -92,17 +88,11 @@ export const removed_to_cart_message=(
             Best regards,
 
             The E-commerce Team
-         `     
-}
+         `;
+};
 
-
-export const pressorder_message = (
-    product:Product,
-    order:order
-): string =>{
-
-
-    return `
+export const pressorder_message = (product: Product, order: order): string => {
+  return `
             Dear ${product.vendor.firstName}  ${product.vendor.lastName},
 
             We are pleased to inform you that a new order has been placed.
@@ -121,15 +111,11 @@ export const pressorder_message = (
             Best regards,
             
             The E-commerce Team
-           ` 
-}
+           `;
+};
 
-export const order_status_changed = (
-    product:Product,
-    order:order
-)=>{
-
-    return  `
+export const order_status_changed = (product: Product, order: order) => {
+  return `
             Dear ${product.vendor.firstName}  ${product.vendor.lastName},
 
             We hope this message finds you well.
@@ -156,13 +142,10 @@ export const order_status_changed = (
 
             **Note:** This is an automated message. Please do not reply directly to this email.
 
-            `
-}
+            `;
+};
 
-export const order_canceled = (
-  product:Product,
-  order:order
-)=>{
+export const order_canceled = (product: Product, order: order) => {
   return `
 
         Dear ${product.vendor.firstName} ${product.vendor.lastName},
@@ -182,15 +165,10 @@ export const order_canceled = (
         Best regards,
         The E-commerce Team
 
-        `
-}
+        `;
+};
 
-
-
-
-export const new_product_created = (
-product:Product
-)=>{
+export const new_product_created = (product: Product) => {
   return `
 
         Hello ${product.vendor.firstName} ${product.vendor.lastName},
@@ -207,12 +185,10 @@ product:Product
 
         Best regards,
         The E-commerce Team
-    `
-}
+    `;
+};
 
-export const updated_Product = (
-  product:Product
-)=>{
+export const updated_Product = (product: Product) => {
   return `
    
         Hello ${product.vendor.firstName} ${product.vendor.lastName},
@@ -229,12 +205,10 @@ export const updated_Product = (
 
         Best regards,
         The E-commerce Team
-    `
-}
+    `;
+};
 
-export const product_deleted=(
-  product:Product
-)=>{
+export const product_deleted = (product: Product) => {
   return `
 
         Hello ${product.vendor.firstName} ${product.vendor.id},
@@ -250,13 +224,11 @@ export const product_deleted=(
 
         Best regards,
         The E-commerce Team
-    `
-}
+    `;
+};
 
-export const product_not_availble = (
-  product:Product
-)=>{
-  return  `
+export const product_not_availble = (product: Product) => {
+  return `
         Dear ${product.vendor.firstName},
 
         We regret to inform you that your product "${product.name}" is currently unavailable on our platform.
@@ -270,13 +242,10 @@ export const product_not_availble = (
 
         Best regards,
         The E-commerce Team
-`
-}
+`;
+};
 
-export const expiried_order = (
-  product:Product,
-  order:order
-)=>{
+export const expiried_order = (product: Product, order: order) => {
   return `
           Hello ${product.vendor.firstName} ${product.vendor.lastName},
 
@@ -289,15 +258,19 @@ export const expiried_order = (
           - Ordered At: ${order.createdAt.toLocaleString()}
           
           Product Details:
-          ${order.orderDetails.map(detail => `
+          ${order.orderDetails
+            .map(
+              (detail) => `
           - Product Name: ${detail.product.name}
           - Product ID: ${detail.product.id}
           - Quantity: ${detail.quantity}
-          - Price: $${detail.price}`).join('\n')}
+          - Price: $${detail.price}`
+            )
+            .join('\n')}
           
           If you have any questions or concerns, please contact our support team.
 
           Best regards,
           The E-commerce Team
-  `
-}
+  `;
+};

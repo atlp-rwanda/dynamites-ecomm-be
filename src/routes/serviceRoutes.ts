@@ -5,9 +5,11 @@ import { checkRole } from '../middlewares/authorize';
 
 const router = Router();
 
-router.post('/service', 
-// IsLoggedIn, checkRole(['Admin']),
- createService);
+router.post(
+  '/service',
+  // IsLoggedIn, checkRole(['Admin']),
+  createService
+);
 
 router.get('/services', IsLoggedIn, checkRole(['Buyer']), getAllServices);
 

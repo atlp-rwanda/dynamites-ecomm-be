@@ -252,7 +252,7 @@
  *               email:
  *                 type: string
  *                 format: email
- *                 description: The updated email address of the user.            
+ *                 description: The updated email address of the user.
  *     responses:
  *       '200':
  *         description: User profile updated successfully.
@@ -295,8 +295,6 @@
  *                   type: string
  *                   description: A message indicating an internal server error occurred.
  */
-
-
 
 /**
  * @swagger

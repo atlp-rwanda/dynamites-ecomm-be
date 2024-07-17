@@ -257,14 +257,15 @@ export const recoverPassword = errorHandler(
       process.env.JWT_SECRET as jwt.Secret,
       { expiresIn: '1h' }
     );
-    
-    const frontend_url = process.env.FRONTEND_URL || 'https://dynamite-frontend.netlify.app'
+
+    const frontend_url =
+      process.env.FRONTEND_URL || 'https://dynamite-frontend.netlify.app';
     const confirmLink = `${frontend_url}/reset-password/${recoverToken}`;
     process.env.NODE_ENV !== 'test' &&
-    (await sendEmail('reset', user.email, {
-      name: user.firstName,
-      link: confirmLink,
-    }));
+      (await sendEmail('reset', user.email, {
+        name: user.firstName,
+        link: confirmLink,
+      }));
 
     return res.status(200).json({
       message: 'Password reset token generated successfully',
@@ -383,13 +384,11 @@ export const changeProfileImg = errorHandler(
     user!.picture = uploadResult.url;
     await userRepository.save(user!);
 
-    return res
-      .status(200)
-      .json({
-        status: 'success',
-        message: 'Profile Image successfully updated',
-        data: { picture: uploadResult.url },
-      });
+    return res.status(200).json({
+      status: 'success',
+      message: 'Profile Image successfully updated',
+      data: { picture: uploadResult.url },
+    });
   }
 );
 
@@ -405,29 +404,29 @@ export const removeProfileImg = errorHandler(
     user!.picture = process.env.DEFAULT_PROFILE_URL as string;
     await userRepository.save(user!);
 
-    return res
-      .status(200)
-      .json({
-        message: 'Profile image successfully deleted',
-        data: { picture: process.env.DEFAULT_PROFILE_URL },
-      });
+    return res.status(200).json({
+      message: 'Profile image successfully deleted',
+      data: { picture: process.env.DEFAULT_PROFILE_URL },
+    });
   }
 );
 
-export const getUserMetrics = errorHandler(async (req: Request, res: Response) => {
-  const users = await userRepository.find({relations:['userType']});
+export const getUserMetrics = errorHandler(
+  async (req: Request, res: Response) => {
+    const users = await userRepository.find({ relations: ['userType'] });
 
-  const buyerData: number[] = Array(12).fill(0);
-  const vendorData: number[] = Array(12).fill(0);
+    const buyerData: number[] = Array(12).fill(0);
+    const vendorData: number[] = Array(12).fill(0);
 
-  for(const user of users){
-    const monthIndex = user.createdAt.getMonth()
-    if(user.userType.name === 'Buyer'){
-      buyerData[monthIndex] += 1
-    }else if(user.userType.name === 'Vendor'){
-      vendorData[monthIndex] += 1
+    for (const user of users) {
+      const monthIndex = user.createdAt.getMonth();
+      if (user.userType.name === 'Buyer') {
+        buyerData[monthIndex] += 1;
+      } else if (user.userType.name === 'Vendor') {
+        vendorData[monthIndex] += 1;
+      }
     }
-  }
 
-  return res.status(200).json({buyerData, vendorData})
-})
+    return res.status(200).json({ buyerData, vendorData });
+  }
+);
