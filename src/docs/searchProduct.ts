@@ -4,8 +4,6 @@
  *   get:
  *     summary: Search products
  *     tags: [Buyer]
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: keyword
