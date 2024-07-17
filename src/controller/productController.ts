@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { In } from 'typeorm';
 import Product from '../database/models/productEntity';
 import Category from '../database/models/categoryEntity';
 import { OrderDetails } from '../database/models/orderDetailsEntity';
@@ -458,7 +457,6 @@ export const checkProductAvailability = async (req: Request, res: Response) => {
   res.json({ availability, productId });
 };
 
-// Best seller API endpoints
 export const getBestSellingProducts = async (req: Request, res: Response) => {
   const orderDetailsRepository = dbConnection.getRepository(OrderDetails);
 
@@ -478,10 +476,12 @@ export const getBestSellingProducts = async (req: Request, res: Response) => {
 
   const productIds = bestSellingProducts.map((item) => item.productId);
 
-  const products = await productRepository.findBy({
-    id: In(productIds),
-  });
-
+  const products = await productRepository
+    .createQueryBuilder('product')
+    .leftJoinAndSelect('product.vendor', 'vendor')
+    .leftJoinAndSelect('product.category', 'category')
+    .where('product.id IN (:...ids)', { ids: productIds })
+    .getMany();
   if (!products || products.length === 0) {
     return res
       .status(404)
@@ -494,6 +494,11 @@ export const getBestSellingProducts = async (req: Request, res: Response) => {
     );
     return {
       ...product,
+      category: product.category.name,
+      vendor: {
+        firstName: product.vendor.firstName,
+        lastName: product.vendor.lastName,
+      },
       sales: parseInt(productData.totalQuantity, 10),
     };
   });
