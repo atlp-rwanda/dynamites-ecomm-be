@@ -207,7 +207,7 @@ export const getSalesByCountry = errorHandler(
   async (req: Request, res: Response) => {
     const orders = await orderRepository.find({
       where: {
-        paid: false,
+        paid: true,
       },
       select: {
         id: true,
