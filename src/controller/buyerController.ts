@@ -18,16 +18,54 @@ export const getOneProduct = errorHandler(
 
     const product = await productRepository.findOne({
       where: { id: productId },
-      relations: ['category'],
+      relations: ['category','reviews','reviews.user','vendor'],
     });
 
     if (!product) {
       return res.status(404).json({ msg: 'Product not found' });
     }
 
+    const similarProducts = await productRepository.find({
+      where:{
+        category:{
+          id: product.category.id
+        }
+      },
+      take: 4
+    })
+
+    const orders = await orderRepository.find({
+      where: {
+        paid: true,
+        orderDetails: {
+          product: {
+            id: productId
+          }
+        }
+      },
+      select: {
+        orderDetails: {
+          product: {
+            id: true
+          },
+          quantity: true
+        }
+      },
+      relations: ['orderDetails', 'orderDetails.product']
+    });
+    
+    let totalQtySold = 0
+
+    for(const order of orders){
+      for(const orderDetail of order.orderDetails){
+        totalQtySold += orderDetail.quantity
+      }
+    }
+    
+
     return res
       .status(200)
-      .json({ msg: 'Product retrieved successfully', product });
+      .json({ msg: 'Product retrieved successfully', product:{...product, similarProducts, totalQtySold} });
   }
 );
 

@@ -89,7 +89,7 @@ describe('Review  controller test', () => {
         .set('Authorization', `Bearer ${buyerToken}`)
         .send(reviewBody)
         expect(responseReview.statusCode).toEqual(409);
-        expect(responseReview.body.message).toEqual('you are already reviewed the product');
+        expect(responseReview.body.message).toEqual('you have already reviewed the product');
 
     })
 

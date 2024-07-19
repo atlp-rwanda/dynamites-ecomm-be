@@ -84,7 +84,9 @@ export const getCartItems = errorHandler(
 
     const cartItems = await cartRepository.find({
       where: {
-        user: user!,
+        user: {
+          id: userId
+        },
       },
       select: {
         user: {
