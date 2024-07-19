@@ -27,6 +27,23 @@
  *         description: Products deleted successfully
  *       '500':
  *         description: Failed to delete products
+ *
+ */
+/**
+ * @swagger
+ * /api/v1/product/mine:
+ *   get:
+ *     summary: Get all products by Vendor
+ *     tags: [Product]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Successful operation
+ *       '500':
+ *         description: Internal server error
+ *       '401':
+ *          description: Unauthorized
  */
 
 /**
