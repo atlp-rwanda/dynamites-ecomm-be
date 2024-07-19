@@ -16,10 +16,9 @@ import { handlePayment } from '../controller/buyerController';
 
 const buyerRouter = Router();
 
-buyerRouter.use(IsLoggedIn, checkRole(['Buyer']));
-
 buyerRouter.get('/get_product/:id', getOneProduct);
 
+buyerRouter.use(IsLoggedIn, checkRole(['Buyer']));
 buyerRouter.post('/addItemToWishList', IsLoggedIn, AddItemInWishList);
 buyerRouter.delete('/removeToWishList', IsLoggedIn, RemoveProductFromWishList);
 buyerRouter.get('/getWishList', IsLoggedIn, getAllWishList);
