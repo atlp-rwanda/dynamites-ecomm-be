@@ -133,6 +133,14 @@ describe('Product Controller Tests', () => {
     expect(response.body.message).toEqual('Data retrieved successfully');
     expect(Array.isArray(response.body.data)).toBeTruthy();
   });
+  it('should retrieve all products by Vendor', async () => {
+    const response = await request(app)
+      .get('/api/v1/product/mine')
+      .set('Authorization', `Bearer ${token}`);
+    expect(response.statusCode).toEqual(200);
+    expect(response.body.message).toEqual('Data retrieved successfully');
+    expect(Array.isArray(response.body.data)).toBeTruthy();
+  });
 
   it('should retrieve a single product by ID', async () => {
     const response = await request(app)

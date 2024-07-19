@@ -11,6 +11,7 @@ import {
   updateProductAvailability,
   checkProductAvailability,
   getBestSellingProducts,
+  getMyProducts,
 } from '../controller/productController';
 import { IsLoggedIn } from '../middlewares/isLoggedIn';
 import { checkRole } from '../middlewares/authorize';
@@ -26,21 +27,25 @@ productRouter
   .get(getAllProducts)
   .delete(IsLoggedIn, deleteAllProduct);
 
+productRouter
+  .route('/mine')
+  .get(IsLoggedIn, checkRole(['Vendor']), getMyProducts);
+
 productRouter.route('/recommended').get(getRecommendedProducts);
 productRouter.route('/bestselling').get(getBestSellingProducts);
 
 productRouter
   .route('/:productId')
   .get(getProduct)
-  .put(IsLoggedIn, checkRole(['Vendor']), updateProduct)
-  .delete(IsLoggedIn, deleteProduct);
+  .put(IsLoggedIn, checkRole(['Vendor', 'Admin']), updateProduct)
+  .delete(IsLoggedIn, checkRole(['Vendor', 'Admin']), deleteProduct);
 
 productRouter
   .route('/:productId/availability')
   .get(IsLoggedIn, checkProductAvailability)
   .put(
     IsLoggedIn,
-    checkRole(['Vendor']),
+    checkRole(['Vendor', 'Admin']),
     validateAvailability,
     updateProductAvailability
   );

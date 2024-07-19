@@ -506,6 +506,32 @@ export const getBestSellingProducts = async (req: Request, res: Response) => {
   res.json(result);
 };
 
+export const getMyProducts = errorHandler(
+  async (req: Request, res: Response) => {
+    const vendorId = req.user!.id;
 
-
-
+    const products = await productRepository.find({
+      where: {
+        vendor: {
+          id: vendorId,
+        },
+      },
+      select: {
+        category: {
+          name: true,
+        },
+        reviews: {
+          content: true,
+          rating: true,
+          user: {
+            firstName: true,
+          },
+        },
+      },
+      relations: ['category', 'reviews'],
+    });
+    return res
+      .status(200)
+      .json({ message: 'Data retrieved successfully', data: products });
+  }
+);
