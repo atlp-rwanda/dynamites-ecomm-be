@@ -18,7 +18,7 @@ export const getOneProduct = errorHandler(
 
     const product = await productRepository.findOne({
       where: { id: productId },
-      relations: ['category','reviews','reviews.user'],
+      relations: ['category','reviews','reviews.user','vendor'],
     });
 
     if (!product) {

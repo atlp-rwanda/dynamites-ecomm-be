@@ -76,15 +76,11 @@ export const getCartItems = errorHandler(
   async (req: Request, res: Response) => {
     const userId = req.user!.id;
 
-    const user = await userRepository.findOne({
-      where: {
-        id: userId,
-      },
-    });
-
     const cartItems = await cartRepository.find({
       where: {
-        user: user!,
+        user: {
+          id: userId
+        },
       },
       select: {
         user: {
