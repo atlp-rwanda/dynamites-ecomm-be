@@ -25,7 +25,7 @@
  *               expirationDate:
  *                 type: string
  *                 format: date
- *               percentage: 
+ *               percentage:
  *                type: number
  *               applicableProducts:
  *                type: array
@@ -160,7 +160,7 @@
  *               expirationDate:
  *                 type: string
  *                 format: date
- *               percentage: 
+ *               percentage:
  *                type: number
  *               applicableProducts:
  *                type: array
@@ -231,7 +231,7 @@
  *         required: true
  *         description: ID of the coupon to delete
  *     responses:
- *       '200':
+ *       '204':
  *         description: Delete Successful
  *       '404':
  *         description: Coupon not found

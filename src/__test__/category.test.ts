@@ -229,7 +229,7 @@ describe('Category Creation Tests', () => {
       country: 'RW',
       status: 'Pending',
       trackingNumber: '123456',
-      paid: false,
+      paid: true,
     });
     await orderRepository.save(order);
 
