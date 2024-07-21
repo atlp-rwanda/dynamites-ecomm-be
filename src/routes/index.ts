@@ -9,7 +9,8 @@ import couponRouter from './couponRoute';
 import chekoutRoutes from './checkoutRoutes';
 import reviewRoute from './reviewRoutes';
 import orderRoutes from './orderRoutes';
-import noticificationRoute from './notificationRoutes' 
+import noticificationRoute from './notificationRoutes';
+import contactRoutes from './contactRoutes';
 const router = Router();
 
 router.use('/user', userRouter);
@@ -22,5 +23,6 @@ router.use('/coupons', couponRouter);
 router.use('/checkout', chekoutRoutes);
 router.use('/review', reviewRoute);
 router.use('/order', orderRoutes);
-router.use('/notification',noticificationRoute)
+router.use('/notification', noticificationRoute);
+router.use('/contact', contactRoutes);
 export default router;
