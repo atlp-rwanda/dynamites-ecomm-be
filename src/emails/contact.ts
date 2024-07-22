@@ -1,10 +1,12 @@
 import axios from 'axios';
 import handlebars from 'handlebars';
 import fs from 'fs';
-type EmailType = 'confirm' | 'reset' | 'subscribe';
+type EmailType = 'contact';
 type Data = {
   name: string;
-  link: string;
+  phone: string;
+  email: string;
+  message: string;
 };
 /**
  * Sends an email of the specified type to the recipient using the provided data.
@@ -16,7 +18,7 @@ type Data = {
  * @throws An error if there is an issue sending the email.
  */
 async function sendEmail(emailType: EmailType, recipient: string, data: Data) {
-  const templatePath = `./src/emails/templates/${emailType}.html`;
+  const templatePath = './src/emails/templates/contact.html';
   try {
     // Read the Handlebars template file
     const templateFile = fs.readFileSync(templatePath, 'utf-8');
@@ -34,7 +36,7 @@ async function sendEmail(emailType: EmailType, recipient: string, data: Data) {
     const body = {
       from: `Dynamites Account Team <info@${domain}>`,
       to: [recipient],
-      subject: 'Verification Email',
+      subject: 'New Contact',
       html: html,
     };
     const mailgunResponse = await axios.post(
