@@ -282,7 +282,7 @@ export const deleteAllOrders = errorHandler(
 
 export const getAllOrders = errorHandler(
   async (req: Request, res: Response) => {
-    const orders = await orderRepository.find({ relations: ['orderDetails'] });
+    const orders = await orderRepository.find({ relations: ['orderDetails','orderDetails.product','orderDetails.product.vendor'] });
     return res.status(200).json({ orders });
   }
 );
